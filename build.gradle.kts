@@ -8,6 +8,12 @@ plugins {
 group = "me.khris"
 version = "1.0-SNAPSHOT"
 
+val ktorVersion = "1.5.0"
+val kotlinHtmlVersion = "0.7.2"
+val slf4fVersion = "1.7.30"
+val kotlinReactVersion = "17.0.0-pre.133-kotlin-1.4.21"
+val reactVersion = "17.0.1"
+
 repositories {
     jcenter()
     mavenCentral()
@@ -53,10 +59,10 @@ kotlin {
         }
         val jvmMain by getting {
             dependencies {
-                implementation("io.ktor:ktor-server-netty:1.4.0")
-                implementation("io.ktor:ktor-html-builder:1.4.0")
-                implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.2")
-                implementation("org.slf4j:slf4j-simple:1.7.30")
+                implementation("io.ktor:ktor-server-netty:$ktorVersion")
+                implementation("io.ktor:ktor-html-builder:$ktorVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinHtmlVersion")
+                implementation("org.slf4j:slf4j-simple:$slf4fVersion")
             }
         }
         val jvmTest by getting {
@@ -66,8 +72,9 @@ kotlin {
         }
         val jsMain by getting {
             dependencies {
-                implementation("org.jetbrains:kotlin-react:16.13.1-pre.113-kotlin-1.4.0")
-                implementation("org.jetbrains:kotlin-react-dom:16.13.1-pre.113-kotlin-1.4.0")
+                implementation("org.jetbrains:kotlin-react:$kotlinReactVersion")
+                implementation("org.jetbrains:kotlin-react-dom:$kotlinReactVersion")
+                implementation(npm("react", reactVersion))
             }
         }
         val jsTest by getting {
@@ -79,7 +86,7 @@ kotlin {
 }
 
 application {
-    mainClassName = "ServerKt"
+    mainClassName = "io.ktor.server.netty.EngineMain"
 }
 
 tasks.getByName<KotlinWebpack>("jsBrowserProductionWebpack") {
