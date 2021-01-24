@@ -27,6 +27,10 @@ import io.ktor.sessions.SessionStorageMemory
 import io.ktor.sessions.Sessions
 import io.ktor.sessions.cookie
 import io.ktor.sessions.sessions
+import me.khrys.dnd.charcreator.common.LOGIN_SESSION
+import me.khrys.dnd.charcreator.common.LOGIN_URL
+import me.khrys.dnd.charcreator.common.ROOT_URL
+import me.khrys.dnd.charcreator.common.STATIC_URL
 import me.khrys.dnd.charcreator.server.authentication.authenticate
 import me.khrys.dnd.charcreator.server.authentication.logout
 import me.khrys.dnd.charcreator.server.locations.Index
@@ -34,10 +38,6 @@ import me.khrys.dnd.charcreator.server.locations.Login
 import me.khrys.dnd.charcreator.server.locations.Logout
 import me.khrys.dnd.charcreator.server.models.LoginSession
 import me.khrys.dnd.charcreator.server.pages.index
-import me.khrys.dnd.charcreator.server.utils.LOGIN_SESSION
-import me.khrys.dnd.charcreator.server.utils.LOGIN_URL
-import me.khrys.dnd.charcreator.server.utils.ROOT_URL
-import me.khrys.dnd.charcreator.server.utils.STATIC_URL
 import org.slf4j.event.Level.INFO
 
 fun Application.main() {

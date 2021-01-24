@@ -7,10 +7,10 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.response.respondRedirect
 import io.ktor.sessions.sessions
+import me.khrys.dnd.charcreator.common.LOGIN_SESSION
+import me.khrys.dnd.charcreator.common.ROOT_URL
 import me.khrys.dnd.charcreator.server.models.LoginSession
 import me.khrys.dnd.charcreator.server.models.UserInfo
-import me.khrys.dnd.charcreator.server.utils.LOGIN_SESSION
-import me.khrys.dnd.charcreator.server.utils.ROOT_URL
 
 suspend fun authenticate(call: ApplicationCall, validationUrl: String, httpClient: HttpClient) {
     val principal: OAuth2? = call.authentication.principal()

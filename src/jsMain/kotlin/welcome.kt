@@ -2,11 +2,11 @@
 
 package me.khrys.dnd.charcreator.client
 
-import com.ccfraser.muirwik.components.button.MButtonVariant.contained
-import com.ccfraser.muirwik.components.button.mButton
-import kotlinx.browser.window
+import kotlinx.css.Clear.both
+import kotlinx.css.clear
 import kotlinx.html.InputType
 import kotlinx.html.js.onChangeFunction
+import me.khrys.dnd.charcreator.client.components.logoutButton
 import org.w3c.dom.HTMLInputElement
 import react.RBuilder
 import react.RComponent
@@ -14,6 +14,8 @@ import react.RProps
 import react.RState
 import react.dom.div
 import react.dom.input
+import styled.css
+import styled.styledDiv
 
 external interface WelcomeProps : RProps {
     var name: String
@@ -29,26 +31,22 @@ class Welcome(props: WelcomeProps) : RComponent<WelcomeProps, WelcomeState>(prop
     }
 
     override fun RBuilder.render() {
-        div {
-            mButton(
-                caption = "Logout",
-                variant = contained,
-                onClick = {
-                    window.location.href = "/logout" }
-            )
-        }
+        logoutButton()
 
-        div {
-            +"Hello, ${state.name}"
-        }
-        input {
-            attrs {
-                type = InputType.text
-                value = state.name
-                onChangeFunction = { event ->
-                    setState(
-                        WelcomeState(name = (event.target as HTMLInputElement).value)
-                    )
+        styledDiv {
+            css { clear = both }
+            div {
+                +"Hello, ${state.name}"
+            }
+            input {
+                attrs {
+                    type = InputType.text
+                    value = state.name
+                    onChangeFunction = { event ->
+                        setState(
+                            WelcomeState(name = (event.target as HTMLInputElement).value)
+                        )
+                    }
                 }
             }
         }

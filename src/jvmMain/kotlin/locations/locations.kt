@@ -3,9 +3,9 @@
 package me.khrys.dnd.charcreator.server.locations
 
 import io.ktor.locations.Location
-import me.khrys.dnd.charcreator.server.utils.LOGIN_URL
-import me.khrys.dnd.charcreator.server.utils.LOGOUT_URL
-import me.khrys.dnd.charcreator.server.utils.ROOT_URL
+import me.khrys.dnd.charcreator.common.LOGIN_URL
+import me.khrys.dnd.charcreator.common.LOGOUT_URL
+import me.khrys.dnd.charcreator.common.ROOT_URL
 
 @Location(ROOT_URL)
 class Index

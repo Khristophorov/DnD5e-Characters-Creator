@@ -12,6 +12,7 @@ version = "1.0-SNAPSHOT"
 // Kotlin dependencies
 val kotlinHtmlVersion = "0.7.2"
 val kotlinReactVersion = "17.0.0-pre.133-kotlin-1.4.21"
+val kotlinReactReduxVersion = "7.2.1-pre.141-kotlin-1.4.21"
 val kotlinStyledVersion = "5.2.0-pre.133-kotlin-1.4.21"
 val kotlinCssJsVersion = "1.0.0-pre.133-kotlin-1.4.21"
 val kotlinSerializationVersion = "1.0.1"
@@ -90,6 +91,7 @@ kotlin {
             dependencies {
                 implementation("org.jetbrains:kotlin-react:$kotlinReactVersion")
                 implementation("org.jetbrains:kotlin-react-dom:$kotlinReactVersion")
+                implementation("org.jetbrains:kotlin-react-redux:$kotlinReactReduxVersion")
                 implementation("org.jetbrains:kotlin-styled:$kotlinStyledVersion")
                 implementation("org.jetbrains:kotlin-css-js:$kotlinCssJsVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
