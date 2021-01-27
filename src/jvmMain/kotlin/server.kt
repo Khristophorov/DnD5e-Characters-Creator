@@ -7,14 +7,12 @@ import io.ktor.application.ApplicationStopping
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.auth.Authentication
-import io.ktor.auth.OAuthServerSettings
 import io.ktor.auth.authenticate
 import io.ktor.auth.oauth
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.features.CallLogging
-import io.ktor.http.HttpMethod
 import io.ktor.http.content.resources
 import io.ktor.http.content.static
 import io.ktor.locations.Locations
@@ -31,30 +29,29 @@ import me.khrys.dnd.charcreator.common.LOGIN_SESSION
 import me.khrys.dnd.charcreator.common.LOGIN_URL
 import me.khrys.dnd.charcreator.common.ROOT_URL
 import me.khrys.dnd.charcreator.common.STATIC_URL
+import me.khrys.dnd.charcreator.common.models.User
 import me.khrys.dnd.charcreator.server.authentication.authenticate
+import me.khrys.dnd.charcreator.server.authentication.initLoginProvider
 import me.khrys.dnd.charcreator.server.authentication.logout
 import me.khrys.dnd.charcreator.server.locations.Index
 import me.khrys.dnd.charcreator.server.locations.Login
 import me.khrys.dnd.charcreator.server.locations.Logout
 import me.khrys.dnd.charcreator.server.models.LoginSession
+import me.khrys.dnd.charcreator.server.mongo.MongoService
 import me.khrys.dnd.charcreator.server.pages.index
+import org.litote.kmongo.KMongo
 import org.slf4j.event.Level.INFO
 
 fun Application.main() {
+    val config = environment.config
+
     val httpClient = HttpClient(Apache) { install(JsonFeature) }.apply {
         environment.monitor.subscribe(ApplicationStopping) { close() }
     }
 
-    val loginProvider = OAuthServerSettings.OAuth2ServerSettings(
-        name = environment.config.property("ktor.oauth.name").getString(),
-        authorizeUrl = environment.config.property("ktor.oauth.authorizeUrl").getString(),
-        accessTokenUrl = environment.config.property("ktor.oauth.accessTokenUrl").getString(),
-        requestMethod = HttpMethod.Post,
+    val mongoService = MongoService(KMongo.createClient(config.property("ktor.mongo.url").getString()))
 
-        clientId = environment.config.property("ktor.oauth.clientId").getString(),
-        clientSecret = environment.config.property("ktor.oauth.clientSecret").getString(),
-        defaultScopes = environment.config.property("ktor.oauth.defaultScopes").getList()
-    )
+    val loginProvider = initLoginProvider(config)
 
     install(CallLogging) { level = INFO }
     install(Sessions) {
@@ -72,15 +69,17 @@ fun Application.main() {
         authenticate {
             location<Login> {
                 handle {
-                    val validationUrl = environment.config.property("ktor.oauth.validationUrl").getString()
+                    val validationUrl = config.property("ktor.oauth.validationUrl").getString()
                     authenticate(call, validationUrl, httpClient)
                 }
             }
         }
         get<Index> {
-            if (call.sessions.get(LOGIN_SESSION) == null) {
+            val login = call.sessions.get(LOGIN_SESSION) as LoginSession?
+            if (login == null) {
                 call.respondRedirect(LOGIN_URL)
             } else {
+                mongoService.storeUser(User(login.username))
                 call.index()
             }
         }

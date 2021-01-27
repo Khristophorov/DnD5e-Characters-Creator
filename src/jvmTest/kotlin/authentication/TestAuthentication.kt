@@ -21,20 +21,20 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockkStatic
 import io.mockk.verifySequence
-import kotlinx.coroutines.runBlocking
-import me.khrys.dnd.charcreator.server.models.LoginSession
-import me.khrys.dnd.charcreator.server.utils.LOGIN_SESSION
-import me.khrys.dnd.charcreator.server.utils.LOGIN_URL
-import me.khrys.dnd.charcreator.server.utils.ROOT_URL
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlinx.coroutines.runBlocking
+import me.khrys.dnd.charcreator.common.LOGIN_SESSION
+import me.khrys.dnd.charcreator.common.LOGIN_URL
+import me.khrys.dnd.charcreator.common.ROOT_URL
+import me.khrys.dnd.charcreator.server.models.LoginSession
 
-private const val VALIDATION_URL = "http://validation-url/"
-private const val TOKEN = "token"
-private const val FULL_VALIDATION_URL = VALIDATION_URL + TOKEN
-private const val EMAIL = "test@mail.com"
-private const val USER_INFO_JSON = """
+const val VALIDATION_URL = "http://validation-url/"
+const val TOKEN = "token"
+const val FULL_VALIDATION_URL = VALIDATION_URL + TOKEN
+const val EMAIL = "test@mail.com"
+const val USER_INFO_JSON = """
     {
         "azp": null,
         "aud": null,

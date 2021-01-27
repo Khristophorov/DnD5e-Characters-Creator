@@ -16,6 +16,7 @@ val kotlinReactReduxVersion = "7.2.1-pre.141-kotlin-1.4.21"
 val kotlinStyledVersion = "5.2.0-pre.133-kotlin-1.4.21"
 val kotlinCssJsVersion = "1.0.0-pre.133-kotlin-1.4.21"
 val kotlinSerializationVersion = "1.0.1"
+val kmongoVersion = "4.2.3"
 val ktorVersion = "1.5.0"
 val slf4fVersion = "1.7.30"
 val muirwikVersion = "0.6.3"
@@ -60,7 +61,12 @@ kotlin {
         }
     }
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
+                implementation("org.litote.kmongo:kmongo-id:$kmongoVersion")
+            }
+        }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))
@@ -76,6 +82,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-apache:$ktorVersion")
                 implementation("io.ktor:ktor-client-serialization:$ktorVersion")
                 implementation("io.ktor:ktor-locations:$ktorVersion")
+                implementation("org.litote.kmongo:kmongo:$kmongoVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinHtmlVersion")
                 implementation("org.slf4j:slf4j-simple:$slf4fVersion")
             }
