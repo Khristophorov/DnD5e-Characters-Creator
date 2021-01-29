@@ -29,12 +29,12 @@ class TestMongoService {
     @RelaxedMockK
     lateinit var users: MongoCollection<User>
 
-    lateinit var service: MongoService
+    private lateinit var service: MongoService
 
     @BeforeTest
     fun setup() {
-        MockKAnnotations.init(this)
         mockkStatic("org.litote.kmongo.MongoDatabasesKt", "org.litote.kmongo.MongoCollectionsKt")
+        MockKAnnotations.init(this)
 
         every { client.getDatabase(DB_NAME) } returns db
         every { db.hint(MongoCollection::class).getCollection<User>() } returns users
