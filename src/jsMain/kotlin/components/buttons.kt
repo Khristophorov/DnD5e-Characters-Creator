@@ -27,9 +27,9 @@ fun RBuilder.dButton(caption: String, action: ((Event) -> Unit)) {
     )
 }
 
-fun RBuilder.logoutButton() {
+fun RBuilder.logoutButton(caption: String?) {
     styledDiv {
         css { float = right }
-        dButton(caption = "Выйти", action = { window.location.href = LOGOUT_URL })
+        dButton(caption = caption ?: "", action = { window.location.href = LOGOUT_URL })
     }
 }

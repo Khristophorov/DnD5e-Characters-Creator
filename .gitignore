@@ -27,3 +27,6 @@ hs_err_pid*
 
 # Output folder
 /build/
+
+# Mongo internal scripts
+/.mongoScripts/

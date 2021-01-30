@@ -3,6 +3,7 @@
 package me.khrys.dnd.charcreator.server
 
 import io.ktor.application.Application
+import io.ktor.application.ApplicationCall
 import io.ktor.application.ApplicationStopping
 import io.ktor.application.call
 import io.ktor.application.install
@@ -12,7 +13,9 @@ import io.ktor.auth.oauth
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.json.JsonFeature
+import io.ktor.config.ApplicationConfig
 import io.ktor.features.CallLogging
+import io.ktor.features.ContentNegotiation
 import io.ktor.http.content.resources
 import io.ktor.http.content.static
 import io.ktor.locations.Locations
@@ -20,11 +23,14 @@ import io.ktor.locations.get
 import io.ktor.locations.location
 import io.ktor.locations.url
 import io.ktor.response.respondRedirect
+import io.ktor.routing.Route
 import io.ktor.routing.Routing
+import io.ktor.serialization.json
 import io.ktor.sessions.SessionStorageMemory
 import io.ktor.sessions.Sessions
 import io.ktor.sessions.cookie
 import io.ktor.sessions.sessions
+import io.ktor.util.pipeline.PipelineContext
 import me.khrys.dnd.charcreator.common.LOGIN_SESSION
 import me.khrys.dnd.charcreator.common.LOGIN_URL
 import me.khrys.dnd.charcreator.common.ROOT_URL
@@ -36,9 +42,11 @@ import me.khrys.dnd.charcreator.server.authentication.logout
 import me.khrys.dnd.charcreator.server.locations.Index
 import me.khrys.dnd.charcreator.server.locations.Login
 import me.khrys.dnd.charcreator.server.locations.Logout
+import me.khrys.dnd.charcreator.server.locations.Translations
 import me.khrys.dnd.charcreator.server.models.LoginSession
 import me.khrys.dnd.charcreator.server.mongo.MongoService
 import me.khrys.dnd.charcreator.server.pages.index
+import me.khrys.dnd.charcreator.server.rest.translations
 import org.litote.kmongo.KMongo
 import org.slf4j.event.Level.INFO
 
@@ -58,6 +66,9 @@ fun Application.main() {
         cookie<LoginSession>(LOGIN_SESSION, SessionStorageMemory()) { cookie.path = ROOT_URL }
     }
     install(Locations)
+    install(ContentNegotiation) {
+        json()
+    }
     install(Authentication) {
         oauth {
             client = httpClient
@@ -66,24 +77,29 @@ fun Application.main() {
         }
     }
     install(Routing) {
-        authenticate {
-            location<Login> {
-                handle {
-                    val validationUrl = config.property("ktor.oauth.validationUrl").getString()
-                    authenticate(call, validationUrl, httpClient)
-                }
-            }
-        }
-        get<Index> {
-            val login = call.sessions.get(LOGIN_SESSION) as LoginSession?
-            if (login == null) {
-                call.respondRedirect(LOGIN_URL)
-            } else {
-                mongoService.storeUser(User(login.username))
-                call.index()
-            }
-        }
+        authenticate { authenticate(config, httpClient) }
+        get<Index> { index(mongoService) }
         get<Logout> { logout(call) }
+        get<Translations> { call.translations(mongoService) }
         static(STATIC_URL) { resources() }
+    }
+}
+
+private fun Route.authenticate(config: ApplicationConfig, httpClient: HttpClient) {
+    location<Login> {
+        handle {
+            val validationUrl = config.property("ktor.oauth.validationUrl").getString()
+            authenticate(call, validationUrl, httpClient)
+        }
+    }
+}
+
+private suspend fun PipelineContext<Unit, ApplicationCall>.index(mongoService: MongoService) {
+    val login = call.sessions.get(LOGIN_SESSION) as LoginSession?
+    if (login == null) {
+        call.respondRedirect(LOGIN_URL)
+    } else {
+        mongoService.storeUser(User(login.username))
+        call.index()
     }
 }

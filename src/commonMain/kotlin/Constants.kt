@@ -16,3 +16,6 @@ const val FONT_URL = "$STATIC_URL/fonts"
 const val SOUNDS_URL = "$STATIC_URL/sounds"
 const val CLICK_SOUND_URL = "$SOUNDS_URL/click.wav"
 const val PTERRA_URL = "$FONT_URL/Pterra_rus.ttf"
+const val TRANSLATIONS_URL = "/translations"
+
+const val LOGOUT_TRANSLATION = "logout"

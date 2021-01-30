@@ -10,6 +10,7 @@ group = "me.khris"
 version = "1.0-SNAPSHOT"
 
 // Kotlin dependencies
+val kotlinCoroutinesVersion = "1.4.2"
 val kotlinHtmlVersion = "0.7.2"
 val kotlinReactVersion = "17.0.0-pre.133-kotlin-1.4.21"
 val kotlinReactReduxVersion = "7.2.1-pre.141-kotlin-1.4.21"
@@ -17,13 +18,14 @@ val kotlinStyledVersion = "5.2.0-pre.133-kotlin-1.4.21"
 val kotlinCssJsVersion = "1.0.0-pre.133-kotlin-1.4.21"
 val kotlinSerializationVersion = "1.0.1"
 val kmongoVersion = "4.2.3"
-val ktorVersion = "1.5.0"
+val ktorVersion = "1.5.1"
 val slf4fVersion = "1.7.30"
-val muirwikVersion = "0.6.3"
+val muirwikVersion = "0.6.5"
 val mockkVersion = "1.10.4"
 
 // JavaScript dependencies
 val reactVersion = "17.0.1"
+val reduxVersion = "4.0.5"
 
 repositories {
     jcenter()
@@ -64,7 +66,6 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
-                implementation("org.litote.kmongo:kmongo-id:$kmongoVersion")
             }
         }
         val commonTest by getting {
@@ -82,6 +83,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-apache:$ktorVersion")
                 implementation("io.ktor:ktor-client-serialization:$ktorVersion")
                 implementation("io.ktor:ktor-locations:$ktorVersion")
+                implementation("io.ktor:ktor-serialization:$ktorVersion")
                 implementation("org.litote.kmongo:kmongo:$kmongoVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinHtmlVersion")
                 implementation("org.slf4j:slf4j-simple:$slf4fVersion")
@@ -101,10 +103,13 @@ kotlin {
                 implementation("org.jetbrains:kotlin-react-redux:$kotlinReactReduxVersion")
                 implementation("org.jetbrains:kotlin-styled:$kotlinStyledVersion")
                 implementation("org.jetbrains:kotlin-css-js:$kotlinCssJsVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
                 implementation("com.ccfraser.muirwik:muirwik-components:$muirwikVersion")
                 implementation(npm("react", reactVersion))
                 implementation(npm("react-dom", reactVersion))
+                implementation(npm("react-is", reactVersion))
+                implementation(npm("redux", reduxVersion))
             }
         }
         val jsTest by getting {

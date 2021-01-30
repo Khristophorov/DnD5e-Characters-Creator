@@ -6,6 +6,7 @@ import io.ktor.locations.Location
 import me.khrys.dnd.charcreator.common.LOGIN_URL
 import me.khrys.dnd.charcreator.common.LOGOUT_URL
 import me.khrys.dnd.charcreator.common.ROOT_URL
+import me.khrys.dnd.charcreator.common.TRANSLATIONS_URL
 
 @Location(ROOT_URL)
 class Index
@@ -15,3 +16,7 @@ class Login
 
 @Location(LOGOUT_URL)
 class Logout
+
+@Location(TRANSLATIONS_URL)
+class Translations
+
