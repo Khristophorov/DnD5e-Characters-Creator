@@ -2,6 +2,7 @@
 
 package me.khrys.dnd.charcreator.client
 
+import com.ccfraser.muirwik.components.mCircularProgress
 import kotlinx.browser.window
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.await
@@ -29,6 +30,7 @@ val mainDnd = functionalComponent<RProps> {
     val (translations, setTranslations) = useState(emptyMap<String, String>())
 
     if (isLoading) {
+        mCircularProgress()
         MainScope().launch {
             if (translations.isEmpty()) {
                 setTranslations(fetchTranslations())

@@ -44,7 +44,9 @@ import me.khrys.dnd.charcreator.server.locations.Login
 import me.khrys.dnd.charcreator.server.locations.Logout
 import me.khrys.dnd.charcreator.server.locations.Translations
 import me.khrys.dnd.charcreator.server.models.LoginSession
-import me.khrys.dnd.charcreator.server.mongo.MongoService
+import me.khrys.dnd.charcreator.server.mongo.MongoServiceFactory
+import me.khrys.dnd.charcreator.server.mongo.TranslationService
+import me.khrys.dnd.charcreator.server.mongo.UserService
 import me.khrys.dnd.charcreator.server.pages.index
 import me.khrys.dnd.charcreator.server.rest.translations
 import org.litote.kmongo.KMongo
@@ -57,7 +59,9 @@ fun Application.main() {
         environment.monitor.subscribe(ApplicationStopping) { close() }
     }
 
-    val mongoService = MongoService(KMongo.createClient(config.property("ktor.mongo.url").getString()))
+    val mongoFactory = MongoServiceFactory(KMongo.createClient(config.property("ktor.mongo.url").getString()))
+    val userService = UserService(mongoFactory.getUsers())
+    val translationService = TranslationService(mongoFactory.getTranslations())
 
     val loginProvider = initLoginProvider(config)
 
@@ -78,9 +82,9 @@ fun Application.main() {
     }
     install(Routing) {
         authenticate { authenticate(config, httpClient) }
-        get<Index> { index(mongoService) }
+        get<Index> { index(userService) }
         get<Logout> { logout(call) }
-        get<Translations> { call.translations(mongoService) }
+        get<Translations> { call.translations(translationService) }
         static(STATIC_URL) { resources() }
     }
 }
@@ -94,12 +98,12 @@ private fun Route.authenticate(config: ApplicationConfig, httpClient: HttpClient
     }
 }
 
-private suspend fun PipelineContext<Unit, ApplicationCall>.index(mongoService: MongoService) {
+private suspend fun PipelineContext<Unit, ApplicationCall>.index(userService: UserService) {
     val login = call.sessions.get(LOGIN_SESSION) as LoginSession?
     if (login == null) {
         call.respondRedirect(LOGIN_URL)
     } else {
-        mongoService.storeUser(User(login.username))
+        userService.storeUser(User(login.username))
         call.index()
     }
 }
