@@ -23,7 +23,7 @@ class TestMongoService {
     @MockK
     lateinit var client: MongoClient
 
-    @MockK
+    @RelaxedMockK
     lateinit var db: MongoDatabase
 
     @RelaxedMockK
