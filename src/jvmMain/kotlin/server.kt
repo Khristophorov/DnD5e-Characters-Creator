@@ -21,6 +21,7 @@ import io.ktor.http.content.static
 import io.ktor.locations.Locations
 import io.ktor.locations.get
 import io.ktor.locations.location
+import io.ktor.locations.post
 import io.ktor.locations.url
 import io.ktor.response.respondRedirect
 import io.ktor.routing.Route
@@ -39,6 +40,7 @@ import me.khrys.dnd.charcreator.common.models.User
 import me.khrys.dnd.charcreator.server.authentication.authenticate
 import me.khrys.dnd.charcreator.server.authentication.initLoginProvider
 import me.khrys.dnd.charcreator.server.authentication.logout
+import me.khrys.dnd.charcreator.server.locations.Characters
 import me.khrys.dnd.charcreator.server.locations.Index
 import me.khrys.dnd.charcreator.server.locations.Login
 import me.khrys.dnd.charcreator.server.locations.Logout
@@ -48,6 +50,8 @@ import me.khrys.dnd.charcreator.server.mongo.MongoServiceFactory
 import me.khrys.dnd.charcreator.server.mongo.TranslationService
 import me.khrys.dnd.charcreator.server.mongo.UserService
 import me.khrys.dnd.charcreator.server.pages.index
+import me.khrys.dnd.charcreator.server.rest.characters
+import me.khrys.dnd.charcreator.server.rest.saveCharacter
 import me.khrys.dnd.charcreator.server.rest.translations
 import org.litote.kmongo.KMongo
 import org.slf4j.event.Level.INFO
@@ -85,6 +89,8 @@ fun Application.main() {
         get<Index> { index(userService) }
         get<Logout> { logout(call) }
         get<Translations> { call.translations(translationService) }
+        get<Characters> { call.characters(userService) }
+        post<Characters> { call.saveCharacter(userService) }
         static(STATIC_URL) { resources() }
     }
 }
@@ -99,11 +105,11 @@ private fun Route.authenticate(config: ApplicationConfig, httpClient: HttpClient
 }
 
 private suspend fun PipelineContext<Unit, ApplicationCall>.index(userService: UserService) {
-    val login = call.sessions.get(LOGIN_SESSION) as LoginSession?
+    val login = retrieveUserName(call.sessions)
     if (login == null) {
         call.respondRedirect(LOGIN_URL)
     } else {
-        userService.storeUser(User(login.username))
+        userService.storeUser(User(login))
         call.index()
     }
 }

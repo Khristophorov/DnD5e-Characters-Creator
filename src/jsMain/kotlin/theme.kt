@@ -29,5 +29,16 @@ private fun createDefaultTheme(): Theme {
             zIndex: '3'
         }
     }""")
+    theme.overrides.MuiAvatar = js("""{
+        root: {
+            width: '64px',
+            height: '64px'
+        }
+    }""")
+    theme.overrides.MuiPaper = js("""{
+        root: {
+            backgroundColor: '#fff3e0'
+        }
+    }""")
     return theme
 }

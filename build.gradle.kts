@@ -26,6 +26,7 @@ val mockkVersion = "1.10.4"
 // JavaScript dependencies
 val reactVersion = "17.0.1"
 val reduxVersion = "4.0.5"
+val reactMaterialUiFormValidatorVersion = "2.1.4"
 
 repositories {
     jcenter()
@@ -110,6 +111,7 @@ kotlin {
                 implementation(npm("react-dom", reactVersion))
                 implementation(npm("react-is", reactVersion))
                 implementation(npm("redux", reduxVersion))
+                implementation(npm("react-material-ui-form-validator", reactMaterialUiFormValidatorVersion))
             }
         }
         val jsTest by getting {

@@ -3,61 +3,68 @@
 package me.khrys.dnd.charcreator.client
 
 import com.ccfraser.muirwik.components.mCircularProgress
-import kotlinx.browser.window
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
 import kotlinx.css.Clear.both
 import kotlinx.css.clear
-import kotlinx.html.InputType
-import kotlinx.html.js.onChangeFunction
+import me.khrys.dnd.charcreator.client.components.addCharacter
+import me.khrys.dnd.charcreator.client.components.currentCharacters
 import me.khrys.dnd.charcreator.client.components.logoutButton
 import me.khrys.dnd.charcreator.common.LOGOUT_TRANSLATION
-import me.khrys.dnd.charcreator.common.TRANSLATIONS_URL
-import me.khrys.dnd.charcreator.common.models.Translation
-import org.w3c.dom.HTMLInputElement
+import me.khrys.dnd.charcreator.common.models.Character
+import react.RBuilder
 import react.RProps
-import react.dom.div
-import react.dom.input
+import react.RSetState
+import react.child
 import react.functionalComponent
 import react.useState
 import styled.css
 import styled.styledDiv
 
 val mainDnd = functionalComponent<RProps> {
-    val (name, setName) = useState("Kotlin/JS")
     val (isLoading, setLoading) = useState(true)
     val (translations, setTranslations) = useState(emptyMap<String, String>())
+    val (characters, setCharacters) = useState(emptyArray<Character>())
 
     if (isLoading) {
-        mCircularProgress()
-        MainScope().launch {
-            if (translations.isEmpty()) {
-                setTranslations(fetchTranslations())
-            }
-            setLoading(false)
-        }
+        loadMainData(
+            translations = translations,
+            setTranslations = setTranslations,
+            setCharacters = setCharacters,
+            setLoading = setLoading
+        )
     } else {
-        logoutButton(translations[LOGOUT_TRANSLATION])
+        TranslationsContext.Provider(translations) {
+            logoutButton(translations[LOGOUT_TRANSLATION])
 
-        styledDiv {
-            css { clear = both }
-            div {
-                +"Hello, $name"
-            }
-            input {
-                attrs {
-                    type = InputType.text
-                    value = name
-                    onChangeFunction = { event ->
-                        setName((event.target as HTMLInputElement).value)
-                    }
-                }
+            CharactersContext.Provider(characters) {
+                renderMainContent()
             }
         }
     }
 }
 
-suspend fun fetchTranslations(): Map<String, String> =
-    window.fetch(TRANSLATIONS_URL).await().json().await().unsafeCast<Array<Translation>>()
-        .map { it._id to it.value }.toMap()
+private fun RBuilder.renderMainContent() {
+    styledDiv {
+        css { clear = both }
+
+        child(addCharacter)
+        child(currentCharacters)
+    }
+}
+
+private fun RBuilder.loadMainData(
+    translations: Map<String, String>,
+    setTranslations: RSetState<Map<String, String>>,
+    setCharacters: RSetState<Array<Character>>,
+    setLoading: RSetState<Boolean>
+) {
+    mCircularProgress()
+    MainScope().launch {
+        if (translations.isEmpty()) {
+            setTranslations(fetchTranslations())
+            setCharacters(fetchCharacters())
+        }
+        setLoading(false)
+    }
+}
