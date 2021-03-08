@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
-    kotlin("multiplatform") version "1.4.21"
-    kotlin("plugin.serialization") version "1.4.21"
+    kotlin("multiplatform") version "1.4.31"
+    kotlin("plugin.serialization") version "1.4.31"
     application
 }
 
@@ -10,23 +10,22 @@ group = "me.khris"
 version = "1.0-SNAPSHOT"
 
 // Kotlin dependencies
-val kotlinCoroutinesVersion = "1.4.2"
+val kotlinCoroutinesVersion = "1.4.3"
 val kotlinHtmlVersion = "0.7.2"
-val kotlinReactVersion = "17.0.0-pre.133-kotlin-1.4.21"
-val kotlinReactReduxVersion = "7.2.1-pre.141-kotlin-1.4.21"
-val kotlinStyledVersion = "5.2.0-pre.133-kotlin-1.4.21"
-val kotlinCssJsVersion = "1.0.0-pre.133-kotlin-1.4.21"
-val kotlinSerializationVersion = "1.0.1"
-val kmongoVersion = "4.2.3"
-val ktorVersion = "1.5.1"
+val kotlinReactVersion = "17.0.1-pre.148-kotlin-1.4.30"
+val kotlinStyledVersion = "5.2.1-pre.146-kotlin-1.4.30"
+val kotlinCssJsVersion = "1.0.0-pre.148-kotlin-1.4.30"
+val kotlinSerializationVersion = "1.1.0"
+val kmongoVersion = "4.2.4"
+val ktorVersion = "1.5.2"
 val slf4fVersion = "1.7.30"
-val muirwikVersion = "0.6.5"
-val mockkVersion = "1.10.4"
+val muirwikVersion = "0.6.7"
+val mockkVersion = "1.10.6"
 
 // JavaScript dependencies
 val reactVersion = "17.0.1"
-val reduxVersion = "4.0.5"
 val reactMaterialUiFormValidatorVersion = "2.1.4"
+val materialUiVersion = "4.11.0"
 
 repositories {
     jcenter()
@@ -39,7 +38,7 @@ repositories {
 kotlin {
     jvm {
         compilations.all {
-            kotlinOptions.jvmTarget = "1.8"
+            kotlinOptions.jvmTarget = "11"
         }
         testRuns["test"].executionTask.configure {
             useJUnit()
@@ -101,16 +100,15 @@ kotlin {
             dependencies {
                 implementation("org.jetbrains:kotlin-react:$kotlinReactVersion")
                 implementation("org.jetbrains:kotlin-react-dom:$kotlinReactVersion")
-                implementation("org.jetbrains:kotlin-react-redux:$kotlinReactReduxVersion")
                 implementation("org.jetbrains:kotlin-styled:$kotlinStyledVersion")
                 implementation("org.jetbrains:kotlin-css-js:$kotlinCssJsVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
                 implementation("com.ccfraser.muirwik:muirwik-components:$muirwikVersion")
+                implementation(npm("@material-ui/core", materialUiVersion))
                 implementation(npm("react", reactVersion))
                 implementation(npm("react-dom", reactVersion))
                 implementation(npm("react-is", reactVersion))
-                implementation(npm("redux", reduxVersion))
                 implementation(npm("react-material-ui-form-validator", reactMaterialUiFormValidatorVersion))
             }
         }
@@ -123,7 +121,7 @@ kotlin {
 }
 
 application {
-    mainClassName = "io.ktor.server.netty.EngineMain"
+    mainClass.set("io.ktor.server.netty.EngineMain")
 }
 
 tasks.getByName<KotlinWebpack>("jsBrowserProductionWebpack") {
