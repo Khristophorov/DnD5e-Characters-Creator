@@ -40,5 +40,15 @@ private fun createDefaultTheme(): Theme {
             backgroundColor: '#fff3e0'
         }
     }""")
+    theme.overrides.MuiDialog = js("""{
+        paperWidthSm: {
+            maxWidth: '700px'
+        }
+    }""")
+    theme.overrides.MuiInputLabel = js("""{
+        shrink: {
+            transformOrigin: 'top center'
+        }
+    }""")
     return theme
 }

@@ -18,7 +18,6 @@ import com.ccfraser.muirwik.components.mTooltip
 import com.ccfraser.muirwik.components.mTypography
 import kotlinx.browser.window
 import kotlinx.css.Display.block
-import kotlinx.css.Display.flex
 import kotlinx.css.FlexWrap.wrap
 import kotlinx.css.Float.left
 import kotlinx.css.Float.right
@@ -28,12 +27,14 @@ import kotlinx.css.float
 import kotlinx.css.margin
 import kotlinx.css.padding
 import kotlinx.html.InputType.submit
+import kotlinx.html.classes
 import me.khrys.dnd.charcreator.client.CharactersContext
 import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.playSound
 import me.khrys.dnd.charcreator.common.ADD_HOVER_TRANSLATION
 import me.khrys.dnd.charcreator.common.BUTTON_SOUND_ID
 import me.khrys.dnd.charcreator.common.CLASS_CENTER
+import me.khrys.dnd.charcreator.common.CLASS_INLINE
 import me.khrys.dnd.charcreator.common.LOGOUT_URL
 import me.khrys.dnd.charcreator.common.models.Character
 import org.w3c.dom.events.Event
@@ -116,8 +117,8 @@ val addCharacter = functionalComponent<RProps> {
 var currentCharacters = functionalComponent<RProps> {
     val characters = useContext(CharactersContext)
     styledDiv {
+        attrs.classes = setOf(CLASS_INLINE)
         css {
-            display = flex
             flexWrap = wrap
         }
         characters.forEach { character ->

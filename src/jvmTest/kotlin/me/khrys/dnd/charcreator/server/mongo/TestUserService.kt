@@ -18,8 +18,11 @@ import org.litote.kmongo.findOne
 import org.litote.kmongo.save
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import me.khrys.dnd.charcreator.common.models.initialAbilities
+import me.khrys.dnd.charcreator.common.models.initialSavingThrows
+import me.khrys.dnd.charcreator.common.models.initialSkills
 
-val character = Character("name", "image")
+val character = Character("name", "image", initialAbilities(), initialSavingThrows(), initialSkills())
 val user = User(EMAIL, listOf(character))
 
 class TestUserService {

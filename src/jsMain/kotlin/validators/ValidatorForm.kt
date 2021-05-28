@@ -13,8 +13,15 @@ import styled.StyledHandler
 @JsNonModule
 private external val formValidatorModule: dynamic
 
+external interface ValidatorForm {
+    fun <T> addValidationRule(ruleName: String, rule: (T?) -> Boolean)
+}
+
+abstract class ValidationFormComponent(props: ValidatorFormProps)
+    : RComponent<ValidatorFormProps, RState>(props), ValidatorForm
+
 @Suppress("UnsafeCastFromDynamic")
-private val validatorForm: RComponent<ValidatorFormProps, RState> = formValidatorModule.ValidatorForm
+val validatorForm: ValidationFormComponent = formValidatorModule.ValidatorForm
 
 interface ValidatorFormProps : StyledPropsWithCommonAttributes
 

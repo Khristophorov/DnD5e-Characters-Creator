@@ -5,11 +5,7 @@ import kotlinx.browser.window
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
-import me.khrys.dnd.charcreator.common.CHARACTERS_URL
-import me.khrys.dnd.charcreator.common.CONTENT_TYPE
-import me.khrys.dnd.charcreator.common.METHOD_POST
-import me.khrys.dnd.charcreator.common.TRANSLATIONS_URL
-import me.khrys.dnd.charcreator.common.TYPE_JSON
+import me.khrys.dnd.charcreator.common.*
 import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.Translation
 import org.w3c.dom.Audio
@@ -37,7 +33,7 @@ fun storeCharacter(character: Character) = MainScope().launch {
     val headers = Headers()
     headers.append(CONTENT_TYPE, TYPE_JSON)
     val request = RequestInit(method = METHOD_POST, headers = headers, body = JSON.stringify(character))
-    window.fetch(CHARACTERS_URL, request).await()
+    window.fetch(CHARACTERS_URL, request).await().apply { window.location.reload() }
 }
 
 fun imageFromEvent(event: Event, callback: (Event) -> Unit) {

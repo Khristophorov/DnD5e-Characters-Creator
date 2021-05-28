@@ -20,7 +20,7 @@ class UserService(private val users: MongoCollection<User>) {
     fun storeCharacter(userName: String, character: Character) {
         val currentCharacters = users.findOne { User::_id eq userName }?.characters ?: emptyList()
         if (currentCharacters.map(Character::name).contains(character.name)) {
-            val newCharacters = currentCharacters.filter { it.name == character.name }.toMutableList()
+            val newCharacters = currentCharacters.filter { it.name != character.name }.toMutableList()
             newCharacters.add(character)
             users.findOneAndUpdate(User::_id eq userName, setValue(User::characters, newCharacters))
         } else {

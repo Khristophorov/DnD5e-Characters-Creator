@@ -10,6 +10,7 @@ import kotlinx.css.clear
 import me.khrys.dnd.charcreator.client.components.addCharacter
 import me.khrys.dnd.charcreator.client.components.currentCharacters
 import me.khrys.dnd.charcreator.client.components.logoutButton
+import me.khrys.dnd.charcreator.client.validators.initValidators
 import me.khrys.dnd.charcreator.common.LOGOUT_TRANSLATION
 import me.khrys.dnd.charcreator.common.models.Character
 import react.RBuilder
@@ -38,6 +39,7 @@ val mainDnd = functionalComponent<RProps> {
             logoutButton(translations[LOGOUT_TRANSLATION])
 
             CharactersContext.Provider(characters) {
+                initValidators(characters)
                 renderMainContent()
             }
         }

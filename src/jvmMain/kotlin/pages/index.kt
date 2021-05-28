@@ -15,7 +15,16 @@ import kotlinx.html.script
 import kotlinx.html.style
 import kotlinx.html.title
 import me.khrys.dnd.charcreator.common.BUTTON_SOUND_ID
+import me.khrys.dnd.charcreator.common.CLASS_ABILITY_BOX
+import me.khrys.dnd.charcreator.common.CLASS_ROUND_BORDERED
 import me.khrys.dnd.charcreator.common.CLASS_BACKGROUND
+import me.khrys.dnd.charcreator.common.CLASS_BOLD
+import me.khrys.dnd.charcreator.common.CLASS_BORDERED
+import me.khrys.dnd.charcreator.common.CLASS_CENTER
+import me.khrys.dnd.charcreator.common.CLASS_DISABLED
+import me.khrys.dnd.charcreator.common.CLASS_INLINE
+import me.khrys.dnd.charcreator.common.CLASS_JUSTIFY_BETWEEN
+import me.khrys.dnd.charcreator.common.CLASS_TEXT_CENTER
 import me.khrys.dnd.charcreator.common.CLICK_SOUND_URL
 import me.khrys.dnd.charcreator.common.FAVICON_URL
 import me.khrys.dnd.charcreator.common.OUTPUT_URL
@@ -36,19 +45,48 @@ suspend fun ApplicationCall.index() {
                 * {
                     font-family: Pterra !important;
                 }
-                .disabled {
+                input::-webkit-inner-spin-button {
+                     -webkit-appearance: none;
+                }
+                .${CLASS_DISABLED} {
                     display: none !important;
                 }
-                .justify-between {
+                .${CLASS_JUSTIFY_BETWEEN} {
                     justify-content: space-between !important;
                 }
-                .center {
+                .${CLASS_CENTER} {
                     margin-left: auto !important;
                     margin-right: auto !important;
-                    display: block !important
+                    display: block !important;
                 }
-                .background {
-                    background-color: #fff3e0;
+                .${CLASS_BACKGROUND} {
+                    background-color: #fff3e0 !important;
+                }
+                .${CLASS_ABILITY_BOX} {
+                    width: 100px;
+                    font-weight: bold;
+                    margin: 5px;
+                }
+                .${CLASS_ABILITY_BOX} input {
+                    font-size: 250%;
+                    text-align: center;
+                }
+                .${CLASS_ROUND_BORDERED} {
+                    width: 25px !important;
+                    height: 25px !important;
+                    border: 2px solid black;
+                }
+                .${CLASS_BORDERED} {
+                    border: 1px solid black;
+                }
+                .${CLASS_INLINE} {
+                    display: flex;
+                }
+                .${CLASS_BOLD} {
+                    font-weight: bold !important;
+                }
+                .${CLASS_TEXT_CENTER} input {
+                    text-align: center;
                 }
                 """
             }

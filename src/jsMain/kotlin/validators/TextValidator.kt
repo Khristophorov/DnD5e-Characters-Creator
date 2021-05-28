@@ -18,7 +18,7 @@ private external val formValidatorModule: dynamic
 @Suppress("UnsafeCastFromDynamic")
 private val textValidator: RComponent<TextValidatorProps, RState> = formValidatorModule.TextValidator
 
-data class InputProps(val accept: String = "")
+data class InputProps(val accept: String = "", val readOnly: Boolean = false)
 
 interface TextValidatorProps : StyledPropsWithCommonAttributes {
     var label: String
