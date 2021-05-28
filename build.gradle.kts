@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
-    kotlin("multiplatform") version "1.4.31"
-    kotlin("plugin.serialization") version "1.4.31"
+    kotlin("multiplatform") version "1.5.10"
+    kotlin("plugin.serialization") version "1.5.10"
     application
 }
 
@@ -10,17 +10,17 @@ group = "me.khris"
 version = "1.0-SNAPSHOT"
 
 // Kotlin dependencies
-val kotlinCoroutinesVersion = "1.4.3"
-val kotlinHtmlVersion = "0.7.2"
+val kotlinCoroutinesVersion = "1.5.0"
+val kotlinHtmlVersion = "0.7.3"
 val kotlinReactVersion = "17.0.1-pre.148-kotlin-1.4.30"
 val kotlinStyledVersion = "5.2.1-pre.146-kotlin-1.4.30"
 val kotlinCssJsVersion = "1.0.0-pre.148-kotlin-1.4.30"
-val kotlinSerializationVersion = "1.1.0"
-val kmongoVersion = "4.2.4"
-val ktorVersion = "1.5.2"
+val kotlinSerializationVersion = "1.2.1"
+val kmongoVersion = "4.2.7"
+val ktorVersion = "1.6.0"
 val slf4fVersion = "1.7.30"
 val muirwikVersion = "0.6.7"
-val mockkVersion = "1.10.6"
+val mockkVersion = "1.11.0"
 
 // JavaScript dependencies
 val reactVersion = "17.0.1"

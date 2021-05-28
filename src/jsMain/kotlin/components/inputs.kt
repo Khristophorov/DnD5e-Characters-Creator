@@ -64,7 +64,7 @@ fun RBuilder.dAbilityBox(
                 css {
                     justifyContent = JustifyContent.center
                 }
-                mInputLabel(caption = label.toUpperCase(), shrink = true)
+                mInputLabel(caption = label.uppercase(), shrink = true)
             }
             dTextValidator(
                 value = value.toString(),
@@ -97,7 +97,7 @@ fun RBuilder.dOneValueInput(
                 mTypography(text = value.toString(), align = center, color = textPrimary)
             }
             mInput(
-                value = header.toUpperCase(),
+                value = header.uppercase(),
                 readOnly = readOnly,
                 fullWidth = true,
                 className = "$CLASS_BORDERED $CLASS_BOLD $CLASS_TEXT_CENTER"
@@ -159,6 +159,6 @@ fun RBuilder.centeredBold(text: String) {
     styledStrong {
         attrs.classes = setOf(CLASS_CENTER)
         css { textAlign = TextAlign.center }
-        +text.toUpperCase()
+        +text.uppercase()
     }
 }
