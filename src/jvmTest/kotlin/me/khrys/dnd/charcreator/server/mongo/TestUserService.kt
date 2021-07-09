@@ -10,19 +10,30 @@ import io.mockk.mockkStatic
 import io.mockk.verify
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.User
+import me.khrys.dnd.charcreator.common.models.emptyRace
+import me.khrys.dnd.charcreator.common.models.initialAbilities
+import me.khrys.dnd.charcreator.common.models.initialSavingThrows
+import me.khrys.dnd.charcreator.common.models.initialSkills
 import me.khrys.dnd.charcreator.server.authentication.EMAIL
 import org.bson.conversions.Bson
 import org.litote.kmongo.findOne
 import org.litote.kmongo.save
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
-import me.khrys.dnd.charcreator.common.models.initialAbilities
-import me.khrys.dnd.charcreator.common.models.initialSavingThrows
-import me.khrys.dnd.charcreator.common.models.initialSkills
 
-val character = Character("name", "image", initialAbilities(), initialSavingThrows(), initialSkills())
+val character = Character(
+    name = "name",
+    image = "image",
+    hitPoints = 10,
+    abilities = initialAbilities(),
+    savingThrows = initialSavingThrows(),
+    skills = initialSkills(),
+    speed = 10,
+    race = emptyRace(),
+    features = emptyArray()
+)
 val user = User(EMAIL, listOf(character))
 
 class TestUserService {

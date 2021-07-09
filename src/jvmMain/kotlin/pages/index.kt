@@ -22,8 +22,10 @@ import me.khrys.dnd.charcreator.common.CLASS_BOLD
 import me.khrys.dnd.charcreator.common.CLASS_BORDERED
 import me.khrys.dnd.charcreator.common.CLASS_CENTER
 import me.khrys.dnd.charcreator.common.CLASS_DISABLED
+import me.khrys.dnd.charcreator.common.CLASS_FLOAT_LEFT
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
 import me.khrys.dnd.charcreator.common.CLASS_JUSTIFY_BETWEEN
+import me.khrys.dnd.charcreator.common.CLASS_PADDINGS
 import me.khrys.dnd.charcreator.common.CLASS_TEXT_CENTER
 import me.khrys.dnd.charcreator.common.CLICK_SOUND_URL
 import me.khrys.dnd.charcreator.common.FAVICON_URL
@@ -87,6 +89,13 @@ suspend fun ApplicationCall.index() {
                 }
                 .${CLASS_TEXT_CENTER} input {
                     text-align: center;
+                }
+                .${CLASS_FLOAT_LEFT} {
+                    float: left;
+                    margin: 7px 7px 7px 0;
+                }
+                .${CLASS_PADDINGS} {
+                    padding: 20px 5px;
                 }
                 """
             }

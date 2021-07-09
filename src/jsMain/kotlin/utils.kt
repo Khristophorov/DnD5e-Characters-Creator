@@ -7,6 +7,7 @@ import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
 import me.khrys.dnd.charcreator.common.*
 import me.khrys.dnd.charcreator.common.models.Character
+import me.khrys.dnd.charcreator.common.models.Race
 import me.khrys.dnd.charcreator.common.models.Translation
 import org.w3c.dom.Audio
 import org.w3c.dom.HTMLInputElement
@@ -24,10 +25,13 @@ fun playSound(id: String) {
 
 suspend fun fetchTranslations(): Map<String, String> =
     window.fetch(TRANSLATIONS_URL).await().json().await().unsafeCast<Array<Translation>>()
-        .map { it._id to it.value }.toMap()
+        .associate { it._id to it.value }
 
 suspend fun fetchCharacters(): Array<Character> =
     window.fetch(CHARACTERS_URL).await().json().await().unsafeCast<Array<Character>>()
+
+suspend fun fetchRaces(): Array<Race> =
+    window.fetch(RACES_URL).await().json().await().unsafeCast<Array<Race>>()
 
 fun storeCharacter(character: Character) = MainScope().launch {
     val headers = Headers()

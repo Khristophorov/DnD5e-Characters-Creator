@@ -30,6 +30,8 @@ import kotlinx.html.InputType.submit
 import kotlinx.html.classes
 import me.khrys.dnd.charcreator.client.CharactersContext
 import me.khrys.dnd.charcreator.client.TranslationsContext
+import me.khrys.dnd.charcreator.client.components.dialogs.characterWindow
+import me.khrys.dnd.charcreator.client.components.dialogs.newCharWindow
 import me.khrys.dnd.charcreator.client.playSound
 import me.khrys.dnd.charcreator.common.ADD_HOVER_TRANSLATION
 import me.khrys.dnd.charcreator.common.BUTTON_SOUND_ID

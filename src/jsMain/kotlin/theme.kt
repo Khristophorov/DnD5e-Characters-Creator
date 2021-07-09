@@ -50,5 +50,10 @@ private fun createDefaultTheme(): Theme {
             transformOrigin: 'top center'
         }
     }""")
+    theme.overrides.MuiSelect = js("""{
+        root: {
+            width: '100px'
+        }
+    }""")
     return theme
 }

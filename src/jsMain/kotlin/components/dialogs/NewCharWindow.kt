@@ -1,28 +1,31 @@
-﻿package me.khrys.dnd.charcreator.client.components
+package me.khrys.dnd.charcreator.client.components.dialogs
 
-import com.ccfraser.muirwik.components.MGridAlignItems.stretch
 import com.ccfraser.muirwik.components.dialog.mDialog
 import com.ccfraser.muirwik.components.dialog.mDialogActions
 import com.ccfraser.muirwik.components.dialog.mDialogContent
 import com.ccfraser.muirwik.components.dialog.mDialogContentText
 import com.ccfraser.muirwik.components.dialog.mDialogTitle
-import com.ccfraser.muirwik.components.form.MFormControlLabelProps
 import com.ccfraser.muirwik.components.form.mFormGroup
-import com.ccfraser.muirwik.components.mGridContainer
-import com.ccfraser.muirwik.components.mGridItem
+import com.ccfraser.muirwik.components.mCircularProgress
+import com.ccfraser.muirwik.components.targetValue
 import kotlinx.browser.document
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import kotlinx.css.FlexWrap.wrap
 import kotlinx.css.flexWrap
-import kotlinx.css.height
-import kotlinx.css.padding
-import kotlinx.css.px
-import kotlinx.css.width
 import kotlinx.html.InputType.file
 import kotlinx.html.classes
 import me.khrys.dnd.charcreator.client.TranslationsContext
-import me.khrys.dnd.charcreator.client.computePassiveSkill
-import me.khrys.dnd.charcreator.client.computeProficiencyBonus
+import me.khrys.dnd.charcreator.client.components.backButton
+import me.khrys.dnd.charcreator.client.components.collectRaceFeatures
+import me.khrys.dnd.charcreator.client.components.collectSubraceFeatures
+import me.khrys.dnd.charcreator.client.components.dAbilityBox
+import me.khrys.dnd.charcreator.client.components.dButton
+import me.khrys.dnd.charcreator.client.components.dCheckboxWithLabel
+import me.khrys.dnd.charcreator.client.components.dSubmit
+import me.khrys.dnd.charcreator.client.components.dValidatedList
 import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
+import me.khrys.dnd.charcreator.client.fetchRaces
 import me.khrys.dnd.charcreator.client.imageFromEvent
 import me.khrys.dnd.charcreator.client.storeCharacter
 import me.khrys.dnd.charcreator.client.validators.InputProps
@@ -39,12 +42,12 @@ import me.khrys.dnd.charcreator.common.ATHLETICS_TRANSLATION
 import me.khrys.dnd.charcreator.common.CHARISMA_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.CHARISMA_TRANSLATION
 import me.khrys.dnd.charcreator.common.CHAR_NAME_EXISTS
-import me.khrys.dnd.charcreator.common.CLASS_BORDERED
 import me.khrys.dnd.charcreator.common.CLASS_DISABLED
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
 import me.khrys.dnd.charcreator.common.CLASS_JUSTIFY_BETWEEN
 import me.khrys.dnd.charcreator.common.CONSTITUTION_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.CONSTITUTION_TRANSLATION
+import me.khrys.dnd.charcreator.common.DANGEROUS_HTML
 import me.khrys.dnd.charcreator.common.DECEPTION_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.DECEPTION_TRANSLATION
 import me.khrys.dnd.charcreator.common.DEXTERITY_CONTENT_TRANSLATION
@@ -56,9 +59,13 @@ import me.khrys.dnd.charcreator.common.ENTER_IMAGE_TRANSLATION
 import me.khrys.dnd.charcreator.common.ENTER_NAME_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.ENTER_NAME_LABEL_TRANSLATION
 import me.khrys.dnd.charcreator.common.ENTER_NAME_TRANSLATION
+import me.khrys.dnd.charcreator.common.ENTER_RACE_CONTENT_TRANSLATION
+import me.khrys.dnd.charcreator.common.ENTER_RACE_TRANSLATION
 import me.khrys.dnd.charcreator.common.ENTER_SAVING_THROWS_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.ENTER_SAVING_THROWS_TRANSLATION
 import me.khrys.dnd.charcreator.common.ENTER_SKILLS_TRANSLATION
+import me.khrys.dnd.charcreator.common.ENTER_SUBRACE_CONTENT_TRANSLATION
+import me.khrys.dnd.charcreator.common.ENTER_SUBRACE_TRANSLATION
 import me.khrys.dnd.charcreator.common.FILE_INPUT_ID
 import me.khrys.dnd.charcreator.common.FINISH_TRANSLATION
 import me.khrys.dnd.charcreator.common.HISTORY_CONTENT_TRANSLATION
@@ -77,24 +84,22 @@ import me.khrys.dnd.charcreator.common.NAME_SHOULD_BE_FILLED_TRANSLATION
 import me.khrys.dnd.charcreator.common.NATURE_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.NATURE_TRANSLATION
 import me.khrys.dnd.charcreator.common.NEXT_TRANSLATION
-import me.khrys.dnd.charcreator.common.PASSIVE_PERCEPTION_TRANSLATION
 import me.khrys.dnd.charcreator.common.PERCEPTION_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.PERCEPTION_TRANSLATION
 import me.khrys.dnd.charcreator.common.PERFORMANCE_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.PERFORMANCE_TRANSLATION
 import me.khrys.dnd.charcreator.common.PERSUASION_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.PERSUASION_TRANSLATION
-import me.khrys.dnd.charcreator.common.PROFICIENCY_BONUS_CONTENT_TRANSLATION
-import me.khrys.dnd.charcreator.common.PROFICIENCY_BONUS_TRANSLATION
+import me.khrys.dnd.charcreator.common.RACE_SHOULD_BE_FILLED_TRANSLATION
 import me.khrys.dnd.charcreator.common.RELIGION_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.RELIGION_TRANSLATION
-import me.khrys.dnd.charcreator.common.SAVE_TRANSLATION
 import me.khrys.dnd.charcreator.common.SLEIGHT_OF_HANDS_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.SLEIGHT_OF_HANDS_TRANSLATION
 import me.khrys.dnd.charcreator.common.STEALTH_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.STEALTH_TRANSLATION
 import me.khrys.dnd.charcreator.common.STRENGTH_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.STRENGTH_TRANSLATION
+import me.khrys.dnd.charcreator.common.SUBRACE_SHOULD_BE_FILLED_TRANSLATION
 import me.khrys.dnd.charcreator.common.SURVIVAL_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.SURVIVAL_TRANSLATION
 import me.khrys.dnd.charcreator.common.UPLOAD_TRANSLATION
@@ -104,48 +109,70 @@ import me.khrys.dnd.charcreator.common.WISDOM_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.WISDOM_TRANSLATION
 import me.khrys.dnd.charcreator.common.models.Abilities
 import me.khrys.dnd.charcreator.common.models.Character
+import me.khrys.dnd.charcreator.common.models.Race
 import me.khrys.dnd.charcreator.common.models.SavingThrows
 import me.khrys.dnd.charcreator.common.models.Skills
 import me.khrys.dnd.charcreator.common.models.emptyCharacter
+import me.khrys.dnd.charcreator.common.models.emptyRace
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.events.Event
 import org.w3c.files.FileReader
 import react.RBuilder
 import react.RProps
+import react.RSetState
+import react.child
 import react.dom.p
 import react.functionalComponent
 import react.useContext
 import react.useState
-import styled.StyledHandler
 import styled.css
 import styled.styledDiv
-import styled.styledImg
-
-interface DialogProps : RProps {
-    var open: Boolean
-    var setOpen: (Boolean) -> Unit
-}
-
-interface CharDialogProps : DialogProps {
-    var character: Character
-}
 
 val newCharWindow = functionalComponent<DialogProps> { props ->
     val translations = useContext(TranslationsContext)
+    val (subraceDialogOpen, setSubraceDialogOpen) = useState(false)
+    val (nameDialogOpen, setNameDialogOpen) = useState(false)
     val (imageDialogOpen, setImageDialogOpen) = useState(false)
     val (abilitiesDialogOpen, setAbilitiesDialogOpen) = useState(false)
     val (savingThrowsDialogOpen, setSavingThrowsDialogOpen) = useState(false)
     val (skillsDialogOpen, setSkillsDialogOpen) = useState(false)
     val (newCharacter, setNewCharacter) = useState(emptyCharacter())
 
-    charNameWindow(translations, newCharacter, props.open) {
+    child(charRaceWindow) {
+        attrs.newCharacter = newCharacter
+        attrs.open = props.open
+        attrs.setOpen = props.setOpen
+        attrs.action = {
+            if (newCharacter.race.subraces.isEmpty()) {
+                setNameDialogOpen(true)
+            } else {
+                setSubraceDialogOpen(true)
+            }
+        }
+    }
+    child(charSubraseWindow) {
+        attrs.newCharacter = newCharacter
+        attrs.open = subraceDialogOpen
+        attrs.backAction = {
+            setSubraceDialogOpen(false)
+            props.setOpen(true)
+        }
+        attrs.action = {
+            setSubraceDialogOpen(false)
+            setNameDialogOpen(true)
+        }
+    }
+    charNameWindow(translations, newCharacter, nameDialogOpen, {
+        setNameDialogOpen(false)
+        props.setOpen(true)
+    }) {
+        setNameDialogOpen(false)
         setImageDialogOpen(true)
-        props.setOpen(false)
     }
     charImageWindow(translations, newCharacter, imageDialogOpen, {
         setImageDialogOpen(false)
-        props.setOpen(true)
+        setNameDialogOpen(true)
     }) {
         setImageDialogOpen(false)
         setAbilitiesDialogOpen(true)
@@ -174,328 +201,109 @@ val newCharWindow = functionalComponent<DialogProps> { props ->
     }
 }
 
-val characterWindow = functionalComponent<CharDialogProps> { props ->
-    val translations = useContext(TranslationsContext)
-    val character = props.character
-    mDialog(open = props.open, fullScreen = true) {
-        mDialogTitle(text = character.name) {
-            closeButton { props.setOpen(false) }
-        }
-        mDialogContent(dividers = true) {
-            val proficiencyBonus = computeProficiencyBonus(1)
-            dValidatorForm(onSubmit = { props.setOpen(false) }) {
-                mGridContainer {
-                    mGridItem {
-                        mGridContainer {
-                            mGridItem {
-                                mGridContainer(alignItems = stretch) {
-                                    mGridItem {
-                                        styledDiv {
-                                            css {
-                                                padding = "20px 5px"
-                                            }
-                                            dAbilitiesGrid(character.abilities, translations)
-                                        }
-                                    }
-                                    mGridItem {
-                                        css {
-                                            padding = "20px 5px"
-                                        }
-                                        dOneValueInput(
-                                            header = translations[PROFICIENCY_BONUS_TRANSLATION] ?: "",
-                                            value = proficiencyBonus,
-                                            title = translations[PROFICIENCY_BONUS_CONTENT_TRANSLATION] ?: "",
-                                            readOnly = false
-                                        )
-                                        dSavingThrowsGrid(character, translations, proficiencyBonus)
-                                        dSkillsGrid(character, translations, proficiencyBonus)
-                                    }
-                                }
-                            }
-                        }
-                        mGridItem {
-                            dOneValueInput(
-                                header = translations[PASSIVE_PERCEPTION_TRANSLATION] ?: "",
-                                value = computePassiveSkill(
-                                    ability = character.abilities.wisdom,
-                                    proficiencyBonus = proficiencyBonus,
-                                    proficient = character.skills.perception
-                                )
-                            )
-                        }
+interface CharRaceProps : RProps {
+    var newCharacter: Character
+    var open: Boolean
+    var setOpen: (Boolean) -> Unit
+    var action: () -> Unit
+    var backAction: () -> Unit
+}
+
+val charRaceWindow = functionalComponent<CharRaceProps> { props ->
+    val (races, setRaces) = useState(emptyMap<String, Race>())
+    val (race, setRace) = useState(emptyRace())
+    val (description, setDescription) = useState("")
+    val (openFeatures, setOpenFeatures) = useState(false)
+    if (props.open && races.isEmpty()) {
+        loadRaces(setRaces)
+    } else {
+        mDialog(open = props.open) {
+            val translations = useContext(TranslationsContext)
+            mDialogTitle(text = translations[ENTER_RACE_TRANSLATION] ?: "")
+            mDialogContent(dividers = true) {
+                mDialogContentText(text = translations[ENTER_RACE_CONTENT_TRANSLATION] ?: "")
+                dValidatorForm(onSubmit = {
+                    props.newCharacter.race = race
+                    props.newCharacter.features = emptyArray()
+                    setOpenFeatures(true)
+                    props.setOpen(false)
+                }) {
+                    dValidatedList(
+                        label = translations[ENTER_RACE_TRANSLATION] ?: "",
+                        value = race._id,
+                        validators = arrayOf(VALIDATION_REQUIRED),
+                        errorMessages = arrayOf(translations[RACE_SHOULD_BE_FILLED_TRANSLATION] ?: ""),
+                        onChange = { event ->
+                            setRace(races[event.targetValue] ?: emptyRace())
+                        },
+                        menuItems = races.mapValues { it.value.description },
+                        setDescription = setDescription,
+                        description = description
+                    )
+                    mDialogActions {
+                        dSubmit(translations[NEXT_TRANSLATION] ?: "")
                     }
-                    mGridItem {
-                        mGridContainer {
-                            mGridItem {
-                                styledImg(src = character.image) {
-                                    css {
-                                        width = 128.px
-                                        height = 128.px
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                mDialogActions {
-                    dSubmit(translations[SAVE_TRANSLATION] ?: "")
                 }
             }
+        }
+        child(collectRaceFeatures) {
+            attrs.character = props.newCharacter
+            attrs.open = openFeatures
+            attrs.setOpen = setOpenFeatures
+            attrs.action = props.action
         }
     }
 }
 
-fun RBuilder.dAbilitiesGrid(
-    abilities: Abilities,
-    translations: Map<String, String>
-) {
-    dAbilityBox(
-        title = translations[STRENGTH_CONTENT_TRANSLATION] ?: "",
-        label = translations[STRENGTH_TRANSLATION] ?: "",
-        readOnly = true,
-        value = abilities.strength,
-        translations = translations
-    )
-    dAbilityBox(
-        title = translations[DEXTERITY_CONTENT_TRANSLATION] ?: "",
-        label = translations[DEXTERITY_TRANSLATION] ?: "",
-        readOnly = true,
-        value = abilities.dexterity,
-        translations = translations
-    )
-    dAbilityBox(
-        title = translations[CONSTITUTION_CONTENT_TRANSLATION] ?: "",
-        label = translations[CONSTITUTION_TRANSLATION] ?: "",
-        readOnly = true,
-        value = abilities.constitution,
-        translations = translations
-    )
-    dAbilityBox(
-        title = translations[INTELLIGENCE_CONTENT_TRANSLATION] ?: "",
-        label = translations[INTELLIGENCE_TRANSLATION] ?: "",
-        readOnly = true,
-        value = abilities.intelligence,
-        translations = translations
-    )
-    dAbilityBox(
-        title = translations[WISDOM_CONTENT_TRANSLATION] ?: "",
-        label = translations[WISDOM_TRANSLATION] ?: "",
-        readOnly = true,
-        value = abilities.wisdom,
-        translations = translations
-    )
-    dAbilityBox(
-        title = translations[CHARISMA_CONTENT_TRANSLATION] ?: "",
-        label = translations[CHARISMA_TRANSLATION] ?: "",
-        readOnly = true,
-        value = abilities.charisma,
-        translations = translations
-    )
-}
-
-fun RBuilder.dSavingThrowsGrid(
-    character: Character,
-    translations: Map<String, String>,
-    proficiencyBonus: Int
-) = styledDiv {
-    attrs.classes = setOf(CLASS_BORDERED)
-    val savingThrows = character.savingThrows
-    val abilities = character.abilities
-    dSavingThrowsGridItem(
-        SavingThrowsItem(
-            label = translations[STRENGTH_TRANSLATION] ?: "",
-            value = abilities.strength,
-            proficient = savingThrows.strength,
-            proficiencyBonus = proficiencyBonus
-        )
-    )
-    dSavingThrowsGridItem(
-        SavingThrowsItem(
-            label = translations[DEXTERITY_TRANSLATION] ?: "",
-            value = abilities.dexterity,
-            proficient = savingThrows.dexterity,
-            proficiencyBonus = proficiencyBonus
-        )
-    )
-    dSavingThrowsGridItem(
-        SavingThrowsItem(
-            label = translations[CONSTITUTION_TRANSLATION] ?: "",
-            value = abilities.constitution,
-            proficient = savingThrows.constitution,
-            proficiencyBonus = proficiencyBonus
-        )
-    )
-    dSavingThrowsGridItem(
-        SavingThrowsItem(
-            label = translations[INTELLIGENCE_TRANSLATION] ?: "",
-            value = abilities.intelligence,
-            proficient = savingThrows.intelligence,
-            proficiencyBonus = proficiencyBonus
-        )
-    )
-    dSavingThrowsGridItem(
-        SavingThrowsItem(
-            label = translations[WISDOM_TRANSLATION] ?: "",
-            value = abilities.wisdom,
-            proficient = savingThrows.wisdom,
-            proficiencyBonus = proficiencyBonus
-        )
-    )
-    dSavingThrowsGridItem(
-        SavingThrowsItem(
-            label = translations[CHARISMA_TRANSLATION] ?: "",
-            value = abilities.charisma,
-            proficient = savingThrows.charisma,
-            proficiencyBonus = proficiencyBonus
-        )
-    )
-    centeredBold(translations[ENTER_SAVING_THROWS_TRANSLATION] ?: "")
-}
-
-fun RBuilder.dSkillsGrid(
-    character: Character,
-    translations: Map<String, String>,
-    proficiencyBonus: Int
-) = styledDiv {
-    attrs.classes = setOf(CLASS_BORDERED)
-    val abilities = character.abilities
-    val skills = character.skills
-    buildSavingThrowsElements(listOf(
-        translations[ACROBATICS_TRANSLATION] to
-                SavingThrowsItem(
-                    title = translations[ACROBATICS_CONTENT_TRANSLATION] ?: "",
-                    label = translations[ACROBATICS_TRANSLATION] ?: "",
-                    value = abilities.dexterity,
-                    proficient = skills.acrobatics,
-                    proficiencyBonus = proficiencyBonus
-                ), translations[ANIMAL_HANDLING_TRANSLATION] to
-                SavingThrowsItem(
-                    title = translations[ANIMAL_HANDLING_CONTENT_TRANSLATION] ?: "",
-                    label = translations[ANIMAL_HANDLING_TRANSLATION] ?: "",
-                    value = abilities.wisdom,
-                    proficient = skills.animalHandling,
-                    proficiencyBonus = proficiencyBonus
-                ), translations[ARCANA_TRANSLATION] to
-                SavingThrowsItem(
-                    title = translations[ARCANA_CONTENT_TRANSLATION] ?: "",
-                    label = translations[ARCANA_TRANSLATION] ?: "",
-                    value = abilities.intelligence,
-                    proficient = skills.arcana,
-                    proficiencyBonus = proficiencyBonus
-                ), translations[ATHLETICS_TRANSLATION] to
-                SavingThrowsItem(
-                    title = translations[ATHLETICS_CONTENT_TRANSLATION] ?: "",
-                    label = translations[ATHLETICS_TRANSLATION] ?: "",
-                    value = abilities.strength,
-                    proficient = skills.athletics,
-                    proficiencyBonus = proficiencyBonus
-                ), translations[DECEPTION_TRANSLATION] to
-                SavingThrowsItem(
-                    title = translations[DECEPTION_CONTENT_TRANSLATION] ?: "",
-                    label = translations[DECEPTION_TRANSLATION] ?: "",
-                    value = abilities.charisma,
-                    proficient = skills.deception,
-                    proficiencyBonus = proficiencyBonus
-                ), translations[HISTORY_TRANSLATION] to
-                SavingThrowsItem(
-                    title = translations[HISTORY_CONTENT_TRANSLATION] ?: "",
-                    label = translations[HISTORY_TRANSLATION] ?: "",
-                    value = abilities.intelligence,
-                    proficient = skills.history,
-                    proficiencyBonus = proficiencyBonus
-                ), translations[INSIGHT_TRANSLATION] to
-                SavingThrowsItem(
-                    title = translations[INSIGHT_CONTENT_TRANSLATION] ?: "",
-                    label = translations[INSIGHT_TRANSLATION] ?: "",
-                    value = abilities.wisdom,
-                    proficient = skills.insight,
-                    proficiencyBonus = proficiencyBonus
-                ), translations[INTIMIDATION_TRANSLATION] to
-                SavingThrowsItem(
-                    title = translations[INTIMIDATION_CONTENT_TRANSLATION] ?: "",
-                    label = translations[INTIMIDATION_TRANSLATION] ?: "",
-                    value = abilities.charisma,
-                    proficient = skills.intimidation,
-                    proficiencyBonus = proficiencyBonus
-                ), translations[INVESTIGATION_TRANSLATION] to
-                SavingThrowsItem(
-                    title = translations[INVESTIGATION_CONTENT_TRANSLATION] ?: "",
-                    label = translations[INVESTIGATION_TRANSLATION] ?: "",
-                    value = abilities.intelligence,
-                    proficient = skills.investigation,
-                    proficiencyBonus = proficiencyBonus
-                ), translations[MEDICINE_TRANSLATION] to
-                SavingThrowsItem(
-                    title = translations[MEDICINE_CONTENT_TRANSLATION] ?: "",
-                    label = translations[MEDICINE_TRANSLATION] ?: "",
-                    value = abilities.wisdom,
-                    proficient = skills.medicine,
-                    proficiencyBonus = proficiencyBonus
-                ), translations[NATURE_TRANSLATION] to
-                SavingThrowsItem(
-                    title = translations[NATURE_CONTENT_TRANSLATION] ?: "",
-                    label = translations[NATURE_TRANSLATION] ?: "",
-                    value = abilities.intelligence,
-                    proficient = skills.nature,
-                    proficiencyBonus = proficiencyBonus
-                ), translations[PERCEPTION_TRANSLATION] to
-                SavingThrowsItem(
-                    title = translations[PERCEPTION_CONTENT_TRANSLATION] ?: "",
-                    label = translations[PERCEPTION_TRANSLATION] ?: "",
-                    value = abilities.wisdom,
-                    proficient = skills.perception,
-                    proficiencyBonus = proficiencyBonus
-                ), translations[PERFORMANCE_TRANSLATION] to
-                SavingThrowsItem(
-                    title = translations[PERFORMANCE_CONTENT_TRANSLATION] ?: "",
-                    label = translations[PERFORMANCE_TRANSLATION] ?: "",
-                    value = abilities.charisma,
-                    proficient = skills.performance,
-                    proficiencyBonus = proficiencyBonus
-                ), translations[PERSUASION_TRANSLATION] to
-                SavingThrowsItem(
-                    title = translations[PERSUASION_CONTENT_TRANSLATION] ?: "",
-                    label = translations[PERSUASION_TRANSLATION] ?: "",
-                    value = abilities.charisma,
-                    proficient = skills.persuasion,
-                    proficiencyBonus = proficiencyBonus
-                ), translations[RELIGION_TRANSLATION] to
-                SavingThrowsItem(
-                    title = translations[RELIGION_CONTENT_TRANSLATION] ?: "",
-                    label = translations[RELIGION_TRANSLATION] ?: "",
-                    value = abilities.intelligence,
-                    proficient = skills.religion,
-                    proficiencyBonus = proficiencyBonus
-                ), translations[SLEIGHT_OF_HANDS_TRANSLATION] to
-                SavingThrowsItem(
-                    title = translations[SLEIGHT_OF_HANDS_CONTENT_TRANSLATION] ?: "",
-                    label = translations[SLEIGHT_OF_HANDS_TRANSLATION] ?: "",
-                    value = abilities.dexterity,
-                    proficient = skills.sleightOfHands,
-                    proficiencyBonus = proficiencyBonus
-                ), translations[STEALTH_TRANSLATION] to
-                SavingThrowsItem(
-                    title = translations[STEALTH_CONTENT_TRANSLATION] ?: "",
-                    label = translations[STEALTH_TRANSLATION] ?: "",
-                    value = abilities.dexterity,
-                    proficient = skills.stealth,
-                    proficiencyBonus = proficiencyBonus
-                ), translations[SURVIVAL_TRANSLATION] to
-                SavingThrowsItem(
-                    title = translations[SURVIVAL_CONTENT_TRANSLATION] ?: "",
-                    label = translations[SURVIVAL_TRANSLATION] ?: "",
-                    value = abilities.wisdom,
-                    proficient = skills.survival,
-                    proficiencyBonus = proficiencyBonus
+val charSubraseWindow = functionalComponent<CharRaceProps> { props ->
+    val subraces = props.newCharacter.race.subraces.associateBy { it._id }
+    val (subrace, setSubrace) = useState(emptyRace())
+    val (description, setDescription) = useState("")
+    val (openFeatures, setOpenFeatures) = useState(false)
+    mDialog(open = props.open) {
+        val translations = useContext(TranslationsContext)
+        mDialogTitle(text = translations[ENTER_SUBRACE_TRANSLATION] ?: "")
+        mDialogContent(dividers = true) {
+            mDialogContentText(text = translations[ENTER_SUBRACE_CONTENT_TRANSLATION] ?: "")
+            dValidatorForm(onSubmit = {
+                props.newCharacter.subrace = subrace
+                if (subrace.features.isEmpty()) {
+                    props.action()
+                }
+                else {
+                    setOpenFeatures(true)
+                }
+            }) {
+                dValidatedList(
+                    label = translations[ENTER_SUBRACE_TRANSLATION] ?: "",
+                    value = subrace._id,
+                    validators = arrayOf(VALIDATION_REQUIRED),
+                    errorMessages = arrayOf(translations[SUBRACE_SHOULD_BE_FILLED_TRANSLATION] ?: ""),
+                    onChange = { event -> setSubrace(subraces[event.targetValue] ?: emptyRace()) },
+                    menuItems = subraces.mapValues { it.value.description },
+                    setDescription = setDescription,
+                    description = description
                 )
-    ).sortedBy { it.first }.map { it.second })
-    centeredBold(translations[ENTER_SKILLS_TRANSLATION] ?: "")
+                mDialogActions(className = CLASS_JUSTIFY_BETWEEN) {
+                    backButton { props.backAction() }
+                    dSubmit(caption = translations[NEXT_TRANSLATION] ?: "")
+                }
+            }
+        }
+    }
+    child(collectSubraceFeatures) {
+        attrs.character = props.newCharacter
+        attrs.open = openFeatures
+        attrs.setOpen = setOpenFeatures
+        attrs.action = props.action
+    }
 }
 
 fun RBuilder.charNameWindow(
     translations: Map<String, String>,
     newCharacter: Character,
     open: Boolean,
+    backAction: (Event) -> Unit,
     action: (Event) -> Unit
 ) {
     mDialog(open = open) {
@@ -516,10 +324,13 @@ fun RBuilder.charNameWindow(
                         translations[NAME_SHOULD_BE_FILLED_TRANSLATION] ?: "",
                         translations[CHAR_NAME_EXISTS] ?: ""
                     ),
-                    onChange = { event -> setCharName((event.target as HTMLInputElement).value) }
+                    onChange = { event -> setCharName(event.targetValue as String) }
                 )
-                mDialogActions {
-                    dSubmit(translations[NEXT_TRANSLATION] ?: "")
+                mDialogActions(className = CLASS_JUSTIFY_BETWEEN) {
+                    backButton { event ->
+                        backAction(event)
+                    }
+                    dSubmit(caption = translations[NEXT_TRANSLATION] ?: "")
                 }
             }
         }
@@ -551,7 +362,7 @@ fun RBuilder.charImageWindow(
                     inputProps = InputProps(accept = "image/*"),
                     validators = arrayOf(VALIDATION_REQUIRED),
                     onChange = { event ->
-                        setCharImage((event.target as HTMLInputElement).value)
+                        setCharImage(event.targetValue as String)
                         imageFromEvent(event) { e -> newCharacter.image = (e.target as FileReader).result as String }
                     }
                 )
@@ -589,7 +400,7 @@ fun RBuilder.charAbilitiesWindow(
         mDialogContent(dividers = true) {
             mDialogContentText("") {
                 p {
-                    attrs["dangerouslySetInnerHTML"] =
+                    attrs[DANGEROUS_HTML] =
                         DangerousHTML(translations[ENTER_ABILITIES_CONTENT_TRANSLATION] ?: "")
                 }
             }
@@ -610,7 +421,7 @@ fun RBuilder.charAbilitiesWindow(
                         value = strength,
                         translations = translations,
                         onChange = { event ->
-                            (event.target as HTMLInputElement).value.toIntOrNull()?.let { setStrength(it) }
+                            (event.targetValue as String).toIntOrNull()?.let { setStrength(it) }
                         }
                     )
                     dAbilityBox(
@@ -619,7 +430,7 @@ fun RBuilder.charAbilitiesWindow(
                         value = dexterity,
                         translations = translations,
                         onChange = { event ->
-                            (event.target as HTMLInputElement).value.toIntOrNull()?.let { setDexterity(it) }
+                            (event.targetValue as String).toIntOrNull()?.let { setDexterity(it) }
                         }
                     )
                     dAbilityBox(
@@ -628,7 +439,7 @@ fun RBuilder.charAbilitiesWindow(
                         value = constitution,
                         translations = translations,
                         onChange = { event ->
-                            (event.target as HTMLInputElement).value.toIntOrNull()?.let { setConstitution(it) }
+                            (event.targetValue as String).toIntOrNull()?.let { setConstitution(it) }
                         }
                     )
                     dAbilityBox(
@@ -637,7 +448,7 @@ fun RBuilder.charAbilitiesWindow(
                         value = intelligence,
                         translations = translations,
                         onChange = { event ->
-                            (event.target as HTMLInputElement).value.toIntOrNull()?.let { setIntelligence(it) }
+                            (event.targetValue as String).toIntOrNull()?.let { setIntelligence(it) }
                         }
                     )
                     dAbilityBox(
@@ -655,7 +466,7 @@ fun RBuilder.charAbilitiesWindow(
                         value = charisma,
                         translations = translations,
                         onChange = { event ->
-                            (event.target as HTMLInputElement).value.toIntOrNull()?.let { setCharisma(it) }
+                            (event.targetValue as String).toIntOrNull()?.let { setCharisma(it) }
                         }
                     )
                 }
@@ -948,22 +759,11 @@ private fun RBuilder.buildCheckboxCreateElements(elements: List<CheckboxWithLabe
     }
 }
 
-private fun RBuilder.buildSavingThrowsElements(elements: List<SavingThrowsItem>) {
-    elements.forEach { dSavingThrowsGridItem(it) }
+fun RBuilder.loadRaces(
+    setRaces: RSetState<Map<String, Race>>
+) {
+    mCircularProgress()
+    MainScope().launch {
+        setRaces(fetchRaces().associateBy { it._id })
+    }
 }
-
-data class CheckboxWithLabelModel(
-    val title: String,
-    val label: String,
-    val checked: Boolean,
-    val onChange: (Event, Boolean) -> Unit,
-    val handler: StyledHandler<MFormControlLabelProps>? = null
-)
-
-data class SavingThrowsItem(
-    val title: String = "",
-    val label: String,
-    val value: Int,
-    val proficient: Boolean,
-    val proficiencyBonus: Int
-)
