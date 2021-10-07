@@ -6,15 +6,21 @@ import com.ccfraser.muirwik.components.dialog.mDialogContent
 import com.ccfraser.muirwik.components.dialog.mDialogTitle
 import com.ccfraser.muirwik.components.mGridContainer
 import com.ccfraser.muirwik.components.mGridItem
+import com.ccfraser.muirwik.components.table.mTable
+import com.ccfraser.muirwik.components.table.mTableBody
+import com.ccfraser.muirwik.components.table.mTableCell
+import com.ccfraser.muirwik.components.table.mTableContainer
+import com.ccfraser.muirwik.components.table.mTableHead
+import com.ccfraser.muirwik.components.table.mTableRow
 import kotlinx.css.height
 import kotlinx.css.px
 import kotlinx.css.width
 import kotlinx.html.classes
 import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.applyFeatures
-import me.khrys.dnd.charcreator.client.components.dCenteredBold
 import me.khrys.dnd.charcreator.client.components.closeButton
 import me.khrys.dnd.charcreator.client.components.dAbilityBox
+import me.khrys.dnd.charcreator.client.components.dCenteredBold
 import me.khrys.dnd.charcreator.client.components.dOneValueInput
 import me.khrys.dnd.charcreator.client.components.dSavingThrowsGridItem
 import me.khrys.dnd.charcreator.client.components.dSubmit
@@ -22,9 +28,9 @@ import me.khrys.dnd.charcreator.client.components.dTextBox
 import me.khrys.dnd.charcreator.client.components.dTextWithTooltip
 import me.khrys.dnd.charcreator.client.components.dTitledInput
 import me.khrys.dnd.charcreator.client.components.dWrappedText
+import me.khrys.dnd.charcreator.client.computeArmorClass
 import me.khrys.dnd.charcreator.client.computePassiveSkill
 import me.khrys.dnd.charcreator.client.computeProficiencyBonus
-import me.khrys.dnd.charcreator.client.getArmorClass
 import me.khrys.dnd.charcreator.client.getInitiative
 import me.khrys.dnd.charcreator.client.validators.dValidatorForm
 import me.khrys.dnd.charcreator.common.ACROBATICS_CONTENT_TRANSLATION
@@ -48,6 +54,7 @@ import me.khrys.dnd.charcreator.common.DECEPTION_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.DECEPTION_TRANSLATION
 import me.khrys.dnd.charcreator.common.DEXTERITY_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.DEXTERITY_TRANSLATION
+import me.khrys.dnd.charcreator.common.DICE_TRANSLATION
 import me.khrys.dnd.charcreator.common.ENTER_RACE_TRANSLATION
 import me.khrys.dnd.charcreator.common.ENTER_SAVING_THROWS_TRANSLATION
 import me.khrys.dnd.charcreator.common.ENTER_SKILLS_TRANSLATION
@@ -78,6 +85,7 @@ import me.khrys.dnd.charcreator.common.PERSUASION_TRANSLATION
 import me.khrys.dnd.charcreator.common.PROFICIENCIES_TRANSLATION
 import me.khrys.dnd.charcreator.common.PROFICIENCY_BONUS_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.PROFICIENCY_BONUS_TRANSLATION
+import me.khrys.dnd.charcreator.common.QUANTITY_TRANSLATION
 import me.khrys.dnd.charcreator.common.RELIGION_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.RELIGION_TRANSLATION
 import me.khrys.dnd.charcreator.common.SAVE_TRANSLATION
@@ -88,6 +96,7 @@ import me.khrys.dnd.charcreator.common.STEALTH_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.STEALTH_TRANSLATION
 import me.khrys.dnd.charcreator.common.STRENGTH_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.STRENGTH_TRANSLATION
+import me.khrys.dnd.charcreator.common.SUPERIORITY_DICES_TRANSLATION
 import me.khrys.dnd.charcreator.common.SURVIVAL_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.SURVIVAL_TRANSLATION
 import me.khrys.dnd.charcreator.common.WISDOM_CONTENT_TRANSLATION
@@ -100,11 +109,12 @@ import react.useContext
 import styled.css
 import styled.styledDiv
 import styled.styledImg
+import styled.styledP
 
 val characterWindow = functionalComponent<CharDialogProps> { props ->
     val translations = useContext(TranslationsContext)
     mDialog(open = props.open, fullScreen = true) {
-        val character = applyFeatures(props.character)
+        val character = applyFeatures(props.character, translations)
         mDialogTitle(text = "") {
             styledDiv {
                 attrs.classes = setOf(CLASS_INLINE, CLASS_JUSTIFY_BETWEEN)
@@ -132,7 +142,7 @@ val characterWindow = functionalComponent<CharDialogProps> { props ->
                                             header = translations[PROFICIENCY_BONUS_TRANSLATION] ?: "",
                                             value = proficiencyBonus,
                                             title = translations[PROFICIENCY_BONUS_CONTENT_TRANSLATION] ?: "",
-                                            readOnly = false
+                                            readOnly = true
                                         )
                                         dSavingThrowsGrid(character, translations, proficiencyBonus)
                                         dSkillsGrid(character, translations, proficiencyBonus)
@@ -167,7 +177,7 @@ val characterWindow = functionalComponent<CharDialogProps> { props ->
                                 styledDiv {
                                     attrs.classes = setOf(CLASS_INLINE)
                                     dTextBox(
-                                        value = character.getArmorClass(),
+                                        value = character.computeArmorClass(),
                                         label = translations[ARMOR_CLASS_TRANSLATION] ?: ""
                                     )
                                     dTextBox(
@@ -198,7 +208,7 @@ val characterWindow = functionalComponent<CharDialogProps> { props ->
                             }
                         }
                     }
-                    mGridItem {
+                    mGridItem(className = CLASS_PADDINGS) {
                         mGridContainer {
                             mGridItem {
                                 styledImg(src = character.image) {
@@ -206,6 +216,14 @@ val characterWindow = functionalComponent<CharDialogProps> { props ->
                                         width = 128.px
                                         height = 128.px
                                     }
+                                }
+                            }
+                        }
+                        if (character.superiorityDices.isNotEmpty()) {
+                            mGridContainer {
+                                mGridItem(className = CLASS_BORDERED) {
+                                    buildSuperiorDices(translations, character)
+                                    dCenteredBold(translations[SUPERIORITY_DICES_TRANSLATION] ?: "")
                                 }
                             }
                         }
@@ -469,4 +487,44 @@ fun RBuilder.dSkillsGrid(
 
 private fun RBuilder.buildSavingThrowsElements(elements: List<SavingThrowsItem>) {
     elements.forEach { dSavingThrowsGridItem(it) }
+}
+
+private fun RBuilder.buildSuperiorDices(
+    translations: Map<String, String>,
+    character: Character
+) {
+    mTableContainer {
+        mTable {
+            mTableHead {
+                mTableRow {
+                    mTableCell {
+                        styledP {
+                            +(translations[DICE_TRANSLATION] ?: "")
+                        }
+                    }
+                    mTableCell {
+                        styledP {
+                            +(translations[QUANTITY_TRANSLATION] ?: "")
+                        }
+                    }
+                }
+            }
+            mTableBody {
+                character.superiorityDices.forEach { superiorityDice ->
+                    mTableRow {
+                        mTableCell {
+                            styledP {
+                                +superiorityDice.dice.toString().lowercase()
+                            }
+                        }
+                        mTableCell {
+                            styledP {
+                                +superiorityDice.quantity.toString()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

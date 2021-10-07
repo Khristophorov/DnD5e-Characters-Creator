@@ -3,10 +3,16 @@ package me.khrys.dnd.charcreator.common.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class User(val _id: String, val characters: List<Character> = emptyList())
+data class User(
+    val _id: String,
+    val characters: List<Character> = emptyList()
+)
 
 @Serializable
-data class Translation(val _id: String, val value: String)
+data class Translation(
+    val _id: String,
+    val value: String
+)
 
 @Serializable
 data class Character(
@@ -17,14 +23,29 @@ data class Character(
     var savingThrows: SavingThrows,
     var skills: Skills,
     var speed: Int = 0,
+    var armorClass: Int = 0,
     var race: Race,
     var subrace: Race = race,
     var features: Array<Feature>,
     var proficiencies: Array<String> = emptyArray(),
-    var languages: Array<String> = emptyArray()
+    var languages: Array<String> = emptyArray(),
+    var bonuses: CharBonuses = CharBonuses(),
+    var superiorityDices: Array<SuperiorityDice> = emptyArray()
 )
+
 fun Character.hasFeature(featureName: String) =
     this.features.map { it.name }.contains(featureName)
+
+@Serializable
+data class SuperiorityDice(
+    var dice: Dice,
+    var quantity: Int
+)
+
+@Serializable
+data class CharBonuses(
+    var initiative: Int = 0
+)
 
 @Serializable
 data class Abilities(
@@ -79,10 +100,13 @@ data class Race(
 
 @Serializable
 data class Feature(
-    val name: String,
-    val description: String,
-    val functions: Array<DnDFunction> = emptyArray(),
-    val source: String = ""
+    var name: String,
+    var description: String,
+    var functions: Array<DnDFunction> = emptyArray(),
+    var filters: Array<Filter> = emptyArray(),
+    var withFeats: Boolean = false,
+    var withoutFeats: Boolean = false,
+    var source: String = ""
 )
 
 @Serializable
@@ -90,6 +114,44 @@ data class DnDFunction(
     val name: String,
     val values: Array<String> = emptyArray()
 )
+
+@Serializable
+data class Feat(
+    val _id: String,
+    val description: String,
+    val functions: Array<DnDFunction> = emptyArray(),
+    val filters: Array<Filter> = emptyArray(),
+    val source: String = ""
+)
+
+@Serializable
+data class Filter(
+    val param: Param,
+    val comparator: Comparator,
+    val value: String
+) {
+    @Serializable
+    enum class Param {
+        PROFICIENCIES,
+        WORE_TYPE,
+        STRENGTH,
+        DEXTERITY,
+        CONSTITUTION,
+        INTELLIGENCE,
+        WISDOM,
+        CHARISMA
+    }
+    @Serializable
+    enum class Comparator {
+        CONTAINS,
+        EQUALS_OR_HIGHER
+    }
+}
+
+@Serializable
+enum class Dice {
+    D4, D6, D8, D10, D12, D20, D100
+}
 
 fun emptyCharacter() =
     Character(
@@ -104,7 +166,11 @@ fun emptyCharacter() =
     )
 
 fun emptyRace() = Race("", "", emptyArray())
+
+fun emptyFeat() = Feat("", "")
+
 fun initialAbilities() = Abilities(10, 10, 10, 10, 10, 10)
+
 fun initialSavingThrows() = SavingThrows(
     strength = false,
     dexterity = false,

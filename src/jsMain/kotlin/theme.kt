@@ -5,7 +5,7 @@ import com.ccfraser.muirwik.components.styles.createMuiTheme
 
 val defaultTheme = createDefaultTheme()
 
-private fun createDefaultTheme(): Theme {
+fun createDefaultTheme(): Theme {
     val theme = createMuiTheme()
     theme.palette.background.default = "#fff3e0"
     theme.palette.primary.main = "#ffcc80"
@@ -53,6 +53,18 @@ private fun createDefaultTheme(): Theme {
     theme.overrides.MuiSelect = js("""{
         root: {
             width: '100px'
+        }
+    }""")
+    theme.overrides.MuiTable = js("""{
+        root: {
+            borderCollapse: 'separate'
+        }
+    }""")
+    theme.overrides.MuiTableCell = js("""{
+        root: {
+            fontSize: 'medium',
+            border: '1px solid black !important',
+            textAlign: 'center'
         }
     }""")
     return theme

@@ -2,8 +2,8 @@ package me.khrys.dnd.charcreator.client.components.dialogs
 
 import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.DnDFunction
+import me.khrys.dnd.charcreator.common.models.Feat
 import me.khrys.dnd.charcreator.common.models.Feature
-import org.w3c.dom.events.Event
 import react.RProps
 
 interface DialogProps : RProps {
@@ -14,19 +14,24 @@ interface DialogProps : RProps {
 interface CharDialogProps : DialogProps {
     var character: Character
     var action: () -> Unit
-    var checkPresence: () -> Boolean
+    var feats: Map<String, Feat>
+    var useFeats: Boolean
 }
 
-interface ChooseOfManyProps : DialogProps {
-    var header: String
-    var description: String
-    var values: Array<String>
-    var setValue: (String) -> Unit
-}
-
-interface FeatureProps : DialogProps {
+interface FeatureProps<T> : DialogProps {
     var character: Character
     var feature: Feature
     var function: DnDFunction
-    var setValue: (String) -> Unit
+    var setValue: (T) -> Unit
+}
+
+interface MultipleFeatureProps: FeatureProps<Array<String>> {
+    var size: Int
+}
+
+interface FeatsProps : DialogProps {
+    var feature: Feature
+    var character: Character
+    var feats: Map<String, Feat>
+    var action: () -> Unit
 }

@@ -22,6 +22,7 @@ import me.khrys.dnd.charcreator.common.CLASS_BOLD
 import me.khrys.dnd.charcreator.common.CLASS_BORDERED
 import me.khrys.dnd.charcreator.common.CLASS_CENTER
 import me.khrys.dnd.charcreator.common.CLASS_DISABLED
+import me.khrys.dnd.charcreator.common.CLASS_DISABLE_POINTER
 import me.khrys.dnd.charcreator.common.CLASS_FLOAT_LEFT
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
 import me.khrys.dnd.charcreator.common.CLASS_JUSTIFY_BETWEEN
@@ -96,6 +97,9 @@ suspend fun ApplicationCall.index() {
                 }
                 .${CLASS_PADDINGS} {
                     padding: 20px 5px;
+                }
+                .${CLASS_DISABLE_POINTER} {
+                    pointer-events: none;
                 }
                 """
             }

@@ -5,7 +5,5 @@ import me.khrys.dnd.charcreator.common.models.Race
 
 class RacesService(private val races: MongoCollection<Race>) {
 
-    fun readRaces(): List<Race> {
-        return races.find().toList()
-    }
+    fun readRaces() = races.find().toList()
 }

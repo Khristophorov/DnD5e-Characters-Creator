@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
-    kotlin("multiplatform") version "1.5.10"
-    kotlin("plugin.serialization") version "1.5.10"
+    kotlin("multiplatform") version "1.5.0"
+    kotlin("plugin.serialization") version "1.5.0"
     application
 }
 
@@ -10,22 +10,22 @@ group = "me.khris"
 version = "1.0-SNAPSHOT"
 
 // Kotlin dependencies
-val kotlinCoroutinesVersion = "1.5.0"
+val kotlinCoroutinesVersion = "1.5.1"
 val kotlinHtmlVersion = "0.7.3"
-val kotlinReactVersion = "17.0.1-pre.148-kotlin-1.4.30"
-val kotlinStyledVersion = "5.2.1-pre.146-kotlin-1.4.30"
-val kotlinCssJsVersion = "1.0.0-pre.148-kotlin-1.4.30"
-val kotlinSerializationVersion = "1.2.1"
-val kmongoVersion = "4.2.7"
-val ktorVersion = "1.6.0"
-val slf4fVersion = "1.7.30"
-val muirwikVersion = "0.6.7"
-val mockkVersion = "1.11.0"
+val kotlinReactVersion = "17.0.2-pre.204-kotlin-1.5.0"
+val kotlinStyledVersion = "5.3.0-pre.204-kotlin-1.5.0"
+val kotlinCssJsVersion = "1.0.0-pre.204-kotlin-1.5.0"
+val kotlinSerializationVersion = "1.2.2"
+val kmongoVersion = "4.2.8"
+val ktorVersion = "1.6.2"
+val slf4fVersion = "1.7.32"
+val muirwikVersion = "0.8.2"
+val mockkVersion = "1.12.0"
 
 // JavaScript dependencies
-val reactVersion = "17.0.1"
+val reactVersion = "17.0.2"
 val reactMaterialUiFormValidatorVersion = "2.1.4"
-val materialUiVersion = "4.11.0"
+val materialUiVersion = "4.11.1"
 
 repositories {
     jcenter()
@@ -98,10 +98,10 @@ kotlin {
         }
         val jsMain by getting {
             dependencies {
-                implementation("org.jetbrains:kotlin-react:$kotlinReactVersion")
-                implementation("org.jetbrains:kotlin-react-dom:$kotlinReactVersion")
-                implementation("org.jetbrains:kotlin-styled:$kotlinStyledVersion")
-                implementation("org.jetbrains:kotlin-css-js:$kotlinCssJsVersion")
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-react:$kotlinReactVersion")
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-react-dom:$kotlinReactVersion")
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-styled:$kotlinStyledVersion")
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-css-js:$kotlinCssJsVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
                 implementation("com.ccfraser.muirwik:muirwik-components:$muirwikVersion")

@@ -14,7 +14,6 @@ import com.ccfraser.muirwik.components.button.mFab
 import com.ccfraser.muirwik.components.button.mIconButton
 import com.ccfraser.muirwik.components.input.mInput
 import com.ccfraser.muirwik.components.mAvatar
-import com.ccfraser.muirwik.components.mTooltip
 import com.ccfraser.muirwik.components.mTypography
 import kotlinx.browser.window
 import kotlinx.css.Display.block
@@ -159,7 +158,7 @@ fun RBuilder.plusButton(title: String, action: (Event) -> Unit) {
             float = right
             padding = "15px"
         }
-        mTooltip(title = title) {
+        dTooltip(title = title) {
             dFab(action = action) { dAddIcon() }
         }
     }

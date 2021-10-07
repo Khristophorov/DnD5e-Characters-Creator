@@ -3,6 +3,7 @@ package me.khrys.dnd.charcreator.server.mongo
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
+import me.khrys.dnd.charcreator.common.models.Feat
 import me.khrys.dnd.charcreator.common.models.Race
 import me.khrys.dnd.charcreator.common.models.Translation
 import me.khrys.dnd.charcreator.common.models.User
@@ -19,4 +20,6 @@ class MongoServiceFactory(client: MongoClient) {
     fun getTranslations(): MongoCollection<Translation> = db.getCollection()
 
     fun getRaces(): MongoCollection<Race> = db.getCollection()
+
+    fun getFeats(): MongoCollection<Feat> = db.getCollection()
 }

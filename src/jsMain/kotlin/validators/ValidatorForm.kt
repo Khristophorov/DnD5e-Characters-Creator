@@ -14,6 +14,8 @@ import styled.StyledHandler
 private external val formValidatorModule: dynamic
 
 external interface ValidatorForm {
+    var values: Array<String>?
+
     fun <T> addValidationRule(ruleName: String, rule: (T?) -> Boolean)
 }
 

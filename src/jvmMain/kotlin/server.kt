@@ -41,17 +41,20 @@ import me.khrys.dnd.charcreator.server.authentication.authenticate
 import me.khrys.dnd.charcreator.server.authentication.initLoginProvider
 import me.khrys.dnd.charcreator.server.authentication.logout
 import me.khrys.dnd.charcreator.server.locations.Characters
+import me.khrys.dnd.charcreator.server.locations.Feats
 import me.khrys.dnd.charcreator.server.locations.Index
 import me.khrys.dnd.charcreator.server.locations.Login
 import me.khrys.dnd.charcreator.server.locations.Logout
 import me.khrys.dnd.charcreator.server.locations.Races
 import me.khrys.dnd.charcreator.server.locations.Translations
 import me.khrys.dnd.charcreator.server.models.LoginSession
+import me.khrys.dnd.charcreator.server.mongo.FeatsService
 import me.khrys.dnd.charcreator.server.mongo.MongoServiceFactory
 import me.khrys.dnd.charcreator.server.mongo.TranslationService
 import me.khrys.dnd.charcreator.server.mongo.UserService
 import me.khrys.dnd.charcreator.server.pages.index
 import me.khrys.dnd.charcreator.server.rest.characters
+import me.khrys.dnd.charcreator.server.rest.feats
 import me.khrys.dnd.charcreator.server.rest.races
 import me.khrys.dnd.charcreator.server.rest.saveCharacter
 import me.khrys.dnd.charcreator.server.rest.translations
@@ -70,6 +73,7 @@ fun Application.main() {
     val userService = UserService(mongoFactory.getUsers())
     val translationService = TranslationService(mongoFactory.getTranslations())
     val racesService = RacesService(mongoFactory.getRaces())
+    val featsService = FeatsService(mongoFactory.getFeats())
 
     val loginProvider = initLoginProvider(config)
 
@@ -95,6 +99,7 @@ fun Application.main() {
         get<Translations> { call.translations(translationService) }
         get<Characters> { call.characters(userService) }
         get<Races> { call.races(racesService) }
+        get<Feats> { call.feats(featsService) }
         post<Characters> { call.saveCharacter(userService) }
         static(STATIC_URL) { resources() }
     }

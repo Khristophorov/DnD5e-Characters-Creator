@@ -7,6 +7,7 @@ import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
 import me.khrys.dnd.charcreator.common.*
 import me.khrys.dnd.charcreator.common.models.Character
+import me.khrys.dnd.charcreator.common.models.Feat
 import me.khrys.dnd.charcreator.common.models.Race
 import me.khrys.dnd.charcreator.common.models.Translation
 import org.w3c.dom.Audio
@@ -32,6 +33,9 @@ suspend fun fetchCharacters(): Array<Character> =
 
 suspend fun fetchRaces(): Array<Race> =
     window.fetch(RACES_URL).await().json().await().unsafeCast<Array<Race>>()
+
+suspend fun fetchFeats(): Array<Feat> =
+    window.fetch(FEATS_URL).await().json().await().unsafeCast<Array<Feat>>()
 
 fun storeCharacter(character: Character) = MainScope().launch {
     val headers = Headers()
