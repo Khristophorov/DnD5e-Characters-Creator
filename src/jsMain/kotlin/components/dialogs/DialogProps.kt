@@ -4,9 +4,10 @@ import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.DnDFunction
 import me.khrys.dnd.charcreator.common.models.Feat
 import me.khrys.dnd.charcreator.common.models.Feature
-import react.RProps
+import react.Props
+import react.PropsWithChildren
 
-interface DialogProps : RProps {
+interface DialogProps : PropsWithChildren {
     var open: Boolean
     var setOpen: (Boolean) -> Unit
 }
@@ -25,7 +26,7 @@ interface FeatureProps<T> : DialogProps {
     var setValue: (T) -> Unit
 }
 
-interface MultipleFeatureProps: FeatureProps<Array<String>> {
+interface MultipleFeatureProps: FeatureProps<List<String>> {
     var size: Int
 }
 
@@ -34,4 +35,13 @@ interface FeatsProps : DialogProps {
     var character: Character
     var feats: Map<String, Feat>
     var action: () -> Unit
+}
+
+interface CharRaceProps : Props {
+    var newCharacter: Character
+    var open: Boolean
+    var setOpen: (Boolean) -> Unit
+    var action: () -> Unit
+    var backAction: () -> Unit
+    var feats: Map<String, Feat>
 }

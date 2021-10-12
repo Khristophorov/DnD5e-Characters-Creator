@@ -1,4 +1,4 @@
-package me.khrys.dnd.charcreator.client.components
+package me.khrys.dnd.charcreator.client.components.inputs.tooltips
 
 import com.ccfraser.muirwik.components.MPopoverHorizontalPosition.center
 import com.ccfraser.muirwik.components.MPopoverVerticalPosition.bottom
@@ -17,7 +17,6 @@ import me.khrys.dnd.charcreator.common.DANGEROUS_HTML
 import org.w3c.dom.Node
 import org.w3c.dom.events.EventTarget
 import react.RBuilder
-import react.ReactElement
 import react.dom.div
 import react.useState
 import styled.StyledHandler
@@ -46,9 +45,9 @@ fun RBuilder.dTooltip(
     id: String? = null,
     className: String? = null,
     handler: StyledHandler<MTypographyProps>? = null
-): ReactElement {
+) {
     val (anchorE1, setAnchorE1) = useState<EventTarget?>(null)
-    return div {
+    div {
         mThemeProvider(tooltipTheme) {
             mTypography {
                 id?.let { attrs.id = id }

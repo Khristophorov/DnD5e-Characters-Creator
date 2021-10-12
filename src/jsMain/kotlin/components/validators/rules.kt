@@ -1,10 +1,10 @@
-package me.khrys.dnd.charcreator.client.validators
+package me.khrys.dnd.charcreator.client.components.validators
 
 import me.khrys.dnd.charcreator.common.VALIDATION_VALUE_ALREADY_PRESENT
 import me.khrys.dnd.charcreator.common.VALIDATION_DUPLICATE_NAME
 import me.khrys.dnd.charcreator.common.models.Character
 
-fun initValidators(characters: Array<Character>) {
+fun initValidators(characters: List<Character>) {
     validatorForm.addValidationRule<String?>(VALIDATION_DUPLICATE_NAME) { name ->
         notDuplicate(name, characters)
     }
@@ -13,7 +13,7 @@ fun initValidators(characters: Array<Character>) {
     }
 }
 
-private fun notDuplicate(name: String?, characters: Array<Character>): Boolean {
+private fun notDuplicate(name: String?, characters: List<Character>): Boolean {
     for (character in characters) {
         if (character.name == name) return false
     }

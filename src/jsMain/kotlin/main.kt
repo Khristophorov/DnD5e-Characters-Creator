@@ -1,5 +1,3 @@
-@file:Suppress("EXPERIMENTAL_API_USAGE")
-
 package me.khrys.dnd.charcreator.client
 
 import com.ccfraser.muirwik.components.mCircularProgress
@@ -7,36 +5,34 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.css.Clear.both
 import kotlinx.css.clear
-import me.khrys.dnd.charcreator.client.components.addCharacter
-import me.khrys.dnd.charcreator.client.components.currentCharacters
-import me.khrys.dnd.charcreator.client.components.logoutButton
-import me.khrys.dnd.charcreator.client.validators.initValidators
+import me.khrys.dnd.charcreator.client.components.buttons.addCharacter
+import me.khrys.dnd.charcreator.client.components.buttons.currentCharacters
+import me.khrys.dnd.charcreator.client.components.buttons.dLogoutButton
+import me.khrys.dnd.charcreator.client.components.validators.initValidators
 import me.khrys.dnd.charcreator.common.LOGOUT_TRANSLATION
 import me.khrys.dnd.charcreator.common.models.Character
+import react.Props
 import react.RBuilder
-import react.RProps
-import react.RSetState
-import react.child
-import react.functionalComponent
+import react.fc
 import react.useState
 import styled.css
 import styled.styledDiv
 
-val mainDnd = functionalComponent<RProps> {
+val mainDnd = fc<Props> {
     val (isLoading, setLoading) = useState(true)
     val (translations, setTranslations) = useState(emptyMap<String, String>())
-    val (characters, setCharacters) = useState(emptyArray<Character>())
+    val (characters, setCharacters) = useState(emptyList<Character>())
 
     if (isLoading) {
         loadMainData(
             translations = translations,
-            setTranslations = setTranslations,
-            setCharacters = setCharacters,
-            setLoading = setLoading
+            setTranslations = { setTranslations(it) },
+            setCharacters = { setCharacters(it) },
+            setLoading = { setLoading(it) }
         )
     } else {
         TranslationsContext.Provider(translations) {
-            logoutButton(translations[LOGOUT_TRANSLATION])
+            dLogoutButton(translations[LOGOUT_TRANSLATION])
 
             CharactersContext.Provider(characters) {
                 initValidators(characters)
@@ -57,9 +53,9 @@ private fun RBuilder.renderMainContent() {
 
 private fun RBuilder.loadMainData(
     translations: Map<String, String>,
-    setTranslations: RSetState<Map<String, String>>,
-    setCharacters: RSetState<Array<Character>>,
-    setLoading: RSetState<Boolean>
+    setTranslations: (Map<String, String>) -> Unit,
+    setCharacters: (List<Character>) -> Unit,
+    setLoading: (Boolean) -> Unit
 ) {
     mCircularProgress()
     MainScope().launch {

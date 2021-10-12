@@ -1,11 +1,11 @@
-package me.khrys.dnd.charcreator.client.validators
+package me.khrys.dnd.charcreator.client.components.validators
 
+import com.ccfraser.muirwik.components.StyledPropsWithCommonAttributes
 import kotlinx.html.InputType
 import kotlinx.html.InputType.text
 import org.w3c.dom.events.InputEvent
+import react.ComponentType
 import react.RBuilder
-import react.RComponent
-import react.RState
 import styled.StyledHandler
 
 @JsModule("react-material-ui-form-validator")
@@ -13,16 +13,21 @@ import styled.StyledHandler
 private external val formValidatorModule: dynamic
 
 @Suppress("UnsafeCastFromDynamic")
-private val selectValidator: RComponent<SelectValidatorProps, RState> = formValidatorModule.SelectValidator
+private val textValidator: ComponentType<TextValidatorProps> = formValidatorModule.TextValidator
 
-data class SelectProps(val native: Boolean = false, val autoWidth: Boolean = false)
+data class InputProps(val accept: String = "", val readOnly: Boolean = false)
 
-interface SelectValidatorProps : TextValidatorProps {
-    @JsName("SelectProps")
-    var selectProps: SelectProps
+interface TextValidatorProps : StyledPropsWithCommonAttributes {
+    var label: String
+    var type: InputType
+    var value: String
+    var inputProps: InputProps
+    var validators: Array<String>
+    var errorMessages: Array<String>
+    var onChange: ((InputEvent) -> Unit)?
 }
 
-fun RBuilder.dSelectValidator(
+fun RBuilder.dTextValidator(
     id: String? = null,
     label: String = "",
     type: InputType = text,
@@ -32,8 +37,7 @@ fun RBuilder.dSelectValidator(
     errorMessages: Array<String> = emptyArray(),
     className: String? = null,
     onChange: ((InputEvent) -> Unit)? = null,
-    native: Boolean = false,
-    handler: StyledHandler<SelectValidatorProps>? = null
+    handler: StyledHandler<TextValidatorProps>? = null
 ) = defaultValidatorComponent(
     id,
     label,
@@ -45,6 +49,5 @@ fun RBuilder.dSelectValidator(
     onChange,
     className,
     handler,
-    selectValidator,
-    additionalHandling = { attrs.selectProps = SelectProps(native = native, autoWidth = true) }
+    textValidator
 )

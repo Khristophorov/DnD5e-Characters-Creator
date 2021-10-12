@@ -32,7 +32,8 @@ val character = Character(
     skills = initialSkills(),
     speed = 10,
     race = emptyRace(),
-    features = emptyArray()
+    subrace = emptyRace(),
+    features = emptyList()
 )
 val user = User(EMAIL, listOf(character))
 

@@ -1,5 +1,3 @@
-@file:Suppress("EXPERIMENTAL_API_USAGE")
-
 package me.khrys.dnd.charcreator.server.pages
 
 import io.ktor.application.ApplicationCall
@@ -14,6 +12,7 @@ import kotlinx.html.meta
 import kotlinx.html.script
 import kotlinx.html.style
 import kotlinx.html.title
+import kotlinx.html.unsafe
 import me.khrys.dnd.charcreator.common.BUTTON_SOUND_ID
 import me.khrys.dnd.charcreator.common.CLASS_ABILITY_BOX
 import me.khrys.dnd.charcreator.common.CLASS_ROUND_BORDERED
@@ -40,7 +39,8 @@ suspend fun ApplicationCall.index() {
         head {
             title { +TITLE }
             style {
-                +"""
+                unsafe {
+                    +"""
                 @font-face {
                     font-family: Pterra;
                     src: url($PTERRA_URL);
@@ -102,6 +102,7 @@ suspend fun ApplicationCall.index() {
                     pointer-events: none;
                 }
                 """
+                }
             }
             meta {
                 name = "viewport"

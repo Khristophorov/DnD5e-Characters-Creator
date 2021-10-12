@@ -86,9 +86,9 @@ fun Character.clone() = Character(
     speed = this.speed,
     race = this.race,
     subrace = this.subrace,
-    features = this.features.copyOf(),
-    proficiencies = this.proficiencies.copyOf(),
-    languages = this.languages.copyOf()
+    features = this.features,
+    proficiencies = this.proficiencies,
+    languages = this.languages
 )
 
 fun Abilities.clone() = Abilities(
@@ -215,15 +215,15 @@ fun Character.setSpeed(speed: Int) {
     this.speed = speed
 }
 
-fun Character.setProficiencies(proficiencies: Array<String>) {
+fun Character.setProficiencies(proficiencies: List<String>) {
     this.proficiencies += proficiencies
 }
 
-fun Character.addLanguages(languages: Array<String>) {
+fun Character.addLanguages(languages: List<String>) {
     this.languages += languages
 }
 
-fun Character.addSkills(skills: Array<String>, translations: Map<String, String>) {
+fun Character.addSkills(skills: List<String>, translations: Map<String, String>) {
     skills.forEach {
         when (it) {
             translations[ACROBATICS_TRANSLATION] -> this.skills.acrobatics = true
@@ -290,8 +290,8 @@ fun Feat.toFeature(): Feature = Feature(
 fun Filter.apply(character: Character): Boolean {
     val dataSet = when (this.param.toString()) {
         PROFICIENCIES.toString() -> character.proficiencies
-        WORE_TYPE.toString() -> emptyArray()
-        else -> emptyArray()
+        WORE_TYPE.toString() -> emptyList()
+        else -> emptyList()
     }
     val dataNum = when (this.param.toString()) {
         STRENGTH.toString() -> character.abilities.strength

@@ -10,7 +10,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import me.khrys.dnd.charcreator.common.models.Feat
 
-val featsList = listOf(Feat(_id = "name", description = "description", functions = emptyArray()))
+val featsList = listOf(Feat(_id = "name", description = "description", functions = emptyList()))
 
 class TestFeatsService {
 

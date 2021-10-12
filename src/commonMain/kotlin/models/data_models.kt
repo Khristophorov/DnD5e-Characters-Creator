@@ -25,12 +25,12 @@ data class Character(
     var speed: Int = 0,
     var armorClass: Int = 0,
     var race: Race,
-    var subrace: Race = race,
-    var features: Array<Feature>,
-    var proficiencies: Array<String> = emptyArray(),
-    var languages: Array<String> = emptyArray(),
+    var subrace: Race,
+    var features: List<Feature>,
+    var proficiencies: List<String> = emptyList(),
+    var languages: List<String> = emptyList(),
     var bonuses: CharBonuses = CharBonuses(),
-    var superiorityDices: Array<SuperiorityDice> = emptyArray()
+    var superiorityDices: List<SuperiorityDice> = emptyList()
 )
 
 fun Character.hasFeature(featureName: String) =
@@ -93,8 +93,8 @@ data class Skills(
 data class Race(
     val _id: String,
     val description: String,
-    val features: Array<Feature>,
-    val subraces: Array<Race> = emptyArray(),
+    val features: List<Feature>,
+    val subraces: List<Race> = emptyList(),
     val source: String = ""
 )
 
@@ -102,8 +102,8 @@ data class Race(
 data class Feature(
     var name: String,
     var description: String,
-    var functions: Array<DnDFunction> = emptyArray(),
-    var filters: Array<Filter> = emptyArray(),
+    var functions: List<DnDFunction> = emptyList(),
+    var filters: List<Filter> = emptyList(),
     var withFeats: Boolean = false,
     var withoutFeats: Boolean = false,
     var source: String = ""
@@ -112,15 +112,15 @@ data class Feature(
 @Serializable
 data class DnDFunction(
     val name: String,
-    val values: Array<String> = emptyArray()
+    val values: List<String> = emptyList()
 )
 
 @Serializable
 data class Feat(
     val _id: String,
     val description: String,
-    val functions: Array<DnDFunction> = emptyArray(),
-    val filters: Array<Filter> = emptyArray(),
+    val functions: List<DnDFunction> = emptyList(),
+    val filters: List<Filter> = emptyList(),
     val source: String = ""
 )
 
@@ -141,6 +141,7 @@ data class Filter(
         WISDOM,
         CHARISMA
     }
+
     @Serializable
     enum class Comparator {
         CONTAINS,
@@ -162,10 +163,11 @@ fun emptyCharacter() =
         savingThrows = initialSavingThrows(),
         skills = initialSkills(),
         race = emptyRace(),
-        features = emptyArray()
+        subrace = emptyRace(),
+        features = emptyList()
     )
 
-fun emptyRace() = Race("", "", emptyArray())
+fun emptyRace() = Race("", "", emptyList())
 
 fun emptyFeat() = Feat("", "")
 

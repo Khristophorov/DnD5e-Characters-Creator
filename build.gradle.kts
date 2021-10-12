@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
-    kotlin("multiplatform") version "1.5.0"
-    kotlin("plugin.serialization") version "1.5.0"
+    kotlin("multiplatform") version "1.5.30"
+    kotlin("plugin.serialization") version "1.5.30"
     application
 }
 
@@ -10,22 +10,22 @@ group = "me.khris"
 version = "1.0-SNAPSHOT"
 
 // Kotlin dependencies
-val kotlinCoroutinesVersion = "1.5.1"
+val kotlinCoroutinesVersion = "1.5.2"
 val kotlinHtmlVersion = "0.7.3"
-val kotlinReactVersion = "17.0.2-pre.204-kotlin-1.5.0"
-val kotlinStyledVersion = "5.3.0-pre.204-kotlin-1.5.0"
-val kotlinCssJsVersion = "1.0.0-pre.204-kotlin-1.5.0"
-val kotlinSerializationVersion = "1.2.2"
-val kmongoVersion = "4.2.8"
-val ktorVersion = "1.6.2"
-val slf4fVersion = "1.7.32"
-val muirwikVersion = "0.8.2"
+val kotlinReactVersion = "17.0.2-pre.236-kotlin-1.5.30"
+val kotlinStyledVersion = "5.3.0-pre.236-kotlin-1.5.30"
+val kotlinCssJsVersion = "1.0.0-pre.236-kotlin-1.5.30"
+val kotlinSerializationVersion = "1.3.0"
+val kmongoVersion = "4.3.0"
+val ktorVersion = "1.6.4"
+val slf4jVersion = "1.7.32"
+val muirwikVersion = "0.9.1"
 val mockkVersion = "1.12.0"
 
 // JavaScript dependencies
 val reactVersion = "17.0.2"
 val reactMaterialUiFormValidatorVersion = "2.1.4"
-val materialUiVersion = "4.11.1"
+val materialUiVersion = "4.11.4"
 
 repositories {
     jcenter()
@@ -86,7 +86,7 @@ kotlin {
                 implementation("io.ktor:ktor-serialization:$ktorVersion")
                 implementation("org.litote.kmongo:kmongo:$kmongoVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinHtmlVersion")
-                implementation("org.slf4j:slf4j-simple:$slf4fVersion")
+                implementation("org.slf4j:slf4j-simple:$slf4jVersion")
             }
         }
         val jvmTest by getting {

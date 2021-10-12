@@ -4,7 +4,6 @@ import com.ccfraser.muirwik.components.mThemeProvider
 import kotlinx.browser.document
 import kotlinx.browser.window
 import me.khrys.dnd.charcreator.common.ROOT
-import react.child
 import react.dom.div
 import react.dom.render
 

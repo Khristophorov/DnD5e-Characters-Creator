@@ -1,12 +1,10 @@
-package me.khrys.dnd.charcreator.client.validators
+package me.khrys.dnd.charcreator.client.components.validators
 
 import com.ccfraser.muirwik.components.StyledPropsWithCommonAttributes
 import com.ccfraser.muirwik.components.createStyled
-import com.ccfraser.muirwik.components.setStyledPropsAndRunHandler
 import org.w3c.dom.events.Event
+import react.ComponentType
 import react.RBuilder
-import react.RComponent
-import react.RState
 import styled.StyledHandler
 
 @JsModule("react-material-ui-form-validator")
@@ -19,8 +17,7 @@ external interface ValidatorForm {
     fun <T> addValidationRule(ruleName: String, rule: (T?) -> Boolean)
 }
 
-abstract class ValidationFormComponent(props: ValidatorFormProps)
-    : RComponent<ValidatorFormProps, RState>(props), ValidatorForm
+interface ValidationFormComponent : ComponentType<ValidatorFormProps>, ValidatorForm
 
 @Suppress("UnsafeCastFromDynamic")
 val validatorForm: ValidationFormComponent = formValidatorModule.ValidatorForm
@@ -31,7 +28,6 @@ fun RBuilder.dValidatorForm(
     className: String? = null,
     onSubmit: ((Event) -> Unit) = {},
     handler: StyledHandler<ValidatorFormProps>? = null
-) = createStyled(validatorForm, true) {
+) = createStyled(validatorForm, className, handler) {
     attrs.onSubmit = onSubmit
-    setStyledPropsAndRunHandler(className, handler)
 }

@@ -1,9 +1,8 @@
 package me.khrys.dnd.charcreator.client.components
 
 import com.ccfraser.muirwik.components.createStyled
+import react.ComponentType
 import react.RBuilder
-import react.RComponent
-import react.RState
 import styled.StyledProps
 
 @JsModule("@material-ui/icons/Add")
@@ -27,22 +26,22 @@ private external val radioButtonUncheckedModule: dynamic
 private external val radioButtonCheckedModule: dynamic
 
 @Suppress("UnsafeCastFromDynamic")
-private val addIcon: RComponent<StyledProps, RState> = addModule.default
+private val addIcon: ComponentType<StyledProps> = addModule.default
 
 @Suppress("UnsafeCastFromDynamic")
-private val arrowBackIcon: RComponent<StyledProps, RState> = arrowBackModule.default
+private val arrowBackIcon: ComponentType<StyledProps> = arrowBackModule.default
 
 @Suppress("UnsafeCastFromDynamic")
-private val closeIcon: RComponent<StyledProps, RState> = closeModule.default
+private val closeIcon: ComponentType<StyledProps> = closeModule.default
 
 @Suppress("UnsafeCastFromDynamic")
-private val radioCheckedIcon: RComponent<StyledProps, RState> = radioButtonCheckedModule.default
+private val radioCheckedIcon: ComponentType<StyledProps> = radioButtonCheckedModule.default
 
 @Suppress("UnsafeCastFromDynamic")
-private val radioUncheckedIcon: RComponent<StyledProps, RState> = radioButtonUncheckedModule.default
+private val radioUncheckedIcon: ComponentType<StyledProps> = radioButtonUncheckedModule.default
 
-fun RBuilder.dAddIcon() = createStyled(addIcon, true) {}
-fun RBuilder.dArrowBackIcon() = createStyled(arrowBackIcon, true) {}
-fun RBuilder.dCloseIcon() = createStyled(closeIcon, true) {}
-fun RBuilder.dRadioCheckedIcon() = createStyled(radioCheckedIcon, true) {}
-fun RBuilder.dRadioUncheckedIcon() = createStyled(radioUncheckedIcon, true) {}
+fun RBuilder.dAddIcon() = createStyled(addIcon)
+fun RBuilder.dArrowBackIcon() = createStyled(arrowBackIcon)
+fun RBuilder.dCloseIcon() = createStyled(closeIcon)
+fun RBuilder.dRadioCheckedIcon() = createStyled(radioCheckedIcon)
+fun RBuilder.dRadioUncheckedIcon() = createStyled(radioUncheckedIcon)

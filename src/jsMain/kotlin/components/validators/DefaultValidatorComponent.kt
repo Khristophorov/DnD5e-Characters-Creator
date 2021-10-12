@@ -1,12 +1,10 @@
-package me.khrys.dnd.charcreator.client.validators
+package me.khrys.dnd.charcreator.client.components.validators
 
 import com.ccfraser.muirwik.components.createStyled
-import com.ccfraser.muirwik.components.setStyledPropsAndRunHandler
 import kotlinx.html.InputType
 import org.w3c.dom.events.InputEvent
+import react.ComponentType
 import react.RBuilder
-import react.RComponent
-import react.RState
 import styled.StyledHandler
 
 fun <P: TextValidatorProps> RBuilder.defaultValidatorComponent(
@@ -20,9 +18,9 @@ fun <P: TextValidatorProps> RBuilder.defaultValidatorComponent(
     onChange: ((InputEvent) -> Unit)?,
     className: String?,
     handler: StyledHandler<P>?,
-    validatorComponent: RComponent<P, RState>,
+    validatorComponent: ComponentType<P>,
     additionalHandling: StyledHandler<P>? = null
-) = createStyled(validatorComponent, true) {
+) = createStyled(validatorComponent, className, handler) {
     additionalHandling?.let { additionalHandling() }
     id?.let { attrs.id = id }
     attrs.label = label
@@ -32,5 +30,4 @@ fun <P: TextValidatorProps> RBuilder.defaultValidatorComponent(
     attrs.validators = validators
     attrs.errorMessages = errorMessages
     onChange.let { attrs.onChange = onChange }
-    setStyledPropsAndRunHandler(className, handler)
 }
