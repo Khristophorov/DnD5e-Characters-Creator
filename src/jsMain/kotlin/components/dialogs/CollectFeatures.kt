@@ -16,7 +16,6 @@ import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.DnDFunction
 import me.khrys.dnd.charcreator.common.models.Feat
 import me.khrys.dnd.charcreator.common.models.Feature
-import me.khrys.dnd.charcreator.common.models.hasFeature
 import react.RBuilder
 import react.fc
 import react.useState

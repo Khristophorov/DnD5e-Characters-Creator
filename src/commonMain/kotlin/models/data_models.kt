@@ -29,12 +29,13 @@ data class Character(
     var features: List<Feature>,
     var proficiencies: List<String> = emptyList(),
     var languages: List<String> = emptyList(),
+    var spells: List<Spell> = emptyList(),
     var bonuses: CharBonuses = CharBonuses(),
     var superiorityDices: List<SuperiorityDice> = emptyList()
-)
-
-fun Character.hasFeature(featureName: String) =
-    this.features.map { it.name }.contains(featureName)
+) {
+    fun hasFeature(featureName: String) =
+        this.features.map { it.name }.contains(featureName)
+}
 
 @Serializable
 data class SuperiorityDice(
@@ -148,6 +149,21 @@ data class Filter(
         EQUALS_OR_HIGHER
     }
 }
+
+@Serializable
+data class Spell(
+    var _id: String,
+    var description: String,
+    var level: Int,
+    var school: String,
+    var ritual: Boolean = false,
+    var castingTime: String,
+    var range: String,
+    var components: List<String>,
+    var duration: String,
+    var classes: List<String>,
+    var source: String = ""
+)
 
 @Serializable
 enum class Dice {
