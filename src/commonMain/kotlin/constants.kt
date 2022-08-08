@@ -50,6 +50,7 @@ const val TRANSLATIONS_URL = "/translations"
 const val CHARACTERS_URL = "/characters"
 const val RACES_URL = "/races"
 const val FEATS_URL = "/feats"
+const val SPELLS_URL = "/spells"
 
 const val LOGOUT_TRANSLATION = "logout"
 const val NEXT_TRANSLATION = "next"

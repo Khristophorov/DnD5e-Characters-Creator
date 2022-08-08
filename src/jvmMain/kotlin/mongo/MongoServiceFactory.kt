@@ -5,6 +5,7 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import me.khrys.dnd.charcreator.common.models.Feat
 import me.khrys.dnd.charcreator.common.models.Race
+import me.khrys.dnd.charcreator.common.models.Spell
 import me.khrys.dnd.charcreator.common.models.Translation
 import me.khrys.dnd.charcreator.common.models.User
 import org.litote.kmongo.getCollection
@@ -22,4 +23,6 @@ class MongoServiceFactory(client: MongoClient) {
     fun getRaces(): MongoCollection<Race> = db.getCollection()
 
     fun getFeats(): MongoCollection<Feat> = db.getCollection()
+
+    fun getSpells(): MongoCollection<Spell> = db.getCollection()
 }

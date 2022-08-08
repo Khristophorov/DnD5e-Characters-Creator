@@ -46,10 +46,12 @@ import me.khrys.dnd.charcreator.server.locations.Index
 import me.khrys.dnd.charcreator.server.locations.Login
 import me.khrys.dnd.charcreator.server.locations.Logout
 import me.khrys.dnd.charcreator.server.locations.Races
+import me.khrys.dnd.charcreator.server.locations.Spells
 import me.khrys.dnd.charcreator.server.locations.Translations
 import me.khrys.dnd.charcreator.server.models.LoginSession
 import me.khrys.dnd.charcreator.server.mongo.FeatsService
 import me.khrys.dnd.charcreator.server.mongo.MongoServiceFactory
+import me.khrys.dnd.charcreator.server.mongo.SpellsService
 import me.khrys.dnd.charcreator.server.mongo.TranslationService
 import me.khrys.dnd.charcreator.server.mongo.UserService
 import me.khrys.dnd.charcreator.server.pages.index
@@ -57,6 +59,7 @@ import me.khrys.dnd.charcreator.server.rest.characters
 import me.khrys.dnd.charcreator.server.rest.feats
 import me.khrys.dnd.charcreator.server.rest.races
 import me.khrys.dnd.charcreator.server.rest.saveCharacter
+import me.khrys.dnd.charcreator.server.rest.spells
 import me.khrys.dnd.charcreator.server.rest.translations
 import mongo.RacesService
 import org.litote.kmongo.KMongo
@@ -74,6 +77,7 @@ fun Application.main() {
     val translationService = TranslationService(mongoFactory.getTranslations())
     val racesService = RacesService(mongoFactory.getRaces())
     val featsService = FeatsService(mongoFactory.getFeats())
+    val spellsService = SpellsService(mongoFactory.getSpells())
 
     val loginProvider = initLoginProvider(config)
 
@@ -100,6 +104,7 @@ fun Application.main() {
         get<Characters> { call.characters(userService) }
         get<Races> { call.races(racesService) }
         get<Feats> { call.feats(featsService) }
+        get<Spells> { call.spells(spellsService) }
         post<Characters> { call.saveCharacter(userService) }
         static(STATIC_URL) { resources() }
     }
