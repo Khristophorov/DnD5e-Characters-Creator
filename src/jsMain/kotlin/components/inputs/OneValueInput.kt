@@ -1,10 +1,11 @@
 package me.khrys.dnd.charcreator.client.components.inputs
 
-import com.ccfraser.muirwik.components.MTypographyAlign.center
-import com.ccfraser.muirwik.components.MTypographyColor.textPrimary
-import com.ccfraser.muirwik.components.input.mInput
-import com.ccfraser.muirwik.components.mAvatar
-import com.ccfraser.muirwik.components.mTypography
+import com.ccfraser.muirwik.components.TypographyAlign.center
+import com.ccfraser.muirwik.components.TypographyColor.textPrimary
+import com.ccfraser.muirwik.components.align
+import com.ccfraser.muirwik.components.avatar
+import com.ccfraser.muirwik.components.input
+import com.ccfraser.muirwik.components.typography
 import kotlinx.html.classes
 import me.khrys.dnd.charcreator.client.components.inputs.tooltips.dDelayedTooltip
 import me.khrys.dnd.charcreator.common.CLASS_BACKGROUND
@@ -27,15 +28,18 @@ fun RBuilder.dOneValueInput(
     dDelayedTooltip(title) {
         styledDiv {
             attrs.classes = setOf(CLASS_INLINE, className)
-            mAvatar(className = "$CLASS_CENTER $CLASS_ROUND_BORDERED $CLASS_BACKGROUND") {
-                mTypography(text = value.toString(), align = center, color = textPrimary)
+            avatar {
+                attrs.className = "$CLASS_CENTER $CLASS_ROUND_BORDERED $CLASS_BACKGROUND"
+                typography(text = value.toString(), color = textPrimary) {
+                    attrs.align = center
+                }
             }
-            mInput(
-                value = header.uppercase(),
-                readOnly = readOnly,
-                fullWidth = true,
-                className = "$CLASS_BORDERED $CLASS_BOLD $CLASS_TEXT_CENTER"
-            )
+            input {
+                attrs.value = header.uppercase()
+                attrs.readOnly = readOnly
+                attrs.fullWidth = true
+                attrs.className = "$CLASS_BORDERED $CLASS_BOLD $CLASS_TEXT_CENTER"
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 package me.khrys.dnd.charcreator.server
 
-import io.ktor.sessions.CurrentSession
+import io.ktor.server.sessions.CurrentSession
 import me.khrys.dnd.charcreator.common.LOGIN_SESSION
 import me.khrys.dnd.charcreator.server.models.LoginSession
 

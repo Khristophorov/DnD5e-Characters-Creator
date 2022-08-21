@@ -143,3 +143,5 @@ const val VALUE_IS_ALREADY_SELECTED_TRANSLATION = "value_is_already_selected"
 const val CHAR_NAME_EXISTS = "char_name_exists"
 const val ABILITY_MINIMUM = "ability_minimum"
 const val ABILITY_MAXIMUM = "ability_maximum"
+
+const val MONGO_URL_PARAM = "ktor.mongo.url"

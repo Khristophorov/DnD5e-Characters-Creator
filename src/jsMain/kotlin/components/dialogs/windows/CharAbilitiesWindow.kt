@@ -1,19 +1,19 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
-import com.ccfraser.muirwik.components.dialog.mDialog
-import com.ccfraser.muirwik.components.dialog.mDialogActions
-import com.ccfraser.muirwik.components.dialog.mDialogContent
-import com.ccfraser.muirwik.components.dialog.mDialogContentText
-import com.ccfraser.muirwik.components.dialog.mDialogTitle
-import com.ccfraser.muirwik.components.targetValue
+import com.ccfraser.muirwik.components.dialog
+import com.ccfraser.muirwik.components.dialogActions
+import com.ccfraser.muirwik.components.dialogContent
+import com.ccfraser.muirwik.components.dialogContentText
+import com.ccfraser.muirwik.components.dialogTitle
+import com.ccfraser.muirwik.components.utils.targetValue
 import kotlinx.css.FlexWrap.wrap
 import kotlinx.css.flexWrap
 import kotlinx.html.classes
 import me.khrys.dnd.charcreator.client.components.buttons.dBackButton
 import me.khrys.dnd.charcreator.client.components.buttons.dSubmit
 import me.khrys.dnd.charcreator.client.components.inputs.dAbilityBox
-import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
 import me.khrys.dnd.charcreator.client.components.validators.dValidatorForm
+import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
 import me.khrys.dnd.charcreator.common.CHARISMA_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.CHARISMA_TRANSLATION
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
@@ -49,7 +49,7 @@ fun RBuilder.charAbilitiesWindow(
     backAction: (Event) -> Unit,
     action: (Event) -> Unit
 ) {
-    mDialog(open = open) {
+    dialog(open = open) {
         val (strength, setStrength) = useState(10)
         val (dexterity, setDexterity) = useState(10)
         val (constitution, setConstitution) = useState(10)
@@ -57,8 +57,8 @@ fun RBuilder.charAbilitiesWindow(
         val (wisdom, setWisdom) = useState(10)
         val (charisma, setCharisma) = useState(10)
 
-        mDialogTitle(text = translations[ENTER_ABILITIES_TRANSLATION] ?: "")
-        mDialogContent(dividers = true) {
+        dialogTitle(text = translations[ENTER_ABILITIES_TRANSLATION] ?: "")
+        dialogContent(dividers = true) {
             title(translations[ENTER_ABILITIES_CONTENT_TRANSLATION] ?: "")
             dValidatorForm(
                 onSubmit = { event ->
@@ -78,7 +78,8 @@ fun RBuilder.charAbilitiesWindow(
                     wisdom(translations, wisdom) { setWisdom(it) }
                     charisma(translations, charisma) { setCharisma(it) }
                 }
-                mDialogActions(className = CLASS_JUSTIFY_BETWEEN) {
+                dialogActions {
+                    attrs.className = CLASS_JUSTIFY_BETWEEN
                     dBackButton(backAction)
                     dSubmit(caption = translations[NEXT_TRANSLATION] ?: "")
                 }
@@ -184,7 +185,7 @@ private fun RBuilder.strength(
 }
 
 private fun RBuilder.title(value: String) {
-    mDialogContentText("") {
+    dialogContentText("") {
         p {
             attrs[DANGEROUS_HTML] =
                 DangerousHTML(value)

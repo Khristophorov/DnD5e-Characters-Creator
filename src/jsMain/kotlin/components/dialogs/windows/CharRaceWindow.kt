@@ -1,19 +1,19 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
-import com.ccfraser.muirwik.components.dialog.mDialog
-import com.ccfraser.muirwik.components.dialog.mDialogActions
-import com.ccfraser.muirwik.components.dialog.mDialogContent
-import com.ccfraser.muirwik.components.dialog.mDialogContentText
-import com.ccfraser.muirwik.components.dialog.mDialogTitle
-import com.ccfraser.muirwik.components.targetValue
+import com.ccfraser.muirwik.components.dialog
+import com.ccfraser.muirwik.components.dialogActions
+import com.ccfraser.muirwik.components.dialogContent
+import com.ccfraser.muirwik.components.dialogContentText
+import com.ccfraser.muirwik.components.dialogTitle
+import com.ccfraser.muirwik.components.utils.targetValue
 import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.components.buttons.dCheckboxWithLabel
 import me.khrys.dnd.charcreator.client.components.buttons.dSubmit
 import me.khrys.dnd.charcreator.client.components.dialogs.CharRaceProps
 import me.khrys.dnd.charcreator.client.components.dialogs.collectRaceFeatures
 import me.khrys.dnd.charcreator.client.components.inputs.dValidatedList
-import me.khrys.dnd.charcreator.client.loadRaces
 import me.khrys.dnd.charcreator.client.components.validators.dValidatorForm
+import me.khrys.dnd.charcreator.client.loadRaces
 import me.khrys.dnd.charcreator.common.ENTER_RACE_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.ENTER_RACE_TRANSLATION
 import me.khrys.dnd.charcreator.common.FEATS_SELECT_TRANSLATION
@@ -35,11 +35,11 @@ val charRaceWindow = fc<CharRaceProps> { props ->
     if (props.open && races.isEmpty()) {
         loadRaces { setRaces(it) }
     } else {
-        mDialog(open = props.open) {
+        dialog(open = props.open) {
             val translations = useContext(TranslationsContext)
-            mDialogTitle(text = translations[ENTER_RACE_TRANSLATION] ?: "")
-            mDialogContent(dividers = true) {
-                mDialogContentText(text = translations[ENTER_RACE_CONTENT_TRANSLATION] ?: "")
+            dialogTitle(text = translations[ENTER_RACE_TRANSLATION] ?: "")
+            dialogContent(dividers = true) {
+                dialogContentText(text = translations[ENTER_RACE_CONTENT_TRANSLATION] ?: "")
                 dValidatorForm(onSubmit = {
                     props.newCharacter.race = race
                     props.newCharacter.features = emptyList()
@@ -65,7 +65,7 @@ val charRaceWindow = fc<CharRaceProps> { props ->
                         setDescription = { setDescription(it) },
                         description = description
                     )
-                    mDialogActions {
+                    dialogActions {
                         dSubmit(translations[NEXT_TRANSLATION] ?: "")
                     }
                 }

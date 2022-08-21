@@ -1,11 +1,11 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
-import com.ccfraser.muirwik.components.dialog.mDialog
-import com.ccfraser.muirwik.components.dialog.mDialogActions
-import com.ccfraser.muirwik.components.dialog.mDialogContent
-import com.ccfraser.muirwik.components.dialog.mDialogContentText
-import com.ccfraser.muirwik.components.dialog.mDialogTitle
-import com.ccfraser.muirwik.components.targetValue
+import com.ccfraser.muirwik.components.dialog
+import com.ccfraser.muirwik.components.dialogActions
+import com.ccfraser.muirwik.components.dialogContent
+import com.ccfraser.muirwik.components.dialogContentText
+import com.ccfraser.muirwik.components.dialogTitle
+import com.ccfraser.muirwik.components.utils.targetValue
 import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.components.buttons.dBackButton
 import me.khrys.dnd.charcreator.client.components.buttons.dSubmit
@@ -29,11 +29,11 @@ val charSubraceWindow = fc<CharRaceProps> { props ->
     val (subrace, setSubrace) = useState(emptyRace())
     val (description, setDescription) = useState("")
     val (openFeatures, setOpenFeatures) = useState(false)
-    mDialog(open = props.open) {
+    dialog(open = props.open) {
         val translations = useContext(TranslationsContext)
-        mDialogTitle(text = translations[ENTER_SUBRACE_TRANSLATION] ?: "")
-        mDialogContent(dividers = true) {
-            mDialogContentText(text = translations[ENTER_SUBRACE_CONTENT_TRANSLATION] ?: "")
+        dialogTitle(text = translations[ENTER_SUBRACE_TRANSLATION] ?: "")
+        dialogContent(dividers = true) {
+            dialogContentText(text = translations[ENTER_SUBRACE_CONTENT_TRANSLATION] ?: "")
             dValidatorForm(onSubmit = {
                 props.newCharacter.subrace = subrace
                 if (subrace.features.isEmpty()) {
@@ -52,7 +52,8 @@ val charSubraceWindow = fc<CharRaceProps> { props ->
                     setDescription = { setDescription(it) },
                     description = description
                 )
-                mDialogActions(className = CLASS_JUSTIFY_BETWEEN) {
+                dialogActions {
+                    attrs.className = CLASS_JUSTIFY_BETWEEN
                     dBackButton {
                         setSubrace(emptyRace())
                         setDescription("")

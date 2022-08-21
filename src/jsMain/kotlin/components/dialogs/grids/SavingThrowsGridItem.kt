@@ -1,6 +1,6 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.grids
 
-import com.ccfraser.muirwik.components.mCheckbox
+import com.ccfraser.muirwik.components.checkbox
 import kotlinx.css.borderBottom
 import kotlinx.css.padding
 import kotlinx.css.paddingLeft
@@ -24,7 +24,7 @@ fun RBuilder.dSavingThrowsGridItem(item: SavingThrowsItem) {
         styledDiv {
             attrs.classes = setOf(CLASS_INLINE)
             val modifier = computeModifier(item.value, item.proficiencyBonus, item.proficient)
-            mCheckbox(checked = item.proficient) {
+            checkbox(checked = item.proficient) {
                 attrs.icon = buildElement { dRadioUncheckedIcon() }
                 attrs.checkedIcon = buildElement { dRadioCheckedIcon() }
             }

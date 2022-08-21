@@ -1,9 +1,10 @@
 package me.khrys.dnd.charcreator.client.components.buttons
 
-import com.ccfraser.muirwik.components.MTypographyAlign.center
-import com.ccfraser.muirwik.components.button.MButtonSize.large
-import com.ccfraser.muirwik.components.mAvatar
-import com.ccfraser.muirwik.components.mTypography
+import com.ccfraser.muirwik.components.ButtonSize.large
+import com.ccfraser.muirwik.components.TypographyAlign.center
+import com.ccfraser.muirwik.components.align
+import com.ccfraser.muirwik.components.avatar
+import com.ccfraser.muirwik.components.typography
 import kotlinx.css.Display.block
 import kotlinx.css.display
 import kotlinx.css.margin
@@ -21,11 +22,12 @@ fun RBuilder.dAvatarButton(character: Character, action: (Event) -> Unit) {
             margin = "5px"
         }
         dFab(size = large, className = CLASS_CENTER, action = action) {
-            mAvatar(src = character.image)
+            avatar(src = character.image)
         }
-        mTypography(
-            text = character.name,
-            align = center
-        )
+        typography(
+            text = character.name
+        ) {
+            attrs.align = center
+        }
     }
 }

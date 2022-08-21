@@ -1,6 +1,6 @@
 package me.khrys.dnd.charcreator.client
 
-import com.ccfraser.muirwik.components.mCircularProgress
+import com.ccfraser.muirwik.components.circularProgress
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.css.Clear.both
@@ -57,7 +57,7 @@ private fun RBuilder.loadMainData(
     setCharacters: (List<Character>) -> Unit,
     setLoading: (Boolean) -> Unit
 ) {
-    mCircularProgress()
+    circularProgress()
     MainScope().launch {
         if (translations.isEmpty()) {
             setTranslations(fetchTranslations())

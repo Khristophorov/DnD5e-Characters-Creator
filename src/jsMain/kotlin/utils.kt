@@ -1,6 +1,6 @@
 package me.khrys.dnd.charcreator.client
 
-import com.ccfraser.muirwik.components.mCircularProgress
+import com.ccfraser.muirwik.components.circularProgress
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.MainScope
@@ -65,7 +65,7 @@ fun imageFromEvent(event: Event, callback: (Event) -> Unit) {
 fun RBuilder.loadRaces(
     setRaces: (Map<String, Race>) -> Unit
 ) {
-    mCircularProgress()
+    circularProgress()
     MainScope().launch {
         setRaces(fetchRaces().associateBy { it._id })
     }
@@ -74,7 +74,7 @@ fun RBuilder.loadRaces(
 fun RBuilder.loadFeats(
     setFeats: (Map<String, Feat>) -> Unit
 ) {
-    mCircularProgress()
+    circularProgress()
     MainScope().launch {
         setFeats(fetchFeats().associateBy { it._id })
     }

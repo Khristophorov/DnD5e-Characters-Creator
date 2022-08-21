@@ -1,11 +1,11 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
-import com.ccfraser.muirwik.components.dialog.mDialog
-import com.ccfraser.muirwik.components.dialog.mDialogActions
-import com.ccfraser.muirwik.components.dialog.mDialogContent
-import com.ccfraser.muirwik.components.dialog.mDialogContentText
-import com.ccfraser.muirwik.components.dialog.mDialogTitle
-import com.ccfraser.muirwik.components.targetValue
+import com.ccfraser.muirwik.components.dialog
+import com.ccfraser.muirwik.components.dialogActions
+import com.ccfraser.muirwik.components.dialogContent
+import com.ccfraser.muirwik.components.dialogContentText
+import com.ccfraser.muirwik.components.dialogTitle
+import com.ccfraser.muirwik.components.utils.targetValue
 import me.khrys.dnd.charcreator.client.components.buttons.dBackButton
 import me.khrys.dnd.charcreator.client.components.buttons.dSubmit
 import me.khrys.dnd.charcreator.client.components.validators.dTextValidator
@@ -31,12 +31,12 @@ fun RBuilder.charNameWindow(
     backAction: (Event) -> Unit,
     action: (Event) -> Unit
 ) {
-    mDialog(open = open) {
+    dialog(open = open) {
         val (charName, setCharName) = useState("")
 
-        mDialogTitle(text = translations[ENTER_NAME_TRANSLATION] ?: "")
-        mDialogContent(dividers = true) {
-            mDialogContentText(text = translations[ENTER_NAME_CONTENT_TRANSLATION] ?: "")
+        dialogTitle(text = translations[ENTER_NAME_TRANSLATION] ?: "")
+        dialogContent(dividers = true) {
+            dialogContentText(text = translations[ENTER_NAME_CONTENT_TRANSLATION] ?: "")
             dValidatorForm(onSubmit = { event ->
                 newCharacter.name = charName
                 action(event)
@@ -51,7 +51,8 @@ fun RBuilder.charNameWindow(
                     ),
                     onChange = { event -> setCharName(event.targetValue as String) }
                 )
-                mDialogActions(className = CLASS_JUSTIFY_BETWEEN) {
+                dialogActions {
+                    attrs.className = CLASS_JUSTIFY_BETWEEN
                     dBackButton { event ->
                         backAction(event)
                     }

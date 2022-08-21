@@ -1,17 +1,18 @@
 package me.khrys.dnd.charcreator.server.authentication
 
-import io.ktor.application.ApplicationCall
-import io.ktor.auth.OAuthAccessTokenResponse.OAuth2
-import io.ktor.auth.authentication
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
-import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.http.headersOf
-import io.ktor.response.respondRedirect
-import io.ktor.sessions.CurrentSession
-import io.ktor.sessions.sessions
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.auth.OAuthAccessTokenResponse.OAuth2
+import io.ktor.server.auth.authentication
+import io.ktor.server.response.respondRedirect
+import io.ktor.server.sessions.CurrentSession
+import io.ktor.server.sessions.sessions
 import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.coVerifySequence
@@ -60,7 +61,9 @@ class TestAuthentication {
     lateinit var session: CurrentSession
 
     private var httpClient = HttpClient(MockEngine) {
-        install(JsonFeature)
+        install(ContentNegotiation) {
+            json()
+        }
         engine {
             val headers = headersOf("Content-Type" to listOf(ContentType.Application.Json.toString()))
             addHandler { request ->
@@ -78,7 +81,7 @@ class TestAuthentication {
     @BeforeTest
     fun setup() {
         MockKAnnotations.init(this)
-        mockkStatic("io.ktor.auth.AuthenticationKt", "io.ktor.sessions.SessionsKt")
+        mockkStatic("io.ktor.server.auth.AuthenticationKt", "io.ktor.server.sessions.SessionDataKt")
 
         every { call.authentication.principal<OAuth2>() } returns oauth
         every { oauth.accessToken } returns TOKEN

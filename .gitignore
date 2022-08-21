@@ -27,6 +27,10 @@ hs_err_pid*
 
 # Output folder
 /build/
+/out/
 
 # Mongo internal scripts
 /.mongoScripts/
+
+# JS generated
+/kotlin-js-store/

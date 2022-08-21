@@ -1,7 +1,7 @@
 package me.khrys.dnd.charcreator.client.components.validators
 
-import com.ccfraser.muirwik.components.StyledPropsWithCommonAttributes
-import com.ccfraser.muirwik.components.createStyled
+import com.ccfraser.muirwik.components.utils.StyledPropsWithCommonAttributes
+import com.ccfraser.muirwik.components.utils.createStyled
 import org.w3c.dom.events.Event
 import react.ComponentType
 import react.RBuilder
@@ -11,18 +11,17 @@ import styled.StyledHandler
 @JsNonModule
 private external val formValidatorModule: dynamic
 
-external interface ValidatorForm {
+external interface ValidatorFormProps : StyledPropsWithCommonAttributes {
     var values: Array<String>?
 
     fun <T> addValidationRule(ruleName: String, rule: (T?) -> Boolean)
 }
 
-interface ValidationFormComponent : ComponentType<ValidatorFormProps>, ValidatorForm
+@Suppress("UnsafeCastFromDynamic")
+val validatorForm: ComponentType<ValidatorFormProps> = formValidatorModule.ValidatorForm
 
 @Suppress("UnsafeCastFromDynamic")
-val validatorForm: ValidationFormComponent = formValidatorModule.ValidatorForm
-
-interface ValidatorFormProps : StyledPropsWithCommonAttributes
+val validatorFormRules: ValidatorFormProps = formValidatorModule.ValidatorForm
 
 fun RBuilder.dValidatorForm(
     className: String? = null,

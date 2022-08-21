@@ -1,7 +1,7 @@
 package me.khrys.dnd.charcreator.server.pages
 
-import io.ktor.application.ApplicationCall
-import io.ktor.html.respondHtml
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.html.respondHtml
 import kotlinx.html.audio
 import kotlinx.html.body
 import kotlinx.html.div

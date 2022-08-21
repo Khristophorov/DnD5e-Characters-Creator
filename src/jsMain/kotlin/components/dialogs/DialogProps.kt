@@ -7,37 +7,37 @@ import me.khrys.dnd.charcreator.common.models.Feature
 import react.Props
 import react.PropsWithChildren
 
-interface DialogProps : PropsWithChildren {
+external interface DialogProps : PropsWithChildren {
     var open: Boolean
     var setOpen: (Boolean) -> Unit
 }
 
-interface CharDialogProps : DialogProps {
+external interface CharDialogProps : DialogProps {
     var character: Character
     var action: () -> Unit
     var feats: Map<String, Feat>
     var useFeats: Boolean
 }
 
-interface FeatureProps<T> : DialogProps {
+external interface FeatureProps<T> : DialogProps {
     var character: Character
     var feature: Feature
     var function: DnDFunction
     var setValue: (T) -> Unit
 }
 
-interface MultipleFeatureProps: FeatureProps<List<String>> {
+external interface MultipleFeatureProps: FeatureProps<List<String>> {
     var size: Int
 }
 
-interface FeatsProps : DialogProps {
+external interface FeatsProps : DialogProps {
     var feature: Feature
     var character: Character
     var feats: Map<String, Feat>
     var action: () -> Unit
 }
 
-interface CharRaceProps : Props {
+external interface CharRaceProps : Props {
     var newCharacter: Character
     var open: Boolean
     var setOpen: (Boolean) -> Unit

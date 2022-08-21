@@ -16,7 +16,7 @@ private val selectValidator: ComponentType<SelectValidatorProps> = formValidator
 
 data class SelectProps(val native: Boolean = false, val autoWidth: Boolean = false)
 
-interface SelectValidatorProps : TextValidatorProps {
+external interface SelectValidatorProps : TextValidatorProps {
     @JsName("SelectProps")
     var selectProps: SelectProps
 }

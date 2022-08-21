@@ -1,13 +1,13 @@
 package me.khrys.dnd.charcreator.client.components.validators
 
-import com.ccfraser.muirwik.components.createStyled
+import com.ccfraser.muirwik.components.utils.createStyled
 import kotlinx.html.InputType
 import org.w3c.dom.events.InputEvent
 import react.ComponentType
 import react.RBuilder
 import styled.StyledHandler
 
-fun <P: TextValidatorProps> RBuilder.defaultValidatorComponent(
+fun <P : TextValidatorProps> RBuilder.defaultValidatorComponent(
     id: String?,
     label: String,
     type: InputType,

@@ -1,6 +1,6 @@
 package me.khrys.dnd.charcreator.client.components.inputs
 
-import com.ccfraser.muirwik.components.menu.mMenuItem
+import com.ccfraser.muirwik.components.menuItem
 import kotlinx.css.Display.inlineBlock
 import kotlinx.css.Overflow.auto
 import kotlinx.css.display
@@ -12,8 +12,8 @@ import kotlinx.css.overflow
 import kotlinx.css.px
 import kotlinx.css.width
 import kotlinx.html.classes
-import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
 import me.khrys.dnd.charcreator.client.components.validators.dSelectValidator
+import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
 import me.khrys.dnd.charcreator.common.CLASS_BORDERED
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
 import me.khrys.dnd.charcreator.common.DANGEROUS_HTML
@@ -43,7 +43,7 @@ fun RBuilder.dValidatedList(
             onChange = onChange
         ) {
             menuItems.forEach { (name, description) ->
-                mMenuItem(value = name) {
+                menuItem(value = name) {
                     attrs.onMouseOver = { setDescription(description) }
                     attrs.onSelect = { setDescription(description) }
                     +name

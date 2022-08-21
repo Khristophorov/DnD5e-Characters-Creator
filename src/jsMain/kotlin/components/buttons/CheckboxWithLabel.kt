@@ -1,8 +1,8 @@
 package me.khrys.dnd.charcreator.client.components.buttons
 
-import com.ccfraser.muirwik.components.form.MFormControlLabelProps
-import com.ccfraser.muirwik.components.form.mFormControlLabel
-import com.ccfraser.muirwik.components.mCheckbox
+import com.ccfraser.muirwik.components.FormControlLabelProps
+import com.ccfraser.muirwik.components.checkbox
+import com.ccfraser.muirwik.components.formControlLabel
 import me.khrys.dnd.charcreator.client.components.dRadioCheckedIcon
 import me.khrys.dnd.charcreator.client.components.dRadioUncheckedIcon
 import me.khrys.dnd.charcreator.client.components.inputs.tooltips.dDelayedTooltip
@@ -18,18 +18,22 @@ fun RBuilder.dCheckboxWithLabel(
     label: String,
     checked: Boolean,
     onChange: ((Event, Boolean) -> Unit)? = null,
-    handler: StyledHandler<MFormControlLabelProps>? = null
+    handler: StyledHandler<FormControlLabelProps>? = null
 ) {
     val checkBox = buildElement {
-        mCheckbox(checked = checked, onChange = { event, value ->
-            playSound(BUTTON_SOUND_ID)
-            onChange?.let { it(event, value) }
-        }) {
+        checkbox(checked = checked) {
             attrs.icon = buildElement { dRadioUncheckedIcon() }
             attrs.checkedIcon = buildElement { dRadioCheckedIcon() }
+            attrs.onChange = { event, value ->
+                playSound(BUTTON_SOUND_ID)
+                onChange?.let { it(event, value) }
+            }
         }
     }
     dDelayedTooltip(title) {
-        mFormControlLabel(label = label, control = checkBox, checked = checked, handler = handler)
+        formControlLabel(label = label, control = checkBox) {
+            attrs.checked = checked
+            handler?.let { handler() }
+        }
     }
 }

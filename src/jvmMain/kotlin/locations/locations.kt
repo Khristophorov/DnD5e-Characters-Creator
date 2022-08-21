@@ -1,8 +1,9 @@
-@file:Suppress("EXPERIMENTAL_API_USAGE")
+@file:OptIn(KtorExperimentalLocationsAPI::class)
 
 package me.khrys.dnd.charcreator.server.locations
 
-import io.ktor.locations.Location
+import io.ktor.server.locations.KtorExperimentalLocationsAPI
+import io.ktor.server.locations.Location
 import me.khrys.dnd.charcreator.common.CHARACTERS_URL
 import me.khrys.dnd.charcreator.common.FEATS_URL
 import me.khrys.dnd.charcreator.common.LOGIN_URL

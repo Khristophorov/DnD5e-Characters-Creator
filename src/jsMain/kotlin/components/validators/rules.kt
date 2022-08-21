@@ -5,11 +5,11 @@ import me.khrys.dnd.charcreator.common.VALIDATION_DUPLICATE_NAME
 import me.khrys.dnd.charcreator.common.models.Character
 
 fun initValidators(characters: List<Character>) {
-    validatorForm.addValidationRule<String?>(VALIDATION_DUPLICATE_NAME) { name ->
+    validatorFormRules.addValidationRule<String?>(VALIDATION_DUPLICATE_NAME) { name ->
         notDuplicate(name, characters)
     }
-    validatorForm.addValidationRule<String>(VALIDATION_VALUE_ALREADY_PRESENT) { value ->
-        valueAlreadyPresent(validatorForm.values, value)
+    validatorFormRules.addValidationRule<String>(VALIDATION_VALUE_ALREADY_PRESENT) { value ->
+        valueAlreadyPresent(validatorFormRules.values, value)
     }
 }
 

@@ -1,11 +1,11 @@
 package me.khrys.dnd.charcreator.client.components.inputs.choosers
 
-import com.ccfraser.muirwik.components.dialog.mDialog
-import com.ccfraser.muirwik.components.dialog.mDialogActions
-import com.ccfraser.muirwik.components.dialog.mDialogContent
-import com.ccfraser.muirwik.components.dialog.mDialogContentText
-import com.ccfraser.muirwik.components.dialog.mDialogTitle
-import com.ccfraser.muirwik.components.targetValue
+import com.ccfraser.muirwik.components.dialog
+import com.ccfraser.muirwik.components.dialogActions
+import com.ccfraser.muirwik.components.dialogContent
+import com.ccfraser.muirwik.components.dialogContentText
+import com.ccfraser.muirwik.components.dialogTitle
+import com.ccfraser.muirwik.components.utils.targetValue
 import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.components.buttons.dSubmit
 import me.khrys.dnd.charcreator.client.components.dialogs.FeatsProps
@@ -13,8 +13,8 @@ import me.khrys.dnd.charcreator.client.components.dialogs.FeatureProps
 import me.khrys.dnd.charcreator.client.components.dialogs.MultipleFeatureProps
 import me.khrys.dnd.charcreator.client.components.dialogs.collectFeatFeatures
 import me.khrys.dnd.charcreator.client.components.inputs.dValidatedList
-import me.khrys.dnd.charcreator.client.toFeature
 import me.khrys.dnd.charcreator.client.components.validators.dValidatorForm
+import me.khrys.dnd.charcreator.client.toFeature
 import me.khrys.dnd.charcreator.common.NEXT_TRANSLATION
 import me.khrys.dnd.charcreator.common.VALIDATION_REQUIRED
 import me.khrys.dnd.charcreator.common.VALUE_SHOULD_BE_CHOSEN_TRANSLATION
@@ -116,10 +116,10 @@ val featsChooser = fc<FeatsProps> { props ->
     val (openFeatures, setOpenFeatures) = useState(false)
 
     val translations = useContext(TranslationsContext)
-    mDialog(open = props.open) {
-        mDialogTitle(text = props.feature.name)
-        mDialogContent(dividers = true) {
-            mDialogContentText(text = props.feature.description)
+    dialog(open = props.open) {
+        dialogTitle(text = props.feature.name)
+        dialogContent(dividers = true) {
+            dialogContentText(text = props.feature.description)
             dValidatorForm(onSubmit = {
                 props.setOpen(false)
                 setOpenFeatures(true)
@@ -136,7 +136,7 @@ val featsChooser = fc<FeatsProps> { props ->
                     setDescription = { setDescription(it) },
                     description = description
                 )
-                mDialogActions {
+                dialogActions {
                     dSubmit(translations[NEXT_TRANSLATION] ?: "")
                 }
             }

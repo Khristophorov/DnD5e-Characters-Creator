@@ -1,6 +1,6 @@
 package me.khrys.dnd.charcreator.client.components.inputs.texts
 
-import com.ccfraser.muirwik.components.input.mInputLabel
+import com.ccfraser.muirwik.components.inputLabel
 import kotlinx.css.WhiteSpace.preWrap
 import kotlinx.css.maxWidth
 import kotlinx.css.px
@@ -15,7 +15,7 @@ fun RBuilder.dWrappedText(
     text: List<String>
 ) {
     styledDiv {
-        mInputLabel(label)
+        inputLabel(label)
         styledP {
             css {
                 maxWidth = 300.px

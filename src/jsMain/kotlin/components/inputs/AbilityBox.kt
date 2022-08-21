@@ -1,16 +1,17 @@
 package me.khrys.dnd.charcreator.client.components.inputs
 
-import com.ccfraser.muirwik.components.MTypographyAlign.center
-import com.ccfraser.muirwik.components.MTypographyColor.textPrimary
-import com.ccfraser.muirwik.components.mAvatar
-import com.ccfraser.muirwik.components.mTypography
+import com.ccfraser.muirwik.components.TypographyAlign.center
+import com.ccfraser.muirwik.components.TypographyColor.textPrimary
+import com.ccfraser.muirwik.components.align
+import com.ccfraser.muirwik.components.avatar
+import com.ccfraser.muirwik.components.typography
 import kotlinx.html.InputType.number
 import kotlinx.html.classes
 import me.khrys.dnd.charcreator.client.components.inputs.texts.dCenteredLabel
 import me.khrys.dnd.charcreator.client.components.inputs.tooltips.dDelayedTooltip
-import me.khrys.dnd.charcreator.client.computeModifier
 import me.khrys.dnd.charcreator.client.components.validators.InputProps
 import me.khrys.dnd.charcreator.client.components.validators.dTextValidator
+import me.khrys.dnd.charcreator.client.computeModifier
 import me.khrys.dnd.charcreator.common.ABILITY_MAXIMUM
 import me.khrys.dnd.charcreator.common.ABILITY_MINIMUM
 import me.khrys.dnd.charcreator.common.CLASS_ABILITY_BOX
@@ -47,8 +48,11 @@ fun RBuilder.dAbilityBox(
                 ),
                 onChange = onChange
             )
-            mAvatar(className = "$CLASS_CENTER $CLASS_ROUND_BORDERED $CLASS_BACKGROUND") {
-                mTypography(text = computeModifier(value).toString(), align = center, color = textPrimary)
+            avatar {
+                attrs.className = "$CLASS_CENTER $CLASS_ROUND_BORDERED $CLASS_BACKGROUND"
+                typography(text = computeModifier(value).toString(), color = textPrimary) {
+                    attrs.align = center
+                }
             }
         }
     }

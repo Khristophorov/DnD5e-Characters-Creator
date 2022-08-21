@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
-    kotlin("multiplatform") version "1.5.30"
-    kotlin("plugin.serialization") version "1.5.30"
+    kotlin("multiplatform") version "1.7.10"
+    kotlin("plugin.serialization") version "1.7.10"
     application
 }
 
@@ -10,25 +10,26 @@ group = "me.khris"
 version = "1.0-SNAPSHOT"
 
 // Kotlin dependencies
-val kotlinCoroutinesVersion = "1.5.2"
-val kotlinHtmlVersion = "0.7.3"
-val kotlinReactVersion = "17.0.2-pre.236-kotlin-1.5.30"
-val kotlinStyledVersion = "5.3.0-pre.236-kotlin-1.5.30"
-val kotlinCssJsVersion = "1.0.0-pre.236-kotlin-1.5.30"
-val kotlinSerializationVersion = "1.3.0"
-val kmongoVersion = "4.3.0"
-val ktorVersion = "1.6.4"
-val slf4jVersion = "1.7.32"
-val muirwikVersion = "0.9.1"
-val mockkVersion = "1.12.0"
+val kotlinCoroutinesVersion = "1.6.4"
+val kotlinHtmlVersion = "0.8.0"
+val kotlinReactVersion = "17.0.2-pre.290-kotlin-1.6.10"
+val kotlinStyledVersion = "5.3.3-pre.290-kotlin-1.6.10"
+val kotlinCssJsVersion = "1.0.0-pre.290-kotlin-1.6.10"
+val kotlinSerializationVersion = "1.3.3"
+val kmongoVersion = "4.7.0"
+val ktorVersion = "2.1.0"
+val slf4jVersion = "1.7.36"
+val muirwikVersion = "0.10.1"
+val mockkVersion = "1.12.5"
 
 // JavaScript dependencies
 val reactVersion = "17.0.2"
-val reactMaterialUiFormValidatorVersion = "2.1.4"
-val materialUiVersion = "4.11.4"
+val reactMaterialUiFormValidatorVersion = "3.0.1"
+val materialUiVersion = "5.3.0"
+val emotionReactVersion = "11.4.1"
+val emotionStyledVersion = "11.3.0"
 
 repositories {
-    jcenter()
     mavenCentral()
     maven { url = uri("https://dl.bintray.com/kotlin/kotlin-js-wrappers") }
     maven { url = uri("https://dl.bintray.com/kotlin/kotlinx") }
@@ -78,12 +79,14 @@ kotlin {
             dependencies {
                 implementation("io.ktor:ktor-server-netty:$ktorVersion")
                 implementation("io.ktor:ktor-server-sessions:$ktorVersion")
-                implementation("io.ktor:ktor-html-builder:$ktorVersion")
-                implementation("io.ktor:ktor-auth:$ktorVersion")
+                implementation("io.ktor:ktor-server-html-builder:$ktorVersion")
+                implementation("io.ktor:ktor-server-auth:$ktorVersion")
+                implementation("io.ktor:ktor-server-locations:$ktorVersion")
+                implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
                 implementation("io.ktor:ktor-client-apache:$ktorVersion")
                 implementation("io.ktor:ktor-client-serialization:$ktorVersion")
-                implementation("io.ktor:ktor-locations:$ktorVersion")
-                implementation("io.ktor:ktor-serialization:$ktorVersion")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
                 implementation("org.litote.kmongo:kmongo:$kmongoVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinHtmlVersion")
                 implementation("org.slf4j:slf4j-simple:$slf4jVersion")
@@ -105,7 +108,11 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
                 implementation("com.ccfraser.muirwik:muirwik-components:$muirwikVersion")
-                implementation(npm("@material-ui/core", materialUiVersion))
+                implementation(npm("@mui/material", materialUiVersion))
+                implementation(npm("@mui/icons-material", materialUiVersion))
+                implementation(npm("@mui/styled-engine-sc", materialUiVersion))
+                implementation(npm("@emotion/react", emotionReactVersion))
+                implementation(npm("@emotion/styled", emotionStyledVersion))
                 implementation(npm("react", reactVersion))
                 implementation(npm("react-dom", reactVersion))
                 implementation(npm("react-is", reactVersion))

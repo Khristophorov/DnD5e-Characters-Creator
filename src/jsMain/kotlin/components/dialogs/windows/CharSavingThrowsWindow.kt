@@ -1,11 +1,11 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
-import com.ccfraser.muirwik.components.dialog.mDialog
-import com.ccfraser.muirwik.components.dialog.mDialogActions
-import com.ccfraser.muirwik.components.dialog.mDialogContent
-import com.ccfraser.muirwik.components.dialog.mDialogContentText
-import com.ccfraser.muirwik.components.dialog.mDialogTitle
-import com.ccfraser.muirwik.components.form.mFormGroup
+import com.ccfraser.muirwik.components.dialog
+import com.ccfraser.muirwik.components.dialogActions
+import com.ccfraser.muirwik.components.dialogContent
+import com.ccfraser.muirwik.components.dialogContentText
+import com.ccfraser.muirwik.components.dialogTitle
+import com.ccfraser.muirwik.components.mFormGroup
 import kotlinx.html.classes
 import me.khrys.dnd.charcreator.client.components.buttons.dBackButton
 import me.khrys.dnd.charcreator.client.components.buttons.dCheckboxWithLabel
@@ -42,10 +42,10 @@ fun RBuilder.charSavingThrowsWindow(
     val (intelligence, setIntelligence) = useState(false)
     val (wisdom, setWisdom) = useState(false)
     val (charisma, setCharisma) = useState(false)
-    mDialog(open = open) {
-        mDialogTitle(text = translations[ENTER_SAVING_THROWS_TRANSLATION] ?: "")
-        mDialogContent(dividers = true) {
-            mDialogContentText(text = translations[ENTER_SAVING_THROWS_CONTENT_TRANSLATION] ?: "")
+    dialog(open = open) {
+        dialogTitle(text = translations[ENTER_SAVING_THROWS_TRANSLATION] ?: "")
+        dialogContent(dividers = true) {
+            dialogContentText(text = translations[ENTER_SAVING_THROWS_CONTENT_TRANSLATION] ?: "")
             dValidatorForm(
                 onSubmit = { event ->
                     newCharacter.savingThrows =
@@ -69,7 +69,8 @@ fun RBuilder.charSavingThrowsWindow(
                     }
                 }
 
-                mDialogActions(className = CLASS_JUSTIFY_BETWEEN) {
+                dialogActions {
+                    attrs.className = CLASS_JUSTIFY_BETWEEN
                     dBackButton(backAction)
                     dSubmit(caption = translations[FINISH_TRANSLATION] ?: "")
                 }

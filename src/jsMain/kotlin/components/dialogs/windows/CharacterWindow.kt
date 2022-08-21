@@ -1,17 +1,19 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
-import com.ccfraser.muirwik.components.dialog.mDialog
-import com.ccfraser.muirwik.components.dialog.mDialogActions
-import com.ccfraser.muirwik.components.dialog.mDialogContent
-import com.ccfraser.muirwik.components.dialog.mDialogTitle
-import com.ccfraser.muirwik.components.mGridContainer
-import com.ccfraser.muirwik.components.mGridItem
-import com.ccfraser.muirwik.components.table.mTable
-import com.ccfraser.muirwik.components.table.mTableBody
-import com.ccfraser.muirwik.components.table.mTableCell
-import com.ccfraser.muirwik.components.table.mTableContainer
-import com.ccfraser.muirwik.components.table.mTableHead
-import com.ccfraser.muirwik.components.table.mTableRow
+import com.ccfraser.muirwik.components.dialog
+import com.ccfraser.muirwik.components.dialogActions
+import com.ccfraser.muirwik.components.dialogContent
+import com.ccfraser.muirwik.components.dialogTitle
+import com.ccfraser.muirwik.components.gridContainer
+import com.ccfraser.muirwik.components.gridItem
+import com.ccfraser.muirwik.components.maxWidth
+import com.ccfraser.muirwik.components.styles.Breakpoint.xl
+import com.ccfraser.muirwik.components.table
+import com.ccfraser.muirwik.components.tableBody
+import com.ccfraser.muirwik.components.tableCell
+import com.ccfraser.muirwik.components.tableContainer
+import com.ccfraser.muirwik.components.tableHead
+import com.ccfraser.muirwik.components.tableRow
 import kotlinx.css.height
 import kotlinx.css.px
 import kotlinx.css.width
@@ -30,11 +32,11 @@ import me.khrys.dnd.charcreator.client.components.inputs.texts.dTextBox
 import me.khrys.dnd.charcreator.client.components.inputs.texts.dTextWithTooltip
 import me.khrys.dnd.charcreator.client.components.inputs.texts.dTitledInput
 import me.khrys.dnd.charcreator.client.components.inputs.texts.dWrappedText
+import me.khrys.dnd.charcreator.client.components.validators.dValidatorForm
 import me.khrys.dnd.charcreator.client.computeArmorClass
 import me.khrys.dnd.charcreator.client.computePassiveSkill
 import me.khrys.dnd.charcreator.client.computeProficiencyBonus
 import me.khrys.dnd.charcreator.client.getInitiative
-import me.khrys.dnd.charcreator.client.components.validators.dValidatorForm
 import me.khrys.dnd.charcreator.common.ARMOR_CLASS_TRANSLATION
 import me.khrys.dnd.charcreator.common.CLASS_BORDERED
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
@@ -66,20 +68,22 @@ import styled.styledP
 
 val characterWindow = fc<CharDialogProps> { props ->
     val translations = useContext(TranslationsContext)
-    mDialog(open = props.open, fullScreen = true) {
+    dialog(open = props.open) {
+        attrs.fullScreen = true
+        attrs.maxWidth = xl
         val character = applyFeatures(props.character, translations)
         title(character, translations, props.setOpen)
 
-        mDialogContent(dividers = true) {
+        dialogContent(dividers = true) {
             val proficiencyBonus = computeProficiencyBonus(1)
             dValidatorForm(onSubmit = { props.setOpen(false) }) {
-                mGridContainer {
+                gridContainer {
                     mainParameters(character, translations, proficiencyBonus)
                     additionalAbilities(character, translations)
                     features(character, translations)
                     specificParameters(character, translations)
                 }
-                mDialogActions {
+                dialogActions {
                     dSubmit(translations[SAVE_TRANSLATION] ?: "")
                 }
             }
@@ -91,7 +95,8 @@ private fun RBuilder.specificParameters(
     character: Character,
     translations: Map<String, String>
 ) {
-    mGridItem(className = CLASS_PADDINGS) {
+    gridItem {
+        attrs.className = CLASS_PADDINGS
         image(character.image)
         if (character.superiorityDices.isNotEmpty()) {
             superiorityDices(translations, character.superiorityDices)
@@ -103,8 +108,9 @@ private fun RBuilder.superiorityDices(
     translations: Map<String, String>,
     superiorityDices: List<SuperiorityDice>
 ) {
-    mGridContainer {
-        mGridItem(className = CLASS_BORDERED) {
+    gridContainer {
+        gridItem {
+            attrs.className = CLASS_BORDERED
             buildSuperiorDices(translations, superiorityDices)
             dCenteredBold(translations[SUPERIORITY_DICES_TRANSLATION] ?: "")
         }
@@ -112,8 +118,8 @@ private fun RBuilder.superiorityDices(
 }
 
 private fun RBuilder.image(image: String) {
-    mGridContainer {
-        mGridItem {
+    gridContainer {
+        gridItem {
             styledImg(src = image) {
                 css {
                     width = 128.px
@@ -128,9 +134,9 @@ private fun RBuilder.features(
     character: Character,
     translations: Map<String, String>
 ) {
-    mGridItem {
-        mGridContainer {
-            mGridItem {
+    gridItem {
+        gridContainer {
+            gridItem {
                 styledDiv {
                     attrs.classes = setOf(CLASS_BORDERED)
                     character.features.forEach { feature ->
@@ -150,9 +156,10 @@ private fun RBuilder.additionalAbilities(
     character: Character,
     translations: Map<String, String>
 ) {
-    mGridItem {
-        mGridContainer {
-            mGridItem(className = CLASS_PADDINGS) {
+    gridItem {
+        gridContainer {
+            gridItem {
+                attrs.className = CLASS_PADDINGS
                 styledDiv {
                     attrs.classes = setOf(CLASS_INLINE)
                     armorClass(character.computeArmorClass(), translations)
@@ -190,7 +197,7 @@ private fun RBuilder.mainParameters(
     translations: Map<String, String>,
     proficiencyBonus: Int
 ) {
-    mGridItem {
+    gridItem {
         mainSkills(character, translations, proficiencyBonus)
         passivePerception(translations, character, proficiencyBonus)
         languageAndProficiencies(translations, character)
@@ -201,7 +208,8 @@ private fun RBuilder.languageAndProficiencies(
     translations: Map<String, String>,
     character: Character
 ) {
-    mGridItem(className = "$CLASS_PADDINGS $CLASS_BORDERED") {
+    gridItem {
+        attrs.className = "$CLASS_PADDINGS $CLASS_BORDERED"
         languages(translations, character.languages)
         proficiencies(translations, character.proficiencies)
     }
@@ -232,7 +240,7 @@ private fun RBuilder.passivePerception(
     character: Character,
     proficiencyBonus: Int
 ) {
-    mGridItem {
+    gridItem {
         dOneValueInput(
             header = translations[PASSIVE_PERCEPTION_TRANSLATION] ?: "",
             value = computePassiveSkill(
@@ -249,9 +257,10 @@ private fun RBuilder.mainSkills(
     translations: Map<String, String>,
     proficiencyBonus: Int
 ) {
-    mGridContainer {
+    gridContainer {
         abilities(character.abilities, translations)
-        mGridItem(className = CLASS_PADDINGS) {
+        gridItem {
+            attrs.className = CLASS_PADDINGS
             proficiencyBonus(translations, proficiencyBonus)
             dSavingThrowsGrid(character, translations, proficiencyBonus)
             dSkillsGrid(character, translations, proficiencyBonus)
@@ -275,7 +284,8 @@ private fun RBuilder.abilities(
     abilities: Abilities,
     translations: Map<String, String>
 ) {
-    mGridItem(className = CLASS_PADDINGS) {
+    gridItem {
+        attrs.className = CLASS_PADDINGS
         dAbilitiesGrid(abilities, translations)
     }
 }
@@ -285,7 +295,7 @@ private fun RBuilder.title(
     translations: Map<String, String>,
     setOpen: (Boolean) -> Unit
 ) {
-    mDialogTitle(text = "") {
+    dialogTitle(text = "") {
         styledDiv {
             attrs.classes = setOf(CLASS_INLINE, CLASS_JUSTIFY_BETWEEN)
             +character.name
@@ -302,31 +312,31 @@ private fun RBuilder.buildSuperiorDices(
     translations: Map<String, String>,
     superiorityDices: List<SuperiorityDice>
 ) {
-    mTableContainer {
-        mTable {
-            mTableHead {
-                mTableRow {
-                    mTableCell {
+    tableContainer {
+        table {
+            tableHead {
+                tableRow {
+                    tableCell {
                         styledP {
                             +(translations[DICE_TRANSLATION] ?: "")
                         }
                     }
-                    mTableCell {
+                    tableCell {
                         styledP {
                             +(translations[QUANTITY_TRANSLATION] ?: "")
                         }
                     }
                 }
             }
-            mTableBody {
+            tableBody {
                 superiorityDices.forEach { superiorityDice ->
-                    mTableRow {
-                        mTableCell {
+                    tableRow {
+                        tableCell {
                             styledP {
                                 +superiorityDice.dice.toString().lowercase()
                             }
                         }
-                        mTableCell {
+                        tableCell {
                             styledP {
                                 +superiorityDice.quantity.toString()
                             }

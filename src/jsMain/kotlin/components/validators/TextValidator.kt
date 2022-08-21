@@ -1,6 +1,6 @@
 package me.khrys.dnd.charcreator.client.components.validators
 
-import com.ccfraser.muirwik.components.StyledPropsWithCommonAttributes
+import com.ccfraser.muirwik.components.utils.StyledPropsWithCommonAttributes
 import kotlinx.html.InputType
 import kotlinx.html.InputType.text
 import org.w3c.dom.events.InputEvent
@@ -17,7 +17,7 @@ private val textValidator: ComponentType<TextValidatorProps> = formValidatorModu
 
 data class InputProps(val accept: String = "", val readOnly: Boolean = false)
 
-interface TextValidatorProps : StyledPropsWithCommonAttributes {
+external interface TextValidatorProps : StyledPropsWithCommonAttributes {
     var label: String
     var type: InputType
     var value: String
