@@ -1,73 +1,79 @@
 package me.khrys.dnd.charcreator.client.components.inputs
 
-import com.ccfraser.muirwik.components.menuItem
-import kotlinx.css.Display.inlineBlock
-import kotlinx.css.Overflow.auto
-import kotlinx.css.display
-import kotlinx.css.height
-import kotlinx.css.margin
-import kotlinx.css.maxHeight
-import kotlinx.css.maxWidth
-import kotlinx.css.overflow
-import kotlinx.css.px
-import kotlinx.css.width
-import kotlinx.html.classes
-import me.khrys.dnd.charcreator.client.components.validators.dSelectValidator
+import csstype.ClassName
+import csstype.Display.Companion.inlineBlock
+import csstype.Overflow
+import csstype.px
+import emotion.react.css
+import me.khrys.dnd.charcreator.client.components.validators.SelectValidator
+import me.khrys.dnd.charcreator.client.components.validators.SelectValidatorProps
 import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
 import me.khrys.dnd.charcreator.common.CLASS_BORDERED
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
-import me.khrys.dnd.charcreator.common.DANGEROUS_HTML
-import org.w3c.dom.events.Event
-import react.RBuilder
-import styled.css
-import styled.styledDiv
+import mui.material.MenuItem
+import react.FC
+import react.PropsWithChildren
+import react.dom.DangerouslySetInnerHTML
+import react.dom.html.ReactHTML.div
+import react.useState
 
-fun RBuilder.dValidatedList(
-    label: String = "",
-    value: String,
-    validators: Array<String>,
-    errorMessages: Array<String>,
-    onChange: (Event) -> Unit,
-    menuItems: Map<String, String>,
-    setDescription: (String) -> Unit = {},
-    description: String = "",
-    useDescription: Boolean = true
-) {
-    styledDiv {
-        attrs.classes = setOf(CLASS_INLINE)
-        dSelectValidator(
-            label = label,
-            value = value,
-            validators = validators,
-            errorMessages = errorMessages,
-            onChange = onChange
-        ) {
-            menuItems.forEach { (name, description) ->
-                menuItem(value = name) {
-                    attrs.onMouseOver = { setDescription(description) }
-                    attrs.onSelect = { setDescription(description) }
+external interface ValidatedListProps : SelectValidatorProps {
+    var description: String
+    var useDescription: Boolean
+    var setDescription: (String) -> Unit
+    var menuItems: Map<String, String>
+}
+
+val ValidatedList = FC<ValidatedListProps> { props ->
+    val (currentDescription, setCurrentDescription) = useState("")
+    div {
+        this.className = ClassName(CLASS_INLINE)
+        SelectValidator {
+            this.label = props.label
+            this.value = props.value
+            this.validators = props.validators
+            this.errorMessages = props.errorMessages
+            this.onChange = props.onChange
+            props.menuItems.forEach { (name, description) ->
+                MenuItem {
+                    this.value = name
+                    this.onMouseOver = {
+                        if (props.useDescription) {
+                            props.setDescription(description)
+                        }
+                    }
+                    this.onMouseLeave = {
+                        if (props.useDescription) {
+                            props.setDescription(currentDescription)
+                        }
+                    }
+                    this.onClick = {
+                        if (props.useDescription) {
+                            setCurrentDescription(description)
+                            props.setDescription(description)
+                        }
+                    }
                     +name
                 }
             }
         }
-        if (useDescription) {
-            dDescriptionFrame(description)
+        if (props.useDescription) {
+            DescriptionFrame { +props.description }
         }
     }
 }
 
-private fun RBuilder.dDescriptionFrame(description: String) {
-    styledDiv {
-        attrs.classes = setOf(CLASS_BORDERED)
-        css {
+private val DescriptionFrame = FC<PropsWithChildren> { props ->
+    div {
+        css(ClassName(CLASS_BORDERED)) {
             height = 300.px
             maxHeight = 300.px
             width = 800.px
             maxWidth = 800.px
-            margin = "5px"
+            margin = 5.px
             display = inlineBlock
-            overflow = auto
+            overflow = "auto".unsafeCast<Overflow>()
         }
-        attrs[DANGEROUS_HTML] = DangerousHTML(description)
+        this.dangerouslySetInnerHTML = DangerousHTML(props.children.toString()).unsafeCast<DangerouslySetInnerHTML>()
     }
 }

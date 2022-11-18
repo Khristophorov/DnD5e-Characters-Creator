@@ -1,18 +1,21 @@
 package me.khrys.dnd.charcreator.client.components.buttons
 
-import kotlinx.css.Float.right
-import kotlinx.css.float
-import me.khrys.dnd.charcreator.client.components.dCloseIcon
-import org.w3c.dom.events.Event
-import react.RBuilder
-import styled.css
-import styled.styledDiv
+import csstype.Float
+import emotion.react.css
+import mui.icons.material.Close
+import mui.material.ButtonProps
+import react.FC
+import react.Props
+import react.dom.html.ReactHTML.div
 
-fun RBuilder.dCloseButton(action: (Event) -> Unit) {
-    styledDiv {
+val CloseButton = FC<ButtonProps> { props ->
+    div {
         css {
-            float = right
+            float = Float.right
         }
-        dIconButton(action = action) { dCloseIcon() }
+        IconButton {
+            this.onClick = props.onClick
+            Close()
+        }
     }
 }

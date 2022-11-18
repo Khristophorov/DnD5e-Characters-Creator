@@ -1,68 +1,78 @@
 package me.khrys.dnd.charcreator.client
 
-import com.ccfraser.muirwik.components.circularProgress
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import kotlinx.css.Clear.both
-import kotlinx.css.clear
-import me.khrys.dnd.charcreator.client.components.buttons.addCharacter
-import me.khrys.dnd.charcreator.client.components.buttons.currentCharacters
-import me.khrys.dnd.charcreator.client.components.buttons.dLogoutButton
+import csstype.Clear.Companion.both
+import emotion.react.css
+import me.khrys.dnd.charcreator.client.components.buttons.AddCharacter
+import me.khrys.dnd.charcreator.client.components.buttons.CurrentCharacters
+import me.khrys.dnd.charcreator.client.components.buttons.LogoutButton
 import me.khrys.dnd.charcreator.client.components.validators.initValidators
 import me.khrys.dnd.charcreator.common.LOGOUT_TRANSLATION
 import me.khrys.dnd.charcreator.common.models.Character
+import mui.material.CircularProgress
+import react.FC
 import react.Props
-import react.RBuilder
-import react.fc
+import react.dom.html.ReactHTML.div
 import react.useState
-import styled.css
-import styled.styledDiv
 
-val mainDnd = fc<Props> {
+val MainDnd = FC<Props> {
     val (isLoading, setLoading) = useState(true)
     val (translations, setTranslations) = useState(emptyMap<String, String>())
     val (characters, setCharacters) = useState(emptyList<Character>())
+    val (loadCharacters, setLoadCharacters) = useState(true)
 
     if (isLoading) {
+        CircularProgress()
         loadMainData(
-            translations = translations,
+            loadTranslations = translations.isEmpty(),
+            loadCharacters = loadCharacters,
+            setLoadCharacters = { setLoadCharacters(it) },
             setTranslations = { setTranslations(it) },
             setCharacters = { setCharacters(it) },
             setLoading = { setLoading(it) }
         )
     } else {
+        console.info("Rendering the app.")
         TranslationsContext.Provider(translations) {
-            dLogoutButton(translations[LOGOUT_TRANSLATION])
+            LogoutButton {
+                +(translations[LOGOUT_TRANSLATION] ?: "")
+            }
 
             CharactersContext.Provider(characters) {
                 initValidators(characters)
-                renderMainContent()
+                MainContent()
             }
         }
     }
 }
 
-private fun RBuilder.renderMainContent() {
-    styledDiv {
+private val MainContent = FC<Props> {
+    console.info("Rendering content.")
+    div {
         css { clear = both }
-
-        child(addCharacter)
-        child(currentCharacters)
+        AddCharacter()
+        CurrentCharacters()
     }
 }
 
-private fun RBuilder.loadMainData(
-    translations: Map<String, String>,
+private fun loadMainData(
+    loadTranslations: Boolean,
+    loadCharacters: Boolean,
+    setLoadCharacters: (Boolean) -> Unit,
     setTranslations: (Map<String, String>) -> Unit,
     setCharacters: (List<Character>) -> Unit,
     setLoading: (Boolean) -> Unit
 ) {
-    circularProgress()
-    MainScope().launch {
-        if (translations.isEmpty()) {
-            setTranslations(fetchTranslations())
-            setCharacters(fetchCharacters())
+    console.info("Loading initial data")
+    if (loadTranslations) {
+        loadTranslations { setTranslations(it) }
+    }
+    if (!loadTranslations && loadCharacters) {
+        loadCharacters {
+            setCharacters(it)
+            setLoadCharacters(false)
         }
+    }
+    if (!(loadTranslations || loadCharacters)) {
         setLoading(false)
     }
 }

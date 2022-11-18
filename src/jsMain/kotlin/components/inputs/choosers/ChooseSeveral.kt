@@ -1,82 +1,81 @@
 package me.khrys.dnd.charcreator.client.components.inputs.choosers
 
-import com.ccfraser.muirwik.components.dialog
-import com.ccfraser.muirwik.components.dialogActions
-import com.ccfraser.muirwik.components.dialogContent
-import com.ccfraser.muirwik.components.dialogContentText
-import com.ccfraser.muirwik.components.dialogTitle
-import com.ccfraser.muirwik.components.utils.targetValue
-import kotlinx.html.classes
+import csstype.ClassName
 import me.khrys.dnd.charcreator.client.TranslationsContext
-import me.khrys.dnd.charcreator.client.components.buttons.dSubmit
-import me.khrys.dnd.charcreator.client.components.inputs.dValidatedList
-import me.khrys.dnd.charcreator.client.components.validators.dValidatorForm
+import me.khrys.dnd.charcreator.client.components.buttons.Submit
+import me.khrys.dnd.charcreator.client.components.inputs.ValidatedList
+import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
 import me.khrys.dnd.charcreator.client.components.validators.validatorFormRules
 import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
+import me.khrys.dnd.charcreator.client.value
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
-import me.khrys.dnd.charcreator.common.DANGEROUS_HTML
 import me.khrys.dnd.charcreator.common.NEXT_TRANSLATION
 import me.khrys.dnd.charcreator.common.VALIDATION_REQUIRED
 import me.khrys.dnd.charcreator.common.VALIDATION_VALUE_ALREADY_PRESENT
 import me.khrys.dnd.charcreator.common.VALUE_IS_ALREADY_SELECTED_TRANSLATION
 import me.khrys.dnd.charcreator.common.VALUE_SHOULD_BE_CHOSEN_TRANSLATION
-import react.RBuilder
+import mui.material.Dialog
+import mui.material.DialogActions
+import mui.material.DialogContent
+import mui.material.DialogContentText
+import mui.material.DialogTitle
+import react.FC
+import react.dom.DangerouslySetInnerHTML
+import react.dom.html.ReactHTML.div
+import react.dom.html.ReactHTML.span
 import react.useContext
 import react.useState
-import styled.styledDiv
 
-fun RBuilder.chooseSeveral(
-    open: Boolean,
-    setOpen: (Boolean) -> Unit,
-    header: String,
-    description: String,
-    size: Int,
-    values: List<String>,
-    setValue: (List<String>) -> Unit
-) {
+val ChooseSeveral = FC<ChooserProps<List<String>>> { props ->
     val (chosenValues, setChosenValues) = useState(emptyList<String>())
     val translations = useContext(TranslationsContext)
-    dialog(open = open) {
-        if (open && chosenValues.isEmpty()) {
-            setChosenValues(MutableList(size) { "" })
+    Dialog {
+        this.open = props.open
+        if (props.open && chosenValues.isEmpty()) {
+            setChosenValues(MutableList(props.size) { "" })
         }
-        if (!(open || chosenValues.isEmpty())) {
+        if (!(props.open || chosenValues.isEmpty())) {
             setChosenValues(emptyList())
         }
-        dialogTitle(text = header)
-        dialogContent(dividers = true) {
-            dialogContentText(text = "") {
-                styledDiv {
-                    attrs[DANGEROUS_HTML] = DangerousHTML(description)
+        DialogTitle {
+            +props.header
+        }
+        DialogContent {
+            this.dividers = true
+            DialogContentText {
+                span {
+                    this.dangerouslySetInnerHTML =
+                        DangerousHTML(props.description).unsafeCast<DangerouslySetInnerHTML>()
                 }
             }
-            dValidatorForm(onSubmit = {
-                setValue(chosenValues)
-                setOpen(false)
-            }) {
-                styledDiv {
-                    attrs.classes = setOf(CLASS_INLINE)
-                    for (i in 0 until size) {
+            ValidatorForm {
+                this.onSubmit = {
+                    props.setValue(chosenValues)
+                    props.setOpen(false)
+                }
+                div {
+                    this.className = ClassName(CLASS_INLINE)
+                    for (i in 0 until props.size) {
                         validatorFormRules.values = chosenValues.toTypedArray()
-                        dValidatedList(
-                            value = if (chosenValues.isEmpty()) "" else chosenValues[i],
-                            validators = arrayOf(VALIDATION_REQUIRED, VALIDATION_VALUE_ALREADY_PRESENT),
-                            errorMessages = arrayOf(
+                        ValidatedList {
+                            this.value = if (chosenValues.isEmpty()) "" else chosenValues[i]
+                            this.validators = arrayOf(VALIDATION_REQUIRED, VALIDATION_VALUE_ALREADY_PRESENT)
+                            this.errorMessages = arrayOf(
                                 translations[VALUE_SHOULD_BE_CHOSEN_TRANSLATION] ?: "",
                                 translations[VALUE_IS_ALREADY_SELECTED_TRANSLATION] ?: ""
-                            ),
-                            onChange = { event ->
+                            )
+                            this.onChange = { event ->
                                 val newValues = chosenValues.toMutableList()
-                                newValues[i] = event.targetValue as String
+                                newValues[i] = event.value()
                                 setChosenValues(newValues)
-                            },
-                            menuItems = values.associateWith { "" },
-                            useDescription = false
-                        )
+                            }
+                            this.menuItems = props.values.associateWith { "" }
+                            this.useDescription = false
+                        }
                     }
                 }
-                dialogActions {
-                    dSubmit(translations[NEXT_TRANSLATION] ?: "")
+                DialogActions {
+                    Submit { +(translations[NEXT_TRANSLATION] ?: "") }
                 }
             }
         }

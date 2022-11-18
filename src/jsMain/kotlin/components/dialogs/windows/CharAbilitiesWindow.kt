@@ -1,26 +1,21 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
-import com.ccfraser.muirwik.components.dialog
-import com.ccfraser.muirwik.components.dialogActions
-import com.ccfraser.muirwik.components.dialogContent
-import com.ccfraser.muirwik.components.dialogContentText
-import com.ccfraser.muirwik.components.dialogTitle
-import com.ccfraser.muirwik.components.utils.targetValue
-import kotlinx.css.FlexWrap.wrap
-import kotlinx.css.flexWrap
-import kotlinx.html.classes
-import me.khrys.dnd.charcreator.client.components.buttons.dBackButton
-import me.khrys.dnd.charcreator.client.components.buttons.dSubmit
-import me.khrys.dnd.charcreator.client.components.inputs.dAbilityBox
-import me.khrys.dnd.charcreator.client.components.validators.dValidatorForm
+import csstype.ClassName
+import csstype.FlexWrap.Companion.wrap
+import emotion.react.css
+import me.khrys.dnd.charcreator.client.components.buttons.BackButton
+import me.khrys.dnd.charcreator.client.components.buttons.Submit
+import me.khrys.dnd.charcreator.client.components.dialogs.CharBasedProps
+import me.khrys.dnd.charcreator.client.components.inputs.AbilityBox
+import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
 import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
+import me.khrys.dnd.charcreator.client.value
 import me.khrys.dnd.charcreator.common.CHARISMA_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.CHARISMA_TRANSLATION
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
 import me.khrys.dnd.charcreator.common.CLASS_JUSTIFY_BETWEEN
 import me.khrys.dnd.charcreator.common.CONSTITUTION_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.CONSTITUTION_TRANSLATION
-import me.khrys.dnd.charcreator.common.DANGEROUS_HTML
 import me.khrys.dnd.charcreator.common.DEXTERITY_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.DEXTERITY_TRANSLATION
 import me.khrys.dnd.charcreator.common.ENTER_ABILITIES_CONTENT_TRANSLATION
@@ -33,162 +28,174 @@ import me.khrys.dnd.charcreator.common.STRENGTH_TRANSLATION
 import me.khrys.dnd.charcreator.common.WISDOM_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.WISDOM_TRANSLATION
 import me.khrys.dnd.charcreator.common.models.Abilities
-import me.khrys.dnd.charcreator.common.models.Character
-import org.w3c.dom.HTMLInputElement
-import org.w3c.dom.events.Event
-import react.RBuilder
-import react.dom.p
+import mui.material.Dialog
+import mui.material.DialogActions
+import mui.material.DialogContent
+import mui.material.DialogContentText
+import mui.material.DialogTitle
+import react.FC
+import react.Props
+import react.PropsWithChildren
+import react.dom.DangerouslySetInnerHTML
+import react.dom.html.ReactHTML.div
+import react.dom.html.ReactHTML.span
 import react.useState
-import styled.css
-import styled.styledDiv
 
-fun RBuilder.charAbilitiesWindow(
-    translations: Map<String, String>,
-    newCharacter: Character,
-    open: Boolean,
-    backAction: (Event) -> Unit,
-    action: (Event) -> Unit
-) {
-    dialog(open = open) {
-        val (strength, setStrength) = useState(10)
-        val (dexterity, setDexterity) = useState(10)
-        val (constitution, setConstitution) = useState(10)
-        val (intelligence, setIntelligence) = useState(10)
-        val (wisdom, setWisdom) = useState(10)
-        val (charisma, setCharisma) = useState(10)
+private external interface AbilitiesProps : Props {
+    var translations: Map<String, String>
+    var value: Int
+    var setValue: (Int) -> Unit
+}
 
-        dialogTitle(text = translations[ENTER_ABILITIES_TRANSLATION] ?: "")
-        dialogContent(dividers = true) {
-            title(translations[ENTER_ABILITIES_CONTENT_TRANSLATION] ?: "")
-            dValidatorForm(
-                onSubmit = { event ->
-                    newCharacter.abilities =
-                        Abilities(strength, dexterity, constitution, intelligence, wisdom, charisma)
-                    action(event)
-                }) {
-                styledDiv {
-                    attrs.classes = setOf(CLASS_INLINE)
-                    css {
-                        flexWrap = wrap
+val CharAbilitiesWindow = FC<CharBasedProps> { props ->
+    if (props.open) {
+        console.info("Rendering abilities")
+        Dialog {
+            this.open = props.open
+            val (strength, setStrength) = useState(10)
+            val (dexterity, setDexterity) = useState(10)
+            val (constitution, setConstitution) = useState(10)
+            val (intelligence, setIntelligence) = useState(10)
+            val (wisdom, setWisdom) = useState(10)
+            val (charisma, setCharisma) = useState(10)
+
+            DialogTitle {
+                +(props.translations[ENTER_ABILITIES_TRANSLATION] ?: "")
+            }
+            DialogContent {
+                this.dividers = true
+                Title { +(props.translations[ENTER_ABILITIES_CONTENT_TRANSLATION] ?: "") }
+                ValidatorForm {
+                    this.onSubmit = {
+                        props.character.abilities =
+                            Abilities(strength, dexterity, constitution, intelligence, wisdom, charisma)
+                        props.action()
                     }
-                    strength(translations, strength) { setStrength(it) }
-                    dexterity(translations, dexterity) { setDexterity(it) }
-                    constitution(translations, constitution) { setConstitution(it) }
-                    intelligence(translations, intelligence) { setIntelligence(it) }
-                    wisdom(translations, wisdom) { setWisdom(it) }
-                    charisma(translations, charisma) { setCharisma(it) }
-                }
-                dialogActions {
-                    attrs.className = CLASS_JUSTIFY_BETWEEN
-                    dBackButton(backAction)
-                    dSubmit(caption = translations[NEXT_TRANSLATION] ?: "")
+                    div {
+                        css(ClassName(CLASS_INLINE)) {
+                            flexWrap = wrap
+                        }
+                        Strength {
+                            this.translations = props.translations
+                            this.value = strength
+                            this.setValue = { setStrength(it) }
+                        }
+                        Dexterity {
+                            this.translations = props.translations
+                            this.value = dexterity
+                            this.setValue = { setDexterity(it) }
+                        }
+                        Constitution {
+                            this.translations = props.translations
+                            this.value = constitution
+                            this.setValue = { setConstitution(it) }
+                        }
+                        Intelligence {
+                            this.translations = props.translations
+                            this.value = intelligence
+                            this.setValue = { setIntelligence(it) }
+                        }
+                        Wisdom {
+                            this.translations = props.translations
+                            this.value = wisdom
+                            this.setValue = { setWisdom(it) }
+                        }
+                        Charisma {
+                            this.translations = props.translations
+                            this.value = charisma
+                            this.setValue = { setCharisma(it) }
+                        }
+                    }
+                    DialogActions {
+                        this.className = ClassName(CLASS_JUSTIFY_BETWEEN)
+                        BackButton {
+                            this.onClick = props.backAction
+                        }
+                        Submit { +(props.translations[NEXT_TRANSLATION] ?: "") }
+                    }
                 }
             }
         }
     }
 }
 
-private fun RBuilder.charisma(
-    translations: Map<String, String>,
-    value: Int,
-    setCharisma: (Int) -> Unit
-) {
-    dAbilityBox(
-        title = translations[CHARISMA_CONTENT_TRANSLATION] ?: "",
-        label = translations[CHARISMA_TRANSLATION] ?: "",
-        value = value,
-        translations = translations,
-        onChange = { event ->
-            (event.targetValue as String).toIntOrNull()?.let { setCharisma(it) }
+private val Charisma = FC<AbilitiesProps> { props ->
+    AbilityBox {
+        this.title = props.translations[CHARISMA_CONTENT_TRANSLATION] ?: ""
+        this.label = props.translations[CHARISMA_TRANSLATION] ?: ""
+        this.value = props.value
+        this.translations = props.translations
+        this.onChange = { event ->
+            event.value().toIntOrNull()?.let { props.setValue(it) }
         }
-    )
+    }
 }
 
-private fun RBuilder.wisdom(
-    translations: Map<String, String>,
-    value: Int,
-    setWisdom: (Int) -> Unit
-) {
-    dAbilityBox(
-        title = translations[WISDOM_CONTENT_TRANSLATION] ?: "",
-        label = translations[WISDOM_TRANSLATION] ?: "",
-        value = value,
-        translations = translations,
-        onChange = { event ->
-            (event.target as HTMLInputElement).value.toIntOrNull()?.let { setWisdom(it) }
+private val Wisdom = FC<AbilitiesProps> { props ->
+    AbilityBox {
+        this.title = props.translations[WISDOM_CONTENT_TRANSLATION] ?: ""
+        this.label = props.translations[WISDOM_TRANSLATION] ?: ""
+        this.value = props.value
+        this.translations = props.translations
+        this.onChange = { event ->
+            event.value().toIntOrNull()?.let { props.setValue(it) }
         }
-    )
+    }
 }
 
-private fun RBuilder.intelligence(
-    translations: Map<String, String>,
-    value: Int,
-    setIntelligence: (Int) -> Unit
-) {
-    dAbilityBox(
-        title = translations[INTELLIGENCE_CONTENT_TRANSLATION] ?: "",
-        label = translations[INTELLIGENCE_TRANSLATION] ?: "",
-        value = value,
-        translations = translations,
-        onChange = { event ->
-            (event.targetValue as String).toIntOrNull()?.let { setIntelligence(it) }
+private val Intelligence = FC<AbilitiesProps> { props ->
+    AbilityBox {
+        this.title = props.translations[INTELLIGENCE_CONTENT_TRANSLATION] ?: ""
+        this.label = props.translations[INTELLIGENCE_TRANSLATION] ?: ""
+        this.value = props.value
+        this.translations = props.translations
+        this.onChange = { event ->
+            event.value().toIntOrNull()?.let { props.setValue(it) }
         }
-    )
+    }
 }
 
-private fun RBuilder.constitution(
-    translations: Map<String, String>,
-    value: Int,
-    setConstitution: (Int) -> Unit
-) {
-    dAbilityBox(
-        title = translations[CONSTITUTION_CONTENT_TRANSLATION] ?: "",
-        label = translations[CONSTITUTION_TRANSLATION] ?: "",
-        value = value,
-        translations = translations,
-        onChange = { event ->
-            (event.targetValue as String).toIntOrNull()?.let { setConstitution(it) }
+private val Constitution = FC<AbilitiesProps> { props ->
+    AbilityBox {
+        this.title = props.translations[CONSTITUTION_CONTENT_TRANSLATION] ?: ""
+        this.label = props.translations[CONSTITUTION_TRANSLATION] ?: ""
+        this.value = props.value
+        this.translations = props.translations
+        this.onChange = { event ->
+            event.value().toIntOrNull()?.let { props.setValue(it) }
         }
-    )
+    }
 }
 
-private fun RBuilder.dexterity(
-    translations: Map<String, String>,
-    value: Int,
-    setDexterity: (Int) -> Unit
-) {
-    dAbilityBox(
-        title = translations[DEXTERITY_CONTENT_TRANSLATION] ?: "",
-        label = translations[DEXTERITY_TRANSLATION] ?: "",
-        value = value,
-        translations = translations,
-        onChange = { event ->
-            (event.targetValue as String).toIntOrNull()?.let { setDexterity(it) }
+private val Dexterity = FC<AbilitiesProps> { props ->
+    AbilityBox {
+        this.title = props.translations[DEXTERITY_CONTENT_TRANSLATION] ?: ""
+        this.label = props.translations[DEXTERITY_TRANSLATION] ?: ""
+        this.value = props.value
+        this.translations = props.translations
+        this.onChange = { event ->
+            event.value().toIntOrNull()?.let { props.setValue(it) }
         }
-    )
+    }
 }
 
-private fun RBuilder.strength(
-    translations: Map<String, String>,
-    value: Int,
-    setStrength: (Int) -> Unit
-) {
-    dAbilityBox(
-        title = translations[STRENGTH_CONTENT_TRANSLATION] ?: "",
-        label = translations[STRENGTH_TRANSLATION] ?: "",
-        value = value,
-        translations = translations,
-        onChange = { event ->
-            (event.targetValue as String).toIntOrNull()?.let { setStrength(it) }
+private val Strength = FC<AbilitiesProps> { props ->
+    AbilityBox {
+        this.title = props.translations[STRENGTH_CONTENT_TRANSLATION] ?: ""
+        this.label = props.translations[STRENGTH_TRANSLATION] ?: ""
+        this.value = props.value
+        this.translations = props.translations
+        this.onChange = { event ->
+            event.value().toIntOrNull()?.let { props.setValue(it) }
         }
-    )
+    }
 }
 
-private fun RBuilder.title(value: String) {
-    dialogContentText("") {
-        p {
-            attrs[DANGEROUS_HTML] =
-                DangerousHTML(value)
+private val Title = FC<PropsWithChildren> { props ->
+    DialogContentText {
+        span {
+            this.dangerouslySetInnerHTML =
+                DangerousHTML(props.children.toString()).unsafeCast<DangerouslySetInnerHTML>()
         }
     }
 }

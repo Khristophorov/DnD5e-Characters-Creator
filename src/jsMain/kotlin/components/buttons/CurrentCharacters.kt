@@ -1,34 +1,40 @@
 package me.khrys.dnd.charcreator.client.components.buttons
 
-import kotlinx.css.FlexWrap.wrap
-import kotlinx.css.flexWrap
-import kotlinx.html.classes
+import csstype.ClassName
+import csstype.FlexWrap.Companion.wrap
+import emotion.react.css
 import me.khrys.dnd.charcreator.client.CharactersContext
-import me.khrys.dnd.charcreator.client.components.dialogs.windows.characterWindow
+import me.khrys.dnd.charcreator.client.components.dialogs.windows.CharacterWindow
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
+import react.FC
 import react.Props
-import react.fc
+import react.dom.html.ReactHTML.div
 import react.useContext
 import react.useState
-import styled.css
-import styled.styledDiv
 
-var currentCharacters = fc<Props> {
+var CurrentCharacters = FC<Props> {
+    console.info("Rendering characters.")
     val characters = useContext(CharactersContext)
-    styledDiv {
-        attrs.classes = setOf(CLASS_INLINE)
-        css {
+    div {
+        css(ClassName(CLASS_INLINE)) {
             flexWrap = wrap
         }
-        characters.forEach { character ->
+        characters.forEach { currentCharacter ->
             val (openCharacter, setOpenCharacter) = useState(false)
-            dAvatarButton(character) { setOpenCharacter(true) }
-            child(characterWindow) {
-                attrs {
-                    this.open = openCharacter
-                    this.setOpen = { setOpenCharacter(it) }
-                    this.character = character
+            AvatarButton {
+                this.character = currentCharacter
+                this.action = {
+                    setOpenCharacter(true)
                 }
+            }
+            CharacterWindow {
+                this.open = openCharacter
+                this.setOpen = {
+                    if (openCharacter != it) {
+                        setOpenCharacter(it)
+                    }
+                }
+                this.character = currentCharacter
             }
         }
     }

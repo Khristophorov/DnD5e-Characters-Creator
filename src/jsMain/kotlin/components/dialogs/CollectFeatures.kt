@@ -1,89 +1,87 @@
 package me.khrys.dnd.charcreator.client.components.dialogs
 
-import me.khrys.dnd.charcreator.client.components.dialogs.windows.informWindow
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.abilitiesChooser
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.elementChooser
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.featsChooser
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.languageChooser
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.languagesChooser
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.maneuversChooser
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.proficienciesChooser
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.proficiencyChooser
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.skillsChooser
+import me.khrys.dnd.charcreator.client.components.dialogs.windows.InformWindow
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.AbilityChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.ElementChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.FeatsChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.LanguageChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.LanguagesChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.ManeuversChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.ProficienciesChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.ProficiencyChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.SkillChooser
 import me.khrys.dnd.charcreator.client.format
 import me.khrys.dnd.charcreator.client.useFeatureWindowSettings
-import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.DnDFunction
-import me.khrys.dnd.charcreator.common.models.Feat
 import me.khrys.dnd.charcreator.common.models.Feature
-import react.RBuilder
-import react.fc
+import react.FC
 import react.useState
 
-val collectRaceFeatures = fc<CharDialogProps> { props ->
-    val features = props.character.race.features
-    collectFeatures(
-        open = props.open,
-        setOpen = props.setOpen,
-        character = props.character,
-        features = features,
-        featsMap = props.feats,
-        useFeats = props.useFeats,
-        action = props.action
-    )
+val CollectRaceFeatures = FC<CharDialogProps> { props ->
+    if (props.open) {
+        val features = props.character.race.features
+        console.info("Loading features for race: ${props.character.race._id}")
+        CollectFeatures {
+            this.open = props.open
+            this.setOpen = props.setOpen
+            this.character = props.character
+            this.features = features
+            this.feats = props.feats
+            this.useFeats = props.useFeats
+            this.action = props.action
+        }
+    }
 }
 
-val collectSubraceFeatures = fc<CharDialogProps> { props ->
-    val features = props.character.subrace.features
-    collectFeatures(
-        open = props.open,
-        setOpen = props.setOpen,
-        character = props.character,
-        features = features,
-        action = props.action
-    )
+val CollectSubraceFeatures = FC<CharDialogProps> { props ->
+    if (props.open) {
+        val features = props.character.subrace.features
+        console.info("Loading features for subrace: ${props.character.subrace._id}")
+        CollectFeatures {
+            this.open = props.open
+            this.setOpen = props.setOpen
+            this.character = props.character
+            this.features = features
+            this.action = props.action
+        }
+    }
 }
 
-val collectFeatFeatures = fc<FeatsProps> { props ->
-    collectFeatures(
-        open = props.open,
-        setOpen = props.setOpen,
-        character = props.character,
-        features = listOf(props.feature),
-        action = props.action
-    )
+val CollectFeatFeatures: FC<FeatsProps> = FC { props ->
+    console.info("Loading feat features for ${props.feature.name}")
+    CollectFeatures {
+        this.open = props.open
+        this.setOpen = props.setOpen
+        this.character = props.character
+        this.features = listOf(props.feature)
+        this.action = props.action
+    }
 }
 
-fun RBuilder.collectFeatures(
-    open: Boolean,
-    setOpen: (Boolean) -> Unit,
-    character: Character,
-    features: List<Feature>,
-    featsMap: Map<String, Feat> = emptyMap(),
-    useFeats: Boolean = false,
-    action: () -> Unit
-) {
+val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
     val inform = useFeatureWindowSettings()
     val proficiency = useFeatureWindowSettings()
     val proficiencies = useFeatureWindowSettings()
     val language = useFeatureWindowSettings()
     val languages = useFeatureWindowSettings()
-    val skills = useFeatureWindowSettings()
-    val abilities = useFeatureWindowSettings()
+    val skill = useFeatureWindowSettings()
+    val ability = useFeatureWindowSettings()
     val element = useFeatureWindowSettings()
     val maneuvers = useFeatureWindowSettings()
     val feats = useFeatureWindowSettings()
 
     val (numberOfNewFunctions, setNumberOfNewFunctions) = useState(-1)
 
-    if (!open && numberOfNewFunctions >= 0) {
+    val (featsFeatures, setFeatsFeatures) = useState(false)
+
+    if (!props.open && numberOfNewFunctions >= 0) {
         setNumberOfNewFunctions(-1)
     }
-    if (open && numberOfNewFunctions < 0) {
+    if (props.open && numberOfNewFunctions < 0) {
         val newFunctions = mutableListOf<() -> Unit>()
-        features.filter { filterFeature(it, useFeats) }.forEach { feature ->
+        props.features.filter { filterFeature(it, props.useFeats) }.forEach { feature ->
             if (feature.functions.isEmpty()) {
-                character.features += feature
+                props.character.features += feature
             } else {
                 var addFeature = true
                 feature.functions.forEach { function ->
@@ -94,52 +92,61 @@ fun RBuilder.collectFeatures(
                             }
                             addFeature = false
                         }
+
                         "Choose Proficiency" -> {
                             newFunctions.add {
                                 proficiency.setParams(true, feature, function)
                             }
                             addFeature = false
                         }
+
                         "Choose Proficiencies" -> {
                             newFunctions.add {
                                 proficiencies.setParams(true, feature, function)
                             }
                             addFeature = false
                         }
+
                         "Choose Language" -> {
                             newFunctions.add {
                                 language.setParams(true, feature, function)
                             }
                         }
+
                         "Choose Languages" -> {
                             newFunctions.add {
                                 languages.setParams(true, feature, function)
                             }
                         }
+
                         "Choose Ability" -> {
                             newFunctions.add {
-                                abilities.setParams(true, feature, function)
+                                ability.setParams(true, feature, function)
                             }
                             addFeature = false
                         }
+
                         "Choose Skills" -> {
                             newFunctions.add {
-                                skills.setParams(true, feature, function)
+                                skill.setParams(true, feature, function)
                             }
                             addFeature = false
                         }
+
                         "Choose Element" -> {
                             newFunctions.add {
                                 element.setParams(true, feature, function)
                             }
                             addFeature = false
                         }
+
                         "Choose Feat" -> {
                             newFunctions.add {
                                 feats.setParams(true, feature, function)
                             }
                             addFeature = false
                         }
+
                         "Choose Maneuvers" -> {
                             newFunctions.add {
                                 maneuvers.setParams(true, feature, function)
@@ -148,62 +155,68 @@ fun RBuilder.collectFeatures(
                     }
                 }
                 if (addFeature) {
-                    character.features += feature
+                    props.character.features += feature
                 }
             }
         }
         setNumberOfNewFunctions(newFunctions.size)
+        newFunctions.forEach { it() }
         if (newFunctions.isEmpty()) {
-            action()
-            setOpen(false)
+            props.action()
+            props.setOpen(false)
         }
-        newFunctions.forEach { function -> function() }
     }
-    child(informWindow) {
-        attrs.open = inform.open
-        attrs.setOpen = { inform.setOpen(it) }
-        attrs.feature = inform.feature
-        attrs.setValue = {
-            character.features +=
+
+    fun shouldOpen(open: Boolean) = open && !props.useFeats || open && props.useFeats && !featsFeatures
+
+    InformWindow {
+        this.open = shouldOpen(inform.open)
+        this.setOpen = { inform.setOpen(it) }
+        this.feature = inform.feature
+        this.setValue = {
+            console.info("Info for ${inform.feature.name}")
+            props.character.features +=
                 Feature(
                     name = inform.feature.name,
                     description = inform.function.values[0],
                     functions = emptyList(),
                     source = inform.feature.source
                 )
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, action, setOpen)
+            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
         }
     }
-    child(proficiencyChooser) {
-        attrs.open = proficiency.open
-        attrs.setOpen = { proficiency.setOpen(it) }
-        attrs.feature = proficiency.feature
-        attrs.function = proficiency.function
-        attrs.character = character
-        attrs.setValue = { value ->
-            character.features +=
+    ProficiencyChooser {
+        this.open = shouldOpen(proficiency.open)
+        this.setOpen = { proficiency.setOpen(it) }
+        this.feature = proficiency.feature
+        this.function = proficiency.function
+        this.character = props.character
+        this.setValue = { value ->
+            console.info("Chosen proficiency: $value")
+            props.character.features +=
                 Feature(
                     name = proficiency.feature.name,
                     description = proficiency.function.values[1].format(value),
                     functions = listOf(DnDFunction(proficiency.function.values[0], listOf(value))),
                     source = proficiency.feature.source
                 )
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, action, setOpen)
+            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
         }
     }
-    child(proficienciesChooser) {
-        attrs.open = proficiencies.open
-        attrs.setOpen = { proficiencies.setOpen(it) }
-        attrs.feature = proficiencies.feature
-        attrs.function = proficiencies.function
-        attrs.character = character
-        attrs.size = if (proficiencies.function.values.isEmpty()) 0 else proficiencies.function.values[2].toInt()
-        attrs.setValue = { values ->
+    ProficienciesChooser {
+        this.open = shouldOpen(proficiencies.open)
+        this.setOpen = { proficiencies.setOpen(it) }
+        this.feature = proficiencies.feature
+        this.function = proficiencies.function
+        this.character = props.character
+        this.size = if (proficiencies.function.values.isEmpty()) 0 else proficiencies.function.values[2].toInt()
+        this.setValue = { values ->
+            console.info("Chosen proficiencies: $values")
             val featureFunctions = listOf(DnDFunction(proficiencies.function.values[0], values))
-            if (character.hasFeature(proficiencies.feature.name)) {
-                character.features.filter { it.name == proficiencies.feature.name }[0].functions += featureFunctions
+            if (props.character.hasFeature(proficiencies.feature.name)) {
+                props.character.features.filter { it.name == proficiencies.feature.name }[0].functions += featureFunctions
             } else {
-                character.features +=
+                props.character.features +=
                     Feature(
                         name = proficiencies.feature.name,
                         description = proficiencies.function.values[1].format(*values.toTypedArray()),
@@ -211,19 +224,20 @@ fun RBuilder.collectFeatures(
                         source = proficiencies.feature.source
                     )
             }
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, action, setOpen)
+            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
         }
     }
-    child(languageChooser) {
-        attrs.open = language.open
-        attrs.setOpen = { language.setOpen(it) }
-        attrs.feature = language.feature
-        attrs.function = language.function
-        attrs.character = character
-        attrs.setValue = { value ->
+    LanguageChooser {
+        this.open = shouldOpen(language.open)
+        this.setOpen = { language.setOpen(it) }
+        this.feature = language.feature
+        this.function = language.function
+        this.character = props.character
+        this.setValue = { value ->
+            console.info("Chosen language: $value")
             val functions =
-                if (character.hasFeature(language.feature.name))
-                    character.features.filter { language.feature.name == it.name }[0].functions
+                if (props.character.hasFeature(language.feature.name))
+                    props.character.features.filter { language.feature.name == it.name }[0].functions
                 else emptyList()
             val feature = Feature(
                 name = language.feature.name,
@@ -231,23 +245,24 @@ fun RBuilder.collectFeatures(
                 functions = functions + arrayOf(DnDFunction(language.function.values[0], listOf(value))),
                 source = language.feature.source
             )
-            val filteredFeatures = character.features.filter { language.feature.name != it.name }
-            character.features = filteredFeatures + feature
+            val filteredFeatures = props.character.features.filter { language.feature.name != it.name }
+            props.character.features = filteredFeatures + feature
 
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, action, setOpen)
+            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
         }
     }
-    child(languagesChooser) {
-        attrs.open = languages.open
-        attrs.setOpen = { languages.setOpen(it) }
-        attrs.feature = languages.feature
-        attrs.function = languages.function
-        attrs.character = character
-        attrs.size = if (languages.function.values.isEmpty()) 0 else languages.function.values[2].toInt()
-        attrs.setValue = { values ->
+    LanguagesChooser {
+        this.open = shouldOpen(languages.open)
+        this.setOpen = { languages.setOpen(it) }
+        this.feature = languages.feature
+        this.function = languages.function
+        this.character = props.character
+        this.size = if (languages.function.values.isEmpty()) 0 else languages.function.values[2].toInt()
+        this.setValue = { values ->
+            console.info("Chosen languages: $values")
             val functions =
-                if (character.hasFeature(languages.feature.name))
-                    character.features.filter { languages.feature.name == it.name }[0].functions
+                if (props.character.hasFeature(languages.feature.name))
+                    props.character.features.filter { languages.feature.name == it.name }[0].functions
                 else emptyList()
             val feature = Feature(
                 name = languages.feature.name,
@@ -255,92 +270,105 @@ fun RBuilder.collectFeatures(
                 functions = functions + arrayOf(DnDFunction(languages.function.values[0], values)),
                 source = languages.feature.source
             )
-            val filteredFeatures = character.features.filter { languages.feature.name != it.name }
-            character.features = filteredFeatures + feature
+            val filteredFeatures = props.character.features.filter { languages.feature.name != it.name }
+            props.character.features = filteredFeatures + feature
 
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, action, setOpen)
+            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
         }
     }
-    child(abilitiesChooser) {
-        attrs.open = abilities.open
-        attrs.setOpen = { abilities.setOpen(it) }
-        attrs.feature = abilities.feature
-        attrs.function = abilities.function
-        attrs.character = character
-        attrs.setValue = { value ->
-            character.features +=
+    AbilityChooser {
+        this.open = shouldOpen(ability.open)
+        this.setOpen = { ability.setOpen(it) }
+        this.feature = ability.feature
+        this.function = ability.function
+        this.character = props.character
+        this.setValue = { value ->
+            console.info("Chosen ability: $value")
+            props.character.features +=
                 Feature(
-                    name = abilities.feature.name,
-                    description = abilities.function.values[1].format(value),
-                    functions = abilities.feature.functions.filter { it.name != abilities.function.name } +
-                            DnDFunction(abilities.function.values[0], listOf(value, abilities.function.values[2])),
-                    source = abilities.feature.source
+                    name = ability.feature.name,
+                    description = ability.function.values[1].format(value),
+                    functions = ability.feature.functions.filter { it.name != ability.function.name } +
+                            DnDFunction(ability.function.values[0], listOf(value, ability.function.values[2])),
+                    source = ability.feature.source
                 )
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, action, setOpen)
+            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
         }
     }
-    child(skillsChooser) {
-        attrs.open = skills.open
-        attrs.setOpen = { skills.setOpen(it) }
-        attrs.feature = skills.feature
-        attrs.function = skills.function
-        attrs.character = character
-        attrs.setValue = { value ->
-            character.features +=
+    SkillChooser {
+        this.open = shouldOpen(skill.open)
+        this.setOpen = { skill.setOpen(it) }
+        this.feature = skill.feature
+        this.function = skill.function
+        this.character = props.character
+        this.setValue = { value ->
+            console.info("Chosen skill: $value")
+            props.character.features +=
                 Feature(
-                    name = skills.feature.name,
-                    description = skills.function.values[1].format(value),
-                    functions = listOf(DnDFunction(skills.function.values[0], listOf(value))),
-                    source = skills.feature.source
+                    name = skill.feature.name,
+                    description = skill.function.values[1].format(value),
+                    functions = listOf(DnDFunction(skill.function.values[0], listOf(value))),
+                    source = skill.feature.source
                 )
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, action, setOpen)
+            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
         }
     }
-    child(elementChooser) {
-        attrs.open = element.open
-        attrs.setOpen = { element.setOpen(it) }
-        attrs.feature = element.feature
-        attrs.function = element.function
-        attrs.character = character
-        attrs.setValue = { value ->
-            character.features +=
+    ElementChooser {
+        this.open = shouldOpen(element.open)
+        this.setOpen = { element.setOpen(it) }
+        this.feature = element.feature
+        this.function = element.function
+        this.character = props.character
+        this.setValue = { value ->
+            console.info("Chosen element: $value")
+            props.character.features +=
                 Feature(
                     name = element.feature.name,
                     description = element.function.values[0].format(value),
                     functions = emptyList(),
                     source = element.feature.source
                 )
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, action, setOpen)
+            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
         }
     }
-    child(maneuversChooser) {
+    ManeuversChooser {
         val functionValues = maneuvers.function.values
-        attrs.open = maneuvers.open
-        attrs.setOpen = { maneuvers.setOpen(it) }
-        attrs.feature = maneuvers.feature
-        attrs.function = maneuvers.function
-        attrs.character = character
-        attrs.size = if (functionValues.isEmpty()) 0 else functionValues[0].toInt()
-        attrs.setValue = { values ->
+        this.open = shouldOpen(maneuvers.open)
+        this.setOpen = { maneuvers.setOpen(it) }
+        this.feature = maneuvers.feature
+        this.function = maneuvers.function
+        this.character = props.character
+        this.size = if (functionValues.isEmpty()) 0 else functionValues[0].toInt()
+        this.setValue = { values ->
+            console.info("Chosen maneuvers: $values")
             values.forEach { value ->
-                character.features += Feature(
+                props.character.features += Feature(
                     name = value,
                     description = functionValues[functionValues.indexOf(value) + 1],
                     functions = emptyList(),
                     source = maneuvers.feature.source
                 )
             }
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, action, setOpen)
+            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
         }
     }
-    if (useFeats) {
-        child(featsChooser) {
-            attrs.open = feats.open
-            attrs.setOpen = { feats.setOpen(it) }
-            attrs.character = character
-            attrs.feature = feats.feature
-            attrs.feats = featsMap
-            attrs.action = { endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, action, setOpen) }
+    if (props.useFeats) {
+        console.info("Use feats.")
+        if (feats.open && !featsFeatures) {
+            setFeatsFeatures(true)
+        }
+        FeatsChooser {
+            this.open = feats.open
+            this.setOpen = { feats.setOpen(it) }
+            this.character = props.character
+            this.feature = feats.feature
+            this.feats = props.feats
+            this.action = {
+                if (featsFeatures) {
+                    setFeatsFeatures(false)
+                }
+                endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
+            }
         }
     }
 }

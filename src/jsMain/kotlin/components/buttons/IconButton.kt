@@ -1,19 +1,17 @@
 package me.khrys.dnd.charcreator.client.components.buttons
 
-import com.ccfraser.muirwik.components.IconButtonProps
-import com.ccfraser.muirwik.components.iconButton
 import me.khrys.dnd.charcreator.client.playSound
 import me.khrys.dnd.charcreator.common.BUTTON_SOUND_ID
-import org.w3c.dom.events.Event
-import react.RBuilder
-import styled.StyledHandler
+import mui.material.IconButton
+import mui.material.IconButtonProps
+import react.FC
 
-fun RBuilder.dIconButton(action: (Event) -> Unit, handler: StyledHandler<IconButtonProps>? = null) {
-    iconButton {
-        attrs.onClick = { event ->
+val IconButton = FC<IconButtonProps> { props ->
+    IconButton {
+        onClick = { event ->
             playSound(BUTTON_SOUND_ID)
-            action(event)
+            props.onClick?.let { it(event) }
         }
-        handler?.let { handler() }
+        +props.children
     }
 }

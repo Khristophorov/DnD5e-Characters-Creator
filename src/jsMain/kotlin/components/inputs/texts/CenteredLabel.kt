@@ -1,24 +1,24 @@
 package me.khrys.dnd.charcreator.client.components.inputs.texts
 
-import com.ccfraser.muirwik.components.inputLabel
-import kotlinx.css.JustifyContent
-import kotlinx.css.justifyContent
-import kotlinx.html.classes
-import me.khrys.dnd.charcreator.common.CLASS_INLINE
-import react.RBuilder
-import styled.css
-import styled.styledDiv
+import csstype.JustifyContent.Companion.center
+import emotion.react.css
+import mui.material.InputLabel
+import react.FC
+import react.Props
+import react.dom.html.ReactHTML.div
 
-fun RBuilder.dCenteredLabel(
-    label: String
-) {
-    styledDiv {
-        attrs.classes = setOf(CLASS_INLINE)
+external interface LabelProps : Props {
+    var label: String
+}
+
+val CenteredLabel = FC<LabelProps> { props ->
+    div {
         css {
-            justifyContent = JustifyContent.center
+            justifyContent = center
         }
-        inputLabel(caption = label.uppercase()) {
-            attrs.shrink = true
+        InputLabel {
+            +props.label.uppercase()
+            this.shrink = true
         }
     }
 }

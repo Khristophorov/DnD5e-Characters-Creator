@@ -1,46 +1,57 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.grids
 
-import com.ccfraser.muirwik.components.checkbox
-import kotlinx.css.borderBottom
-import kotlinx.css.padding
-import kotlinx.css.paddingLeft
-import kotlinx.css.px
-import kotlinx.html.classes
-import me.khrys.dnd.charcreator.client.components.dRadioCheckedIcon
-import me.khrys.dnd.charcreator.client.components.dRadioUncheckedIcon
+import csstype.Border
+import csstype.ClassName
+import csstype.LineStyle.Companion.solid
+import csstype.NamedColor.black
+import csstype.Padding
+import csstype.px
+import emotion.react.css
 import me.khrys.dnd.charcreator.client.components.dialogs.SavingThrowsItem
-import me.khrys.dnd.charcreator.client.components.inputs.tooltips.dDelayedTooltip
+import me.khrys.dnd.charcreator.client.components.inputs.tooltips.DelayedTooltip
 import me.khrys.dnd.charcreator.client.computeModifier
 import me.khrys.dnd.charcreator.client.toSignedString
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
-import react.RBuilder
-import react.buildElement
-import styled.css
-import styled.styledDiv
-import styled.styledSpan
+import mui.icons.material.RadioButtonChecked
+import mui.icons.material.RadioButtonUnchecked
+import mui.material.Checkbox
+import react.FC
+import react.Props
+import react.ReactNode
+import react.createElement
+import react.dom.html.ReactHTML.div
+import react.dom.html.ReactHTML.span
 
-fun RBuilder.dSavingThrowsGridItem(item: SavingThrowsItem) {
-    dDelayedTooltip(item.title) {
-        styledDiv {
-            attrs.classes = setOf(CLASS_INLINE)
+external interface SavingThrowsGridItemProps : Props {
+    var item: SavingThrowsItem
+}
+
+val SavingThrowsGridItem = FC<SavingThrowsGridItemProps> { props ->
+    console.info("Rendering saving throws grid item: Title ${props.item.title} Value: ${props.item.value}")
+    val item = props.item
+    DelayedTooltip {
+        this.title = ReactNode(item.title)
+        div {
+            this.className = ClassName(CLASS_INLINE)
             val modifier = computeModifier(item.value, item.proficiencyBonus, item.proficient)
-            checkbox(checked = item.proficient) {
-                attrs.icon = buildElement { dRadioUncheckedIcon() }
-                attrs.checkedIcon = buildElement { dRadioCheckedIcon() }
+            Checkbox {
+                this.checked = item.proficient
+                this.icon = createElement(RadioButtonUnchecked)
+                this.checkedIcon = createElement(RadioButtonChecked)
             }
-            styledDiv {
+            div {
                 css {
-                    padding = "10px 2px"
+                    this.padding = Padding(10.px, 2.px)
                 }
-                styledSpan {
+                span {
                     css {
-                        borderBottom = "1px solid black"
+                        this.borderBottom = Border(1.px, solid, black)
                     }
                     +toSignedString(modifier)
                 }
-                styledSpan {
+                span {
                     css {
-                        paddingLeft = 10.px
+                        this.paddingLeft = 10.px
                     }
                     +item.label
                 }

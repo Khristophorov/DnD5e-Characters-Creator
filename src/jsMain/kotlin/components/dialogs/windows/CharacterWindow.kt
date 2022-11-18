@@ -1,38 +1,24 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
-import com.ccfraser.muirwik.components.dialog
-import com.ccfraser.muirwik.components.dialogActions
-import com.ccfraser.muirwik.components.dialogContent
-import com.ccfraser.muirwik.components.dialogTitle
-import com.ccfraser.muirwik.components.gridContainer
-import com.ccfraser.muirwik.components.gridItem
-import com.ccfraser.muirwik.components.maxWidth
-import com.ccfraser.muirwik.components.styles.Breakpoint.xl
-import com.ccfraser.muirwik.components.table
-import com.ccfraser.muirwik.components.tableBody
-import com.ccfraser.muirwik.components.tableCell
-import com.ccfraser.muirwik.components.tableContainer
-import com.ccfraser.muirwik.components.tableHead
-import com.ccfraser.muirwik.components.tableRow
-import kotlinx.css.height
-import kotlinx.css.px
-import kotlinx.css.width
-import kotlinx.html.classes
+import csstype.ClassName
+import csstype.px
+import emotion.react.css
 import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.applyFeatures
-import me.khrys.dnd.charcreator.client.components.buttons.dCloseButton
-import me.khrys.dnd.charcreator.client.components.buttons.dSubmit
+import me.khrys.dnd.charcreator.client.components.buttons.CloseButton
+import me.khrys.dnd.charcreator.client.components.buttons.Submit
 import me.khrys.dnd.charcreator.client.components.dialogs.CharDialogProps
-import me.khrys.dnd.charcreator.client.components.dialogs.grids.dAbilitiesGrid
-import me.khrys.dnd.charcreator.client.components.dialogs.grids.dSavingThrowsGrid
-import me.khrys.dnd.charcreator.client.components.dialogs.grids.dSkillsGrid
-import me.khrys.dnd.charcreator.client.components.inputs.dCenteredBold
-import me.khrys.dnd.charcreator.client.components.inputs.dOneValueInput
-import me.khrys.dnd.charcreator.client.components.inputs.texts.dTextBox
-import me.khrys.dnd.charcreator.client.components.inputs.texts.dTextWithTooltip
-import me.khrys.dnd.charcreator.client.components.inputs.texts.dTitledInput
-import me.khrys.dnd.charcreator.client.components.inputs.texts.dWrappedText
-import me.khrys.dnd.charcreator.client.components.validators.dValidatorForm
+import me.khrys.dnd.charcreator.client.components.dialogs.grids.AbilitiesGrid
+import me.khrys.dnd.charcreator.client.components.dialogs.grids.AbilitiesProps
+import me.khrys.dnd.charcreator.client.components.dialogs.grids.SavingThrowsGrid
+import me.khrys.dnd.charcreator.client.components.dialogs.grids.SkillsGrid
+import me.khrys.dnd.charcreator.client.components.inputs.CenteredBold
+import me.khrys.dnd.charcreator.client.components.inputs.OneValueInput
+import me.khrys.dnd.charcreator.client.components.inputs.texts.TextBox
+import me.khrys.dnd.charcreator.client.components.inputs.texts.TextWithTooltip
+import me.khrys.dnd.charcreator.client.components.inputs.texts.TitledInput
+import me.khrys.dnd.charcreator.client.components.inputs.texts.WrappedText
+import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
 import me.khrys.dnd.charcreator.client.computeArmorClass
 import me.khrys.dnd.charcreator.client.computePassiveSkill
 import me.khrys.dnd.charcreator.client.computeProficiencyBonus
@@ -55,72 +41,145 @@ import me.khrys.dnd.charcreator.common.QUANTITY_TRANSLATION
 import me.khrys.dnd.charcreator.common.SAVE_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPEED_TRANSLATION
 import me.khrys.dnd.charcreator.common.SUPERIORITY_DICES_TRANSLATION
-import me.khrys.dnd.charcreator.common.models.Abilities
 import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.SuperiorityDice
-import react.RBuilder
-import react.fc
+import mui.material.Dialog
+import mui.material.DialogActions
+import mui.material.DialogContent
+import mui.material.DialogTitle
+import mui.material.Grid
+import mui.material.Table
+import mui.material.TableBody
+import mui.material.TableCell
+import mui.material.TableContainer
+import mui.material.TableHead
+import mui.material.TableRow
+import mui.system.Breakpoint.xl
+import react.FC
+import react.Props
+import react.PropsWithChildren
+import react.ReactNode
+import react.dom.html.ReactHTML.div
+import react.dom.html.ReactHTML.img
+import react.dom.html.ReactHTML.p
 import react.useContext
-import styled.css
-import styled.styledDiv
-import styled.styledImg
-import styled.styledP
 
-val characterWindow = fc<CharDialogProps> { props ->
+private external interface CharAbilitiesProps : Props {
+    var value: String
+    var translations: Map<String, String>
+}
+
+private external interface SuperiorDicesProps : Props {
+    var translations: Map<String, String>
+    var superiorityDices: List<SuperiorityDice>
+}
+
+private external interface ParametersProps : Props {
+    var character: Character
+    var translations: Map<String, String>
+    var proficiencyBonus: Int
+}
+
+private external interface MultiValueProps : Props {
+    var translations: Map<String, String>
+    var values: List<String>
+}
+
+val CharacterWindow = FC<CharDialogProps> { props ->
+    console.info("Loading character window for ${props.character.name}")
     val translations = useContext(TranslationsContext)
-    dialog(open = props.open) {
-        attrs.fullScreen = true
-        attrs.maxWidth = xl
+    Dialog {
+        this.open = props.open
+        this.fullScreen = true
+        this.maxWidth = xl
         val character = applyFeatures(props.character, translations)
-        title(character, translations, props.setOpen)
+        Title {
+            this.open = props.open
+            this.setOpen = props.setOpen
+            this.character = character
+            this.translations = translations
+        }
 
-        dialogContent(dividers = true) {
+        DialogContent {
+            this.dividers = true
             val proficiencyBonus = computeProficiencyBonus(1)
-            dValidatorForm(onSubmit = { props.setOpen(false) }) {
-                gridContainer {
-                    mainParameters(character, translations, proficiencyBonus)
-                    additionalAbilities(character, translations)
-                    features(character, translations)
-                    specificParameters(character, translations)
+            ValidatorForm {
+                this.onSubmit = {
+                    console.info("Submitting character ${props.character.name}")
+                    if (props.open) {
+                        props.setOpen(false)
+                    }
                 }
-                dialogActions {
-                    dSubmit(translations[SAVE_TRANSLATION] ?: "")
+                Grid {
+                    this.container = true
+                    MainParameters {
+                        this.character = character
+                        this.translations = translations
+                        this.proficiencyBonus = proficiencyBonus
+                    }
+                    AdditionalAbilities {
+                        this.character = character
+                        this.translations = translations
+                    }
+                    Features {
+                        this.character = character
+                        this.translations = translations
+                    }
+                    SpecificParameters {
+                        this.character = character
+                        this.translations = translations
+                    }
+                }
+                DialogActions {
+                    Submit {
+                        +(translations[SAVE_TRANSLATION] ?: "")
+                    }
                 }
             }
         }
     }
 }
 
-private fun RBuilder.specificParameters(
-    character: Character,
-    translations: Map<String, String>
-) {
-    gridItem {
-        attrs.className = CLASS_PADDINGS
-        image(character.image)
-        if (character.superiorityDices.isNotEmpty()) {
-            superiorityDices(translations, character.superiorityDices)
+private val SpecificParameters = FC<AbilitiesProps> { props ->
+    Grid {
+        this.item = true
+        this.className = ClassName(CLASS_PADDINGS)
+        Image {
+            +props.character.image
+        }
+        if (props.character.superiorityDices.isNotEmpty()) {
+            SuperiorityDices {
+                this.translations = props.translations
+                this.superiorityDices = props.character.superiorityDices
+            }
         }
     }
 }
 
-private fun RBuilder.superiorityDices(
-    translations: Map<String, String>,
-    superiorityDices: List<SuperiorityDice>
-) {
-    gridContainer {
-        gridItem {
-            attrs.className = CLASS_BORDERED
-            buildSuperiorDices(translations, superiorityDices)
-            dCenteredBold(translations[SUPERIORITY_DICES_TRANSLATION] ?: "")
+private val SuperiorityDices = FC<SuperiorDicesProps> { props ->
+    Grid {
+        this.container = true
+        Grid {
+            this.item = true
+            this.className = ClassName(CLASS_BORDERED)
+            SuperiorDices {
+                this.translations = props.translations
+                this.superiorityDices = props.superiorityDices
+            }
+            CenteredBold {
+                +(props.translations[SUPERIORITY_DICES_TRANSLATION] ?: "")
+            }
         }
     }
 }
 
-private fun RBuilder.image(image: String) {
-    gridContainer {
-        gridItem {
-            styledImg(src = image) {
+private val Image = FC<PropsWithChildren> { props ->
+    Grid {
+        this.container = true
+        Grid {
+            this.item = true
+            img {
+                this.src = props.children.toString()
                 css {
                     width = 128.px
                     height = 128.px
@@ -130,214 +189,244 @@ private fun RBuilder.image(image: String) {
     }
 }
 
-private fun RBuilder.features(
-    character: Character,
-    translations: Map<String, String>
-) {
-    gridItem {
-        gridContainer {
-            gridItem {
-                styledDiv {
-                    attrs.classes = setOf(CLASS_BORDERED)
-                    character.features.forEach { feature ->
-                        dTextWithTooltip(
-                            text = feature.name,
-                            tooltip = feature.description
-                        )
-                    }
-                    dCenteredBold(translations[FEATURES_TRANSLATION] ?: "")
-                }
-            }
-        }
-    }
-}
-
-private fun RBuilder.additionalAbilities(
-    character: Character,
-    translations: Map<String, String>
-) {
-    gridItem {
-        gridContainer {
-            gridItem {
-                attrs.className = CLASS_PADDINGS
-                styledDiv {
-                    attrs.classes = setOf(CLASS_INLINE)
-                    armorClass(character.computeArmorClass(), translations)
-                    initiative(character.getInitiative(), translations)
-                    speed(character.speed, translations)
-                }
-            }
-        }
-    }
-}
-
-private fun RBuilder.speed(value: Int, translations: Map<String, String>) {
-    dTextBox(
-        value = value,
-        label = translations[SPEED_TRANSLATION] ?: ""
-    )
-}
-
-private fun RBuilder.initiative(value: Int, translations: Map<String, String>) {
-    dTextBox(
-        value = value,
-        label = translations[INITIATIVE_TRANSLATION] ?: ""
-    )
-}
-
-private fun RBuilder.armorClass(value: Int, translations: Map<String, String>) {
-    dTextBox(
-        value = value,
-        label = translations[ARMOR_CLASS_TRANSLATION] ?: ""
-    )
-}
-
-private fun RBuilder.mainParameters(
-    character: Character,
-    translations: Map<String, String>,
-    proficiencyBonus: Int
-) {
-    gridItem {
-        mainSkills(character, translations, proficiencyBonus)
-        passivePerception(translations, character, proficiencyBonus)
-        languageAndProficiencies(translations, character)
-    }
-}
-
-private fun RBuilder.languageAndProficiencies(
-    translations: Map<String, String>,
-    character: Character
-) {
-    gridItem {
-        attrs.className = "$CLASS_PADDINGS $CLASS_BORDERED"
-        languages(translations, character.languages)
-        proficiencies(translations, character.proficiencies)
-    }
-}
-
-private fun RBuilder.proficiencies(
-    translations: Map<String, String>,
-    values: List<String>
-) {
-    dWrappedText(
-        label = translations[PROFICIENCIES_TRANSLATION] ?: "",
-        text = values
-    )
-}
-
-private fun RBuilder.languages(
-    translations: Map<String, String>,
-    values: List<String>
-) {
-    dWrappedText(
-        label = translations[LANGUAGES_TRANSLATION] ?: "",
-        text = values
-    )
-}
-
-private fun RBuilder.passivePerception(
-    translations: Map<String, String>,
-    character: Character,
-    proficiencyBonus: Int
-) {
-    gridItem {
-        dOneValueInput(
-            header = translations[PASSIVE_PERCEPTION_TRANSLATION] ?: "",
-            value = computePassiveSkill(
-                ability = character.abilities.wisdom,
-                proficiencyBonus = proficiencyBonus,
-                proficient = character.skills.perception
-            )
-        )
-    }
-}
-
-private fun RBuilder.mainSkills(
-    character: Character,
-    translations: Map<String, String>,
-    proficiencyBonus: Int
-) {
-    gridContainer {
-        abilities(character.abilities, translations)
-        gridItem {
-            attrs.className = CLASS_PADDINGS
-            proficiencyBonus(translations, proficiencyBonus)
-            dSavingThrowsGrid(character, translations, proficiencyBonus)
-            dSkillsGrid(character, translations, proficiencyBonus)
-        }
-    }
-}
-
-private fun RBuilder.proficiencyBonus(
-    translations: Map<String, String>,
-    proficiencyBonus: Int
-) {
-    dOneValueInput(
-        header = translations[PROFICIENCY_BONUS_TRANSLATION] ?: "",
-        value = proficiencyBonus,
-        title = translations[PROFICIENCY_BONUS_CONTENT_TRANSLATION] ?: "",
-        readOnly = true
-    )
-}
-
-private fun RBuilder.abilities(
-    abilities: Abilities,
-    translations: Map<String, String>
-) {
-    gridItem {
-        attrs.className = CLASS_PADDINGS
-        dAbilitiesGrid(abilities, translations)
-    }
-}
-
-private fun RBuilder.title(
-    character: Character,
-    translations: Map<String, String>,
-    setOpen: (Boolean) -> Unit
-) {
-    dialogTitle(text = "") {
-        styledDiv {
-            attrs.classes = setOf(CLASS_INLINE, CLASS_JUSTIFY_BETWEEN)
-            +character.name
-            dTitledInput(
-                label = translations[ENTER_RACE_TRANSLATION] ?: "",
-                value = character.subrace._id
-            )
-            dCloseButton { setOpen(false) }
-        }
-    }
-}
-
-private fun RBuilder.buildSuperiorDices(
-    translations: Map<String, String>,
-    superiorityDices: List<SuperiorityDice>
-) {
-    tableContainer {
-        table {
-            tableHead {
-                tableRow {
-                    tableCell {
-                        styledP {
-                            +(translations[DICE_TRANSLATION] ?: "")
+private val Features = FC<AbilitiesProps> { props ->
+    Grid {
+        this.item = true
+        Grid {
+            this.container = true
+            Grid {
+                this.item = true
+                div {
+                    this.className = ClassName(CLASS_BORDERED)
+                    props.character.features.forEach { feature ->
+                        TextWithTooltip {
+                            this.title = ReactNode(feature.description)
+                            +feature.name
                         }
                     }
-                    tableCell {
-                        styledP {
-                            +(translations[QUANTITY_TRANSLATION] ?: "")
+                    CenteredBold {
+                        +(props.translations[FEATURES_TRANSLATION] ?: "")
+                    }
+                }
+            }
+        }
+    }
+}
+
+private val AdditionalAbilities = FC<AbilitiesProps> { props ->
+    Grid {
+        this.item = true
+        Grid {
+            this.container = true
+            Grid {
+                this.item = true
+                this.className = ClassName(CLASS_PADDINGS)
+                div {
+                    this.className = ClassName(CLASS_INLINE)
+                    ArmorClass {
+                        this.value = props.character.computeArmorClass().toString()
+                        this.translations = props.translations
+                    }
+                    Initiative {
+                        this.value = props.character.getInitiative().toString()
+                        this.translations = props.translations
+                    }
+                    Speed {
+                        this.value = props.character.speed.toString()
+                        this.translations = props.translations
+                    }
+                }
+            }
+        }
+    }
+}
+
+private val Speed = FC<CharAbilitiesProps> { props ->
+    TextBox {
+        this.value = props.value
+        this.label = props.translations[SPEED_TRANSLATION] ?: ""
+    }
+}
+
+private val Initiative = FC<CharAbilitiesProps> { props ->
+    TextBox {
+        this.value = props.value
+        this.label = props.translations[INITIATIVE_TRANSLATION] ?: ""
+    }
+}
+
+private val ArmorClass = FC<CharAbilitiesProps> { props ->
+    TextBox {
+        this.value = props.value
+        this.label = props.translations[ARMOR_CLASS_TRANSLATION] ?: ""
+    }
+}
+
+private val MainParameters = FC<ParametersProps> { props ->
+    Grid {
+        this.item = true
+        MainSkills {
+            this.character = props.character
+            this.translations = props.translations
+            this.proficiencyBonus = props.proficiencyBonus
+        }
+        PassivePerception {
+            this.translations = props.translations
+            this.character = props.character
+            this.proficiencyBonus = props.proficiencyBonus
+        }
+        LanguageAndProficiencies {
+            this.translations = props.translations
+            this.character = props.character
+        }
+    }
+}
+
+private val LanguageAndProficiencies = FC<ParametersProps> { props ->
+    Grid {
+        this.item = true
+        this.className = ClassName("$CLASS_PADDINGS $CLASS_BORDERED")
+        Languages {
+            this.translations = props.translations
+            this.values = props.character.languages
+        }
+        Proficiencies {
+            this.translations = props.translations
+            this.values = props.character.proficiencies
+        }
+    }
+}
+
+private val Proficiencies = FC<MultiValueProps> { props ->
+    WrappedText {
+        this.label = props.translations[PROFICIENCIES_TRANSLATION] ?: ""
+        this.values = props.values
+    }
+}
+
+private val Languages = FC<MultiValueProps> { props ->
+    WrappedText {
+        this.label = props.translations[LANGUAGES_TRANSLATION] ?: ""
+        this.values = props.values
+    }
+}
+
+private val PassivePerception = FC<ParametersProps> { props ->
+    Grid {
+        this.item = true
+        OneValueInput {
+            this.header = props.translations[PASSIVE_PERCEPTION_TRANSLATION] ?: ""
+            this.value = computePassiveSkill(
+                ability = props.character.abilities.wisdom,
+                proficiencyBonus = props.proficiencyBonus,
+                proficient = props.character.skills.perception
+            ).toString()
+        }
+    }
+}
+
+private val MainSkills = FC<ParametersProps> { props ->
+    Grid {
+        this.container = true
+        Abilities {
+            this.character = props.character
+            this.translations = props.translations
+        }
+        Grid {
+            this.item = true
+            this.className = ClassName(CLASS_PADDINGS)
+            ProficiencyBonus {
+                this.translations = props.translations
+                this.proficiencyBonus = props.proficiencyBonus
+            }
+            SavingThrowsGrid {
+                this.character = props.character
+                this.translations = props.translations
+                this.proficiencyBonus = props.proficiencyBonus
+            }
+            SkillsGrid {
+                this.character = props.character
+                this.translations = props.translations
+                this.proficiencyBonus = props.proficiencyBonus
+            }
+        }
+    }
+}
+
+private val ProficiencyBonus = FC<ParametersProps> { props ->
+    OneValueInput {
+        this.header = props.translations[PROFICIENCY_BONUS_TRANSLATION] ?: ""
+        this.value = props.proficiencyBonus.toString()
+        this.title = props.translations[PROFICIENCY_BONUS_CONTENT_TRANSLATION] ?: ""
+        this.isReadOnly = true
+    }
+}
+
+private val Abilities = FC<ParametersProps> { props ->
+    Grid {
+        this.item = true
+        this.className = ClassName(CLASS_PADDINGS)
+        AbilitiesGrid {
+            this.abilities = props.character.abilities
+            this.translations = props.translations
+        }
+    }
+}
+
+private external interface TitleProps : Props {
+    var character: Character
+    var translations: Map<String, String>
+    var open: Boolean
+    var setOpen: (Boolean) -> Unit
+}
+
+private val Title = FC<TitleProps> { props ->
+    DialogTitle {
+        div {
+            this.className = ClassName("$CLASS_INLINE $CLASS_JUSTIFY_BETWEEN")
+            +props.character.name
+            TitledInput {
+                this.label = props.translations[ENTER_RACE_TRANSLATION] ?: ""
+                this.value = props.character.subrace._id
+            }
+            CloseButton {
+                this.onClick = {
+                    if (props.open) {
+                        props.setOpen(false)
+                    }
+                }
+            }
+        }
+    }
+}
+
+private val SuperiorDices = FC<SuperiorDicesProps> { props ->
+    TableContainer {
+        Table {
+            TableHead {
+                TableRow {
+                    TableCell {
+                        p {
+                            +(props.translations[DICE_TRANSLATION] ?: "")
+                        }
+                    }
+                    TableCell {
+                        p {
+                            +(props.translations[QUANTITY_TRANSLATION] ?: "")
                         }
                     }
                 }
             }
-            tableBody {
-                superiorityDices.forEach { superiorityDice ->
-                    tableRow {
-                        tableCell {
-                            styledP {
+            TableBody {
+                props.superiorityDices.forEach { superiorityDice ->
+                    TableRow {
+                        TableCell {
+                            p {
                                 +superiorityDice.dice.toString().lowercase()
                             }
                         }
-                        tableCell {
-                            styledP {
+                        TableCell {
+                            p {
                                 +superiorityDice.quantity.toString()
                             }
                         }

@@ -60,7 +60,7 @@ class TestAuthentication {
     @RelaxedMockK
     lateinit var session: CurrentSession
 
-    private var httpClient = HttpClient(MockEngine) {
+    private val httpClient = HttpClient(MockEngine) {
         install(ContentNegotiation) {
             json()
         }

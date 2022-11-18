@@ -1,5 +1,6 @@
 package me.khrys.dnd.charcreator.client.components.dialogs
 
+import me.khrys.dnd.charcreator.client.components.buttons.ButtonAction
 import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.DnDFunction
 import me.khrys.dnd.charcreator.common.models.Feat
@@ -12,12 +13,7 @@ external interface DialogProps : PropsWithChildren {
     var setOpen: (Boolean) -> Unit
 }
 
-external interface CharDialogProps : DialogProps {
-    var character: Character
-    var action: () -> Unit
-    var feats: Map<String, Feat>
-    var useFeats: Boolean
-}
+external interface CharDialogProps : FeatsProps
 
 external interface FeatureProps<T> : DialogProps {
     var character: Character
@@ -26,7 +22,7 @@ external interface FeatureProps<T> : DialogProps {
     var setValue: (T) -> Unit
 }
 
-external interface MultipleFeatureProps: FeatureProps<List<String>> {
+external interface MultipleFeatureProps : FeatureProps<List<String>> {
     var size: Int
 }
 
@@ -34,14 +30,24 @@ external interface FeatsProps : DialogProps {
     var feature: Feature
     var character: Character
     var feats: Map<String, Feat>
+    var useFeats: Boolean
     var action: () -> Unit
 }
 
-external interface CharRaceProps : Props {
-    var newCharacter: Character
+external interface MultipleFeaturesFeatsProps : DialogProps {
+    var features: List<Feature>
+    var character: Character
+    var feats: Map<String, Feat>
+    var useFeats: Boolean
+    var action: () -> Unit
+}
+
+external interface CharBasedProps : Props {
+    var character: Character
     var open: Boolean
     var setOpen: (Boolean) -> Unit
     var action: () -> Unit
-    var backAction: () -> Unit
+    var backAction: ButtonAction
     var feats: Map<String, Feat>
+    var translations: Map<String, String>
 }

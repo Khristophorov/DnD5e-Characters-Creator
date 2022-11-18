@@ -1,22 +1,28 @@
 package me.khrys.dnd.charcreator.client
 
-import com.ccfraser.muirwik.components.themeProvider
 import kotlinx.browser.document
 import kotlinx.browser.window
 import me.khrys.dnd.charcreator.common.ROOT
-import react.dom.div
-import react.dom.render
+import mui.material.styles.ThemeProvider
+import react.FC
+import react.Props
+import react.createElement
+import react.dom.client.createRoot
+import react.dom.html.ReactHTML.div
 
 fun main() {
     window.onload = {
         document.getElementById(ROOT)?.let {
-            render(it) {
-                themeProvider(defaultTheme) {
+            console.info("Starting the app.")
+            val mainElement = FC<Props> {
+                ThemeProvider {
+                    theme = defaultTheme
                     div {
-                        child(mainDnd)
+                        MainDnd()
                     }
                 }
             }
+            createRoot(it).render(createElement(mainElement))
         }
     }
 }

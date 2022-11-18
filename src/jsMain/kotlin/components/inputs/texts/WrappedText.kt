@@ -1,27 +1,30 @@
 package me.khrys.dnd.charcreator.client.components.inputs.texts
 
-import com.ccfraser.muirwik.components.inputLabel
-import kotlinx.css.WhiteSpace.preWrap
-import kotlinx.css.maxWidth
-import kotlinx.css.px
-import kotlinx.css.whiteSpace
-import react.RBuilder
-import styled.css
-import styled.styledDiv
-import styled.styledP
+import csstype.WhiteSpace.Companion.preWrap
+import csstype.px
+import emotion.react.css
+import mui.material.InputLabel
+import react.FC
+import react.Props
+import react.dom.html.ReactHTML.div
+import react.dom.html.ReactHTML.p
 
-fun RBuilder.dWrappedText(
-    label: String,
-    text: List<String>
-) {
-    styledDiv {
-        inputLabel(label)
-        styledP {
+external interface WrappedTextProps : Props {
+    var label: String
+    var values: List<String>
+}
+
+val WrappedText = FC<WrappedTextProps> { props ->
+    div {
+        InputLabel {
+            +props.label
+        }
+        p {
             css {
                 maxWidth = 300.px
                 whiteSpace = preWrap
             }
-            +text.joinToString(separator = ", ")
+            +props.values.joinToString(separator = ", ")
         }
     }
 }

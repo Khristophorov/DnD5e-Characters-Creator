@@ -1,8 +1,8 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.grids
 
-import kotlinx.html.classes
+import csstype.ClassName
 import me.khrys.dnd.charcreator.client.components.dialogs.SavingThrowsItem
-import me.khrys.dnd.charcreator.client.components.inputs.dCenteredBold
+import me.khrys.dnd.charcreator.client.components.inputs.CenteredBold
 import me.khrys.dnd.charcreator.common.ACROBATICS_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.ACROBATICS_TRANSLATION
 import me.khrys.dnd.charcreator.common.ANIMAL_HANDLING_CONTENT_TRANSLATION
@@ -42,150 +42,160 @@ import me.khrys.dnd.charcreator.common.STEALTH_TRANSLATION
 import me.khrys.dnd.charcreator.common.SURVIVAL_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.SURVIVAL_TRANSLATION
 import me.khrys.dnd.charcreator.common.models.Character
-import react.RBuilder
-import styled.styledDiv
+import react.FC
+import react.Props
+import react.dom.html.ReactHTML.div
 
-fun RBuilder.dSkillsGrid(
-    character: Character,
-    translations: Map<String, String>,
-    proficiencyBonus: Int
-) = styledDiv {
-    attrs.classes = setOf(CLASS_BORDERED)
-    val abilities = character.abilities
-    val skills = character.skills
-    buildSavingThrowsElements(
-        listOf(
-            translations[ACROBATICS_TRANSLATION] to
-                    SavingThrowsItem(
-                        title = translations[ACROBATICS_CONTENT_TRANSLATION] ?: "",
-                        label = translations[ACROBATICS_TRANSLATION] ?: "",
-                        value = abilities.dexterity,
-                        proficient = skills.acrobatics,
-                        proficiencyBonus = proficiencyBonus
-                    ), translations[ANIMAL_HANDLING_TRANSLATION] to
-                    SavingThrowsItem(
-                        title = translations[ANIMAL_HANDLING_CONTENT_TRANSLATION] ?: "",
-                        label = translations[ANIMAL_HANDLING_TRANSLATION] ?: "",
-                        value = abilities.wisdom,
-                        proficient = skills.animalHandling,
-                        proficiencyBonus = proficiencyBonus
-                    ), translations[ARCANA_TRANSLATION] to
-                    SavingThrowsItem(
-                        title = translations[ARCANA_CONTENT_TRANSLATION] ?: "",
-                        label = translations[ARCANA_TRANSLATION] ?: "",
-                        value = abilities.intelligence,
-                        proficient = skills.arcana,
-                        proficiencyBonus = proficiencyBonus
-                    ), translations[ATHLETICS_TRANSLATION] to
-                    SavingThrowsItem(
-                        title = translations[ATHLETICS_CONTENT_TRANSLATION] ?: "",
-                        label = translations[ATHLETICS_TRANSLATION] ?: "",
-                        value = abilities.strength,
-                        proficient = skills.athletics,
-                        proficiencyBonus = proficiencyBonus
-                    ), translations[DECEPTION_TRANSLATION] to
-                    SavingThrowsItem(
-                        title = translations[DECEPTION_CONTENT_TRANSLATION] ?: "",
-                        label = translations[DECEPTION_TRANSLATION] ?: "",
-                        value = abilities.charisma,
-                        proficient = skills.deception,
-                        proficiencyBonus = proficiencyBonus
-                    ), translations[HISTORY_TRANSLATION] to
-                    SavingThrowsItem(
-                        title = translations[HISTORY_CONTENT_TRANSLATION] ?: "",
-                        label = translations[HISTORY_TRANSLATION] ?: "",
-                        value = abilities.intelligence,
-                        proficient = skills.history,
-                        proficiencyBonus = proficiencyBonus
-                    ), translations[INSIGHT_TRANSLATION] to
-                    SavingThrowsItem(
-                        title = translations[INSIGHT_CONTENT_TRANSLATION] ?: "",
-                        label = translations[INSIGHT_TRANSLATION] ?: "",
-                        value = abilities.wisdom,
-                        proficient = skills.insight,
-                        proficiencyBonus = proficiencyBonus
-                    ), translations[INTIMIDATION_TRANSLATION] to
-                    SavingThrowsItem(
-                        title = translations[INTIMIDATION_CONTENT_TRANSLATION] ?: "",
-                        label = translations[INTIMIDATION_TRANSLATION] ?: "",
-                        value = abilities.charisma,
-                        proficient = skills.intimidation,
-                        proficiencyBonus = proficiencyBonus
-                    ), translations[INVESTIGATION_TRANSLATION] to
-                    SavingThrowsItem(
-                        title = translations[INVESTIGATION_CONTENT_TRANSLATION] ?: "",
-                        label = translations[INVESTIGATION_TRANSLATION] ?: "",
-                        value = abilities.intelligence,
-                        proficient = skills.investigation,
-                        proficiencyBonus = proficiencyBonus
-                    ), translations[MEDICINE_TRANSLATION] to
-                    SavingThrowsItem(
-                        title = translations[MEDICINE_CONTENT_TRANSLATION] ?: "",
-                        label = translations[MEDICINE_TRANSLATION] ?: "",
-                        value = abilities.wisdom,
-                        proficient = skills.medicine,
-                        proficiencyBonus = proficiencyBonus
-                    ), translations[NATURE_TRANSLATION] to
-                    SavingThrowsItem(
-                        title = translations[NATURE_CONTENT_TRANSLATION] ?: "",
-                        label = translations[NATURE_TRANSLATION] ?: "",
-                        value = abilities.intelligence,
-                        proficient = skills.nature,
-                        proficiencyBonus = proficiencyBonus
-                    ), translations[PERCEPTION_TRANSLATION] to
-                    SavingThrowsItem(
-                        title = translations[PERCEPTION_CONTENT_TRANSLATION] ?: "",
-                        label = translations[PERCEPTION_TRANSLATION] ?: "",
-                        value = abilities.wisdom,
-                        proficient = skills.perception,
-                        proficiencyBonus = proficiencyBonus
-                    ), translations[PERFORMANCE_TRANSLATION] to
-                    SavingThrowsItem(
-                        title = translations[PERFORMANCE_CONTENT_TRANSLATION] ?: "",
-                        label = translations[PERFORMANCE_TRANSLATION] ?: "",
-                        value = abilities.charisma,
-                        proficient = skills.performance,
-                        proficiencyBonus = proficiencyBonus
-                    ), translations[PERSUASION_TRANSLATION] to
-                    SavingThrowsItem(
-                        title = translations[PERSUASION_CONTENT_TRANSLATION] ?: "",
-                        label = translations[PERSUASION_TRANSLATION] ?: "",
-                        value = abilities.charisma,
-                        proficient = skills.persuasion,
-                        proficiencyBonus = proficiencyBonus
-                    ), translations[RELIGION_TRANSLATION] to
-                    SavingThrowsItem(
-                        title = translations[RELIGION_CONTENT_TRANSLATION] ?: "",
-                        label = translations[RELIGION_TRANSLATION] ?: "",
-                        value = abilities.intelligence,
-                        proficient = skills.religion,
-                        proficiencyBonus = proficiencyBonus
-                    ), translations[SLEIGHT_OF_HANDS_TRANSLATION] to
-                    SavingThrowsItem(
-                        title = translations[SLEIGHT_OF_HANDS_CONTENT_TRANSLATION] ?: "",
-                        label = translations[SLEIGHT_OF_HANDS_TRANSLATION] ?: "",
-                        value = abilities.dexterity,
-                        proficient = skills.sleightOfHands,
-                        proficiencyBonus = proficiencyBonus
-                    ), translations[STEALTH_TRANSLATION] to
-                    SavingThrowsItem(
-                        title = translations[STEALTH_CONTENT_TRANSLATION] ?: "",
-                        label = translations[STEALTH_TRANSLATION] ?: "",
-                        value = abilities.dexterity,
-                        proficient = skills.stealth,
-                        proficiencyBonus = proficiencyBonus
-                    ), translations[SURVIVAL_TRANSLATION] to
-                    SavingThrowsItem(
-                        title = translations[SURVIVAL_CONTENT_TRANSLATION] ?: "",
-                        label = translations[SURVIVAL_TRANSLATION] ?: "",
-                        value = abilities.wisdom,
-                        proficient = skills.survival,
-                        proficiencyBonus = proficiencyBonus
-                    )
-        ).sortedBy { it.first }.map { it.second })
-    dCenteredBold(translations[ENTER_SKILLS_TRANSLATION] ?: "")
+external interface SkillsProps : Props {
+    var character: Character
+    var translations: Map<String, String>
+    var proficiencyBonus: Int
 }
 
-private fun RBuilder.buildSavingThrowsElements(elements: List<SavingThrowsItem>) {
-    elements.forEach { dSavingThrowsGridItem(it) }
+private external interface SavingThrowsProps : Props {
+    var elements: List<SavingThrowsItem>
+}
+
+val SkillsGrid = FC<SkillsProps> { props ->
+    div {
+        this.className = ClassName(CLASS_BORDERED)
+        val abilities = props.character.abilities
+        val skills = props.character.skills
+        SavingThrowsElements {
+            this.elements = listOf(
+                props.translations[ACROBATICS_TRANSLATION] to
+                        SavingThrowsItem(
+                            title = props.translations[ACROBATICS_CONTENT_TRANSLATION] ?: "",
+                            label = props.translations[ACROBATICS_TRANSLATION] ?: "",
+                            value = abilities.dexterity,
+                            proficient = skills.acrobatics,
+                            proficiencyBonus = props.proficiencyBonus
+                        ), props.translations[ANIMAL_HANDLING_TRANSLATION] to
+                        SavingThrowsItem(
+                            title = props.translations[ANIMAL_HANDLING_CONTENT_TRANSLATION] ?: "",
+                            label = props.translations[ANIMAL_HANDLING_TRANSLATION] ?: "",
+                            value = abilities.wisdom,
+                            proficient = skills.animalHandling,
+                            proficiencyBonus = props.proficiencyBonus
+                        ), props.translations[ARCANA_TRANSLATION] to
+                        SavingThrowsItem(
+                            title = props.translations[ARCANA_CONTENT_TRANSLATION] ?: "",
+                            label = props.translations[ARCANA_TRANSLATION] ?: "",
+                            value = abilities.intelligence,
+                            proficient = skills.arcana,
+                            proficiencyBonus = props.proficiencyBonus
+                        ), props.translations[ATHLETICS_TRANSLATION] to
+                        SavingThrowsItem(
+                            title = props.translations[ATHLETICS_CONTENT_TRANSLATION] ?: "",
+                            label = props.translations[ATHLETICS_TRANSLATION] ?: "",
+                            value = abilities.strength,
+                            proficient = skills.athletics,
+                            proficiencyBonus = props.proficiencyBonus
+                        ), props.translations[DECEPTION_TRANSLATION] to
+                        SavingThrowsItem(
+                            title = props.translations[DECEPTION_CONTENT_TRANSLATION] ?: "",
+                            label = props.translations[DECEPTION_TRANSLATION] ?: "",
+                            value = abilities.charisma,
+                            proficient = skills.deception,
+                            proficiencyBonus = props.proficiencyBonus
+                        ), props.translations[HISTORY_TRANSLATION] to
+                        SavingThrowsItem(
+                            title = props.translations[HISTORY_CONTENT_TRANSLATION] ?: "",
+                            label = props.translations[HISTORY_TRANSLATION] ?: "",
+                            value = abilities.intelligence,
+                            proficient = skills.history,
+                            proficiencyBonus = props.proficiencyBonus
+                        ), props.translations[INSIGHT_TRANSLATION] to
+                        SavingThrowsItem(
+                            title = props.translations[INSIGHT_CONTENT_TRANSLATION] ?: "",
+                            label = props.translations[INSIGHT_TRANSLATION] ?: "",
+                            value = abilities.wisdom,
+                            proficient = skills.insight,
+                            proficiencyBonus = props.proficiencyBonus
+                        ), props.translations[INTIMIDATION_TRANSLATION] to
+                        SavingThrowsItem(
+                            title = props.translations[INTIMIDATION_CONTENT_TRANSLATION] ?: "",
+                            label = props.translations[INTIMIDATION_TRANSLATION] ?: "",
+                            value = abilities.charisma,
+                            proficient = skills.intimidation,
+                            proficiencyBonus = props.proficiencyBonus
+                        ), props.translations[INVESTIGATION_TRANSLATION] to
+                        SavingThrowsItem(
+                            title = props.translations[INVESTIGATION_CONTENT_TRANSLATION] ?: "",
+                            label = props.translations[INVESTIGATION_TRANSLATION] ?: "",
+                            value = abilities.intelligence,
+                            proficient = skills.investigation,
+                            proficiencyBonus = props.proficiencyBonus
+                        ), props.translations[MEDICINE_TRANSLATION] to
+                        SavingThrowsItem(
+                            title = props.translations[MEDICINE_CONTENT_TRANSLATION] ?: "",
+                            label = props.translations[MEDICINE_TRANSLATION] ?: "",
+                            value = abilities.wisdom,
+                            proficient = skills.medicine,
+                            proficiencyBonus = props.proficiencyBonus
+                        ), props.translations[NATURE_TRANSLATION] to
+                        SavingThrowsItem(
+                            title = props.translations[NATURE_CONTENT_TRANSLATION] ?: "",
+                            label = props.translations[NATURE_TRANSLATION] ?: "",
+                            value = abilities.intelligence,
+                            proficient = skills.nature,
+                            proficiencyBonus = props.proficiencyBonus
+                        ), props.translations[PERCEPTION_TRANSLATION] to
+                        SavingThrowsItem(
+                            title = props.translations[PERCEPTION_CONTENT_TRANSLATION] ?: "",
+                            label = props.translations[PERCEPTION_TRANSLATION] ?: "",
+                            value = abilities.wisdom,
+                            proficient = skills.perception,
+                            proficiencyBonus = props.proficiencyBonus
+                        ), props.translations[PERFORMANCE_TRANSLATION] to
+                        SavingThrowsItem(
+                            title = props.translations[PERFORMANCE_CONTENT_TRANSLATION] ?: "",
+                            label = props.translations[PERFORMANCE_TRANSLATION] ?: "",
+                            value = abilities.charisma,
+                            proficient = skills.performance,
+                            proficiencyBonus = props.proficiencyBonus
+                        ), props.translations[PERSUASION_TRANSLATION] to
+                        SavingThrowsItem(
+                            title = props.translations[PERSUASION_CONTENT_TRANSLATION] ?: "",
+                            label = props.translations[PERSUASION_TRANSLATION] ?: "",
+                            value = abilities.charisma,
+                            proficient = skills.persuasion,
+                            proficiencyBonus = props.proficiencyBonus
+                        ), props.translations[RELIGION_TRANSLATION] to
+                        SavingThrowsItem(
+                            title = props.translations[RELIGION_CONTENT_TRANSLATION] ?: "",
+                            label = props.translations[RELIGION_TRANSLATION] ?: "",
+                            value = abilities.intelligence,
+                            proficient = skills.religion,
+                            proficiencyBonus = props.proficiencyBonus
+                        ), props.translations[SLEIGHT_OF_HANDS_TRANSLATION] to
+                        SavingThrowsItem(
+                            title = props.translations[SLEIGHT_OF_HANDS_CONTENT_TRANSLATION] ?: "",
+                            label = props.translations[SLEIGHT_OF_HANDS_TRANSLATION] ?: "",
+                            value = abilities.dexterity,
+                            proficient = skills.sleightOfHands,
+                            proficiencyBonus = props.proficiencyBonus
+                        ), props.translations[STEALTH_TRANSLATION] to
+                        SavingThrowsItem(
+                            title = props.translations[STEALTH_CONTENT_TRANSLATION] ?: "",
+                            label = props.translations[STEALTH_TRANSLATION] ?: "",
+                            value = abilities.dexterity,
+                            proficient = skills.stealth,
+                            proficiencyBonus = props.proficiencyBonus
+                        ), props.translations[SURVIVAL_TRANSLATION] to
+                        SavingThrowsItem(
+                            title = props.translations[SURVIVAL_CONTENT_TRANSLATION] ?: "",
+                            label = props.translations[SURVIVAL_TRANSLATION] ?: "",
+                            value = abilities.wisdom,
+                            proficient = skills.survival,
+                            proficiencyBonus = props.proficiencyBonus
+                        )
+            ).sortedBy { it.first }.map { it.second }
+        }
+        CenteredBold { +(props.translations[ENTER_SKILLS_TRANSLATION] ?: "") }
+    }
+}
+
+private val SavingThrowsElements = FC<SavingThrowsProps> { props ->
+    props.elements.forEach { SavingThrowsGridItem { this.item = it } }
 }

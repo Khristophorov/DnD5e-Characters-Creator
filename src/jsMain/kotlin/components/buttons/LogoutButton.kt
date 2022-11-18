@@ -1,16 +1,20 @@
 package me.khrys.dnd.charcreator.client.components.buttons
 
+import csstype.Float
+import emotion.react.css
 import kotlinx.browser.window
-import kotlinx.css.Float.right
-import kotlinx.css.float
 import me.khrys.dnd.charcreator.common.LOGOUT_URL
-import react.RBuilder
-import styled.css
-import styled.styledDiv
+import mui.material.ButtonProps
+import react.FC
+import react.dom.html.ReactHTML.div
 
-fun RBuilder.dLogoutButton(caption: String?) {
-    styledDiv {
-        css { float = right }
-        dButton(caption = caption ?: "", action = { window.location.href = LOGOUT_URL })
+val LogoutButton = FC<ButtonProps> { props ->
+    console.info("Logout button rendering")
+    div {
+        css { float = Float.right }
+        Button {
+            +props.children
+            this.onClick = { window.location.href = LOGOUT_URL }
+        }
     }
 }

@@ -1,23 +1,27 @@
 package me.khrys.dnd.charcreator.client.components.buttons
 
-import kotlinx.css.Float.right
-import kotlinx.css.float
-import kotlinx.css.padding
-import me.khrys.dnd.charcreator.client.components.dAddIcon
-import me.khrys.dnd.charcreator.client.components.inputs.tooltips.dTooltip
-import org.w3c.dom.events.Event
-import react.RBuilder
-import styled.css
-import styled.styledDiv
+import csstype.Float
+import csstype.px
+import emotion.react.css
+import me.khrys.dnd.charcreator.client.components.inputs.tooltips.Tooltip
+import mui.icons.material.Add
+import mui.material.ButtonProps
+import react.FC
+import react.dom.html.ReactHTML.div
 
-fun RBuilder.dPlusButton(title: String, action: (Event) -> Unit) {
-    styledDiv {
+val PlusButton = FC<ButtonProps> { props ->
+    console.info("Rendering Plus Button")
+    div {
         css {
-            float = right
-            padding = "15px"
+            float = Float.right
+            padding = 15.px
         }
-        dTooltip(title = title) {
-            dFab(action = action) { dAddIcon() }
+        Tooltip {
+            Fab {
+                Add()
+                this.onClick = props.onClick
+            }
+            props.children?.let { this.title = it }
         }
     }
 }

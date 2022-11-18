@@ -1,19 +1,14 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
-import com.ccfraser.muirwik.components.dialog
-import com.ccfraser.muirwik.components.dialogActions
-import com.ccfraser.muirwik.components.dialogContent
-import com.ccfraser.muirwik.components.dialogContentText
-import com.ccfraser.muirwik.components.dialogTitle
-import com.ccfraser.muirwik.components.utils.targetValue
 import me.khrys.dnd.charcreator.client.TranslationsContext
-import me.khrys.dnd.charcreator.client.components.buttons.dCheckboxWithLabel
-import me.khrys.dnd.charcreator.client.components.buttons.dSubmit
-import me.khrys.dnd.charcreator.client.components.dialogs.CharRaceProps
-import me.khrys.dnd.charcreator.client.components.dialogs.collectRaceFeatures
-import me.khrys.dnd.charcreator.client.components.inputs.dValidatedList
-import me.khrys.dnd.charcreator.client.components.validators.dValidatorForm
+import me.khrys.dnd.charcreator.client.components.buttons.CheckboxWithLabel
+import me.khrys.dnd.charcreator.client.components.buttons.Submit
+import me.khrys.dnd.charcreator.client.components.dialogs.CharBasedProps
+import me.khrys.dnd.charcreator.client.components.dialogs.CollectRaceFeatures
+import me.khrys.dnd.charcreator.client.components.inputs.ValidatedList
+import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
 import me.khrys.dnd.charcreator.client.loadRaces
+import me.khrys.dnd.charcreator.client.value
 import me.khrys.dnd.charcreator.common.ENTER_RACE_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.ENTER_RACE_TRANSLATION
 import me.khrys.dnd.charcreator.common.FEATS_SELECT_TRANSLATION
@@ -22,62 +17,79 @@ import me.khrys.dnd.charcreator.common.RACE_SHOULD_BE_FILLED_TRANSLATION
 import me.khrys.dnd.charcreator.common.VALIDATION_REQUIRED
 import me.khrys.dnd.charcreator.common.models.Race
 import me.khrys.dnd.charcreator.common.models.emptyRace
-import react.fc
+import mui.material.CircularProgress
+import mui.material.Dialog
+import mui.material.DialogActions
+import mui.material.DialogContent
+import mui.material.DialogContentText
+import mui.material.DialogTitle
+import react.FC
 import react.useContext
 import react.useState
 
-val charRaceWindow = fc<CharRaceProps> { props ->
+val CharRaceWindow = FC<CharBasedProps> { props ->
     val (races, setRaces) = useState(emptyMap<String, Race>())
     val (race, setRace) = useState(emptyRace())
     val (description, setDescription) = useState("")
     val (openFeatures, setOpenFeatures) = useState(false)
     val (useFeats, setUseFeats) = useState(false)
+    val translations = useContext(TranslationsContext)
     if (props.open && races.isEmpty()) {
+        CircularProgress()
         loadRaces { setRaces(it) }
-    } else {
-        dialog(open = props.open) {
-            val translations = useContext(TranslationsContext)
-            dialogTitle(text = translations[ENTER_RACE_TRANSLATION] ?: "")
-            dialogContent(dividers = true) {
-                dialogContentText(text = translations[ENTER_RACE_CONTENT_TRANSLATION] ?: "")
-                dValidatorForm(onSubmit = {
-                    props.newCharacter.race = race
-                    props.newCharacter.features = emptyList()
-                    setOpenFeatures(true)
-                    props.setOpen(false)
-                }) {
-                    if (race.features.any { it.withFeats }) {
-                        dCheckboxWithLabel(
-                            label = translations[FEATS_SELECT_TRANSLATION] ?: "",
-                            checked = useFeats,
-                            onChange = { _, value -> setUseFeats(value) }
-                        )
+    } else if (props.open) {
+        console.info("Rendering character race window")
+        Dialog {
+            this.open = props.open
+            DialogTitle {
+                +(translations[ENTER_RACE_TRANSLATION] ?: "")
+            }
+            DialogContent {
+                this.dividers = true
+                DialogContentText {
+                    +(translations[ENTER_RACE_CONTENT_TRANSLATION] ?: "")
+                }
+                ValidatorForm {
+                    this.onSubmit = {
+                        console.info("Chosen race: ${race._id}")
+                        props.character.race = race
+                        props.character.features = emptyList()
+                        setOpenFeatures(true)
+                        props.setOpen(false)
                     }
-                    dValidatedList(
-                        label = translations[ENTER_RACE_TRANSLATION] ?: "",
-                        value = race._id,
-                        validators = arrayOf(VALIDATION_REQUIRED),
-                        errorMessages = arrayOf(translations[RACE_SHOULD_BE_FILLED_TRANSLATION] ?: ""),
-                        onChange = { event ->
-                            setRace(races[event.targetValue] ?: emptyRace())
-                        },
-                        menuItems = races.mapValues { it.value.description },
-                        setDescription = { setDescription(it) },
-                        description = description
-                    )
-                    dialogActions {
-                        dSubmit(translations[NEXT_TRANSLATION] ?: "")
+                    if (race.features.any { it.withFeats }) {
+                        CheckboxWithLabel {
+                            this.label = translations[FEATS_SELECT_TRANSLATION] ?: ""
+                            this.checked = useFeats
+                            this.onChange = { _, value -> setUseFeats(value) }
+                        }
+                    }
+                    ValidatedList {
+                        this.label = translations[ENTER_RACE_TRANSLATION] ?: ""
+                        this.value = race._id
+                        this.validators = arrayOf(VALIDATION_REQUIRED)
+                        this.errorMessages = arrayOf(translations[RACE_SHOULD_BE_FILLED_TRANSLATION] ?: "")
+                        this.onChange = { event ->
+                            setRace(races[event.value()] ?: emptyRace())
+                        }
+                        this.menuItems = races.mapValues { it.value.description }
+                        this.useDescription = true
+                        this.setDescription = { setDescription(it) }
+                        this.description = description
+                    }
+                    DialogActions {
+                        Submit { +(translations[NEXT_TRANSLATION] ?: "") }
                     }
                 }
             }
         }
-        child(collectRaceFeatures) {
-            attrs.character = props.newCharacter
-            attrs.open = openFeatures
-            attrs.setOpen = { setOpenFeatures(it) }
-            attrs.action = props.action
-            attrs.feats = props.feats
-            attrs.useFeats = useFeats
-        }
+    }
+    CollectRaceFeatures {
+        this.character = props.character
+        this.open = openFeatures
+        this.setOpen = { setOpenFeatures(it) }
+        this.action = props.action
+        this.feats = props.feats
+        this.useFeats = useFeats
     }
 }

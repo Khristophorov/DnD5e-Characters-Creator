@@ -1,25 +1,22 @@
 package me.khrys.dnd.charcreator.client.components.inputs.texts
 
-import kotlinx.css.WhiteSpace.preWrap
-import kotlinx.css.maxWidth
-import kotlinx.css.px
-import kotlinx.css.whiteSpace
-import me.khrys.dnd.charcreator.client.components.inputs.tooltips.dTooltip
-import react.RBuilder
-import styled.css
-import styled.styledP
+import csstype.WhiteSpace.Companion.preWrap
+import csstype.px
+import emotion.react.css
+import me.khrys.dnd.charcreator.client.components.inputs.tooltips.Tooltip
+import mui.material.TooltipProps
+import react.FC
+import react.dom.html.ReactHTML.span
 
-fun RBuilder.dTextWithTooltip(
-    text: String,
-    tooltip: String
-) {
-    dTooltip(tooltip) {
-        styledP {
+val TextWithTooltip = FC<TooltipProps> { props ->
+    Tooltip {
+        this.title = props.title
+        span {
             css {
                 maxWidth = 300.px
                 whiteSpace = preWrap
             }
-            +text
+            +props.children
         }
     }
 }

@@ -1,9 +1,11 @@
 package me.khrys.dnd.charcreator.client
 
-import com.ccfraser.muirwik.components.styles.Theme
-import com.ccfraser.muirwik.components.styles.createTheme
+import csstype.Color
+import mui.material.styles.Theme
+import mui.material.styles.createTheme
 
-val defaultTheme = createDefaultTheme(js("""
+val defaultTheme = createDefaultTheme(
+    js("""
     {
         components: {
             MuiButton: {
@@ -32,7 +34,8 @@ val defaultTheme = createDefaultTheme(js("""
                 styleOverrides: {
                     root: {
                         width: '64px',
-                        height: '64px'
+                        height: '64px',
+                        color: 'black'
                     }
                 }
             },
@@ -53,8 +56,9 @@ val defaultTheme = createDefaultTheme(js("""
             MuiInputLabel: {
                 styleOverrides: {
                     shrink: {
-                        transformOrigin: 'top center',
-                        overflow: 'visible'
+                        overflow: 'visible',
+                        marginRight: '-50%',
+                        textAlign: 'center'
                     }
                 }
             },
@@ -82,15 +86,16 @@ val defaultTheme = createDefaultTheme(js("""
                 }
             }
         }
-    }""")
+    }
+    """)
 )
 
 fun createDefaultTheme(args: dynamic): Theme {
-    val theme = createTheme(args = args)
+    val theme = createTheme(args = arrayOf(args))
     theme.palette.background.default = "#fff3e0"
-    theme.palette.primary.main = "#ffcc80"
-    theme.palette.primary.dark = "#ffb74d"
-    theme.palette.primary.contrastText = "black"
-    theme.palette.secondary.main = "#d97d1a"
+    theme.palette.primary.main = Color("#ffb74d")
+    theme.palette.primary.dark = Color("#ffb74d")
+    theme.palette.primary.contrastText = Color("black")
+    theme.palette.secondary.main = Color("#d97d1a")
     return theme
 }

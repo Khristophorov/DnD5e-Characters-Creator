@@ -1,6 +1,5 @@
 package me.khrys.dnd.charcreator.client
 
-import com.ccfraser.muirwik.components.circularProgress
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.MainScope
@@ -23,6 +22,7 @@ import me.khrys.dnd.charcreator.common.models.Feature
 import me.khrys.dnd.charcreator.common.models.Race
 import me.khrys.dnd.charcreator.common.models.Translation
 import org.w3c.dom.Audio
+import org.w3c.dom.HTMLDataElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.events.Event
 import org.w3c.fetch.Headers
@@ -30,7 +30,6 @@ import org.w3c.fetch.RequestInit
 import org.w3c.files.Blob
 import org.w3c.files.FileReader
 import org.w3c.files.get
-import react.RBuilder
 import react.StateSetter
 import react.useState
 
@@ -56,25 +55,35 @@ fun storeCharacter(character: Character) = MainScope().launch {
 }
 
 fun imageFromEvent(event: Event, callback: (Event) -> Unit) {
-    val file = (event.target as HTMLInputElement).files?.get(0) ?: Blob()
+    val file = event.target.unsafeCast<HTMLInputElement>().files?.get(0) ?: Blob()
     val reader = FileReader()
     reader.onloadend = callback
     reader.readAsDataURL(file)
 }
 
-fun RBuilder.loadRaces(
-    setRaces: (Map<String, Race>) -> Unit
-) {
-    circularProgress()
+fun loadTranslations(setTranslations: (Map<String, String>) -> Unit) {
+    console.info("Loading translations.")
+    MainScope().launch {
+        setTranslations(fetchTranslations())
+    }
+}
+
+fun loadCharacters(setCharacters: (List<Character>) -> Unit) {
+    console.info("Loading characters.")
+    MainScope().launch {
+        setCharacters(fetchCharacters())
+    }
+}
+
+fun loadRaces(setRaces: (Map<String, Race>) -> Unit) {
+    console.info("Loading races.")
     MainScope().launch {
         setRaces(fetchRaces().associateBy { it._id })
     }
 }
 
-fun RBuilder.loadFeats(
-    setFeats: (Map<String, Feat>) -> Unit
-) {
-    circularProgress()
+fun loadFeats(setFeats: (Map<String, Feat>) -> Unit) {
+    console.info("Loading feats.")
     MainScope().launch {
         setFeats(fetchFeats().associateBy { it._id })
     }
@@ -105,3 +114,5 @@ fun useFeatureWindowSettings(): FeatureWindowSettings {
 
     return FeatureWindowSettings(open, setOpen, feature, setFeature, function, setFunction)
 }
+
+fun Event.value() = this.target.unsafeCast<HTMLDataElement>().value

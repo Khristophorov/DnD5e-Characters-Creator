@@ -1,17 +1,18 @@
 package me.khrys.dnd.charcreator.client.components.inputs
 
-import kotlinx.css.TextAlign
-import kotlinx.css.textAlign
-import kotlinx.html.classes
+import csstype.ClassName
+import csstype.TextAlign.Companion.center
+import emotion.react.css
 import me.khrys.dnd.charcreator.common.CLASS_CENTER
-import react.RBuilder
-import styled.css
-import styled.styledStrong
+import react.FC
+import react.PropsWithChildren
+import react.dom.html.ReactHTML.strong
 
-fun RBuilder.dCenteredBold(text: String) {
-    styledStrong {
-        attrs.classes = setOf(CLASS_CENTER)
-        css { textAlign = TextAlign.center }
-        +text.uppercase()
+val CenteredBold = FC<PropsWithChildren> { props ->
+    strong {
+        css(ClassName(CLASS_CENTER)) {
+            textAlign = center
+        }
+        +props.children.toString().uppercase()
     }
 }

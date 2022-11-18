@@ -1,55 +1,47 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
-import com.ccfraser.muirwik.components.dialog
-import com.ccfraser.muirwik.components.dialogActions
-import com.ccfraser.muirwik.components.dialogContent
-import com.ccfraser.muirwik.components.dialogContentText
-import com.ccfraser.muirwik.components.dialogTitle
 import me.khrys.dnd.charcreator.client.TranslationsContext
-import me.khrys.dnd.charcreator.client.components.buttons.dSubmit
+import me.khrys.dnd.charcreator.client.components.buttons.Submit
 import me.khrys.dnd.charcreator.client.components.dialogs.FeatureProps
-import me.khrys.dnd.charcreator.client.components.validators.dValidatorForm
+import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
 import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
-import me.khrys.dnd.charcreator.common.DANGEROUS_HTML
 import me.khrys.dnd.charcreator.common.NEXT_TRANSLATION
-import react.RBuilder
-import react.fc
+import mui.material.Dialog
+import mui.material.DialogActions
+import mui.material.DialogContent
+import mui.material.DialogContentText
+import mui.material.DialogTitle
+import react.FC
+import react.dom.DangerouslySetInnerHTML
+import react.dom.html.ReactHTML.span
 import react.useContext
-import styled.styledDiv
 
-val informWindow = fc<FeatureProps<String>> { props ->
-    dInformWindow(
-        open = props.open,
-        setOpen = props.setOpen,
-        header = props.feature.name,
-        description = props.feature.description,
-        setValue = { props.setValue("") }
-    )
-}
+val InformWindow = FC<FeatureProps<String>> { props ->
+    if (props.open) {
+        val translations = useContext(TranslationsContext)
+        console.info("Rendering info for ${props.feature.name}")
 
-fun RBuilder.dInformWindow(
-    open: Boolean,
-    setOpen: (Boolean) -> Unit,
-    header: String,
-    description: String,
-    setValue: () -> Unit
-) {
-    val translations = useContext(TranslationsContext)
-
-    dialog(open = open) {
-        dialogTitle(text = header)
-        dialogContent(dividers = true) {
-            dialogContentText(text = "") {
-                styledDiv {
-                    attrs[DANGEROUS_HTML] = DangerousHTML(description)
-                }
+        Dialog {
+            this.open = props.open
+            DialogTitle {
+                +props.feature.name
             }
-            dValidatorForm(onSubmit = {
-                setValue()
-                setOpen(false)
-            }) {
-                dialogActions {
-                    dSubmit(translations[NEXT_TRANSLATION] ?: "")
+            DialogContent {
+                this.dividers = true
+                DialogContentText {
+                    span {
+                        this.dangerouslySetInnerHTML =
+                            DangerousHTML(props.feature.description).unsafeCast<DangerouslySetInnerHTML>()
+                    }
+                }
+                ValidatorForm {
+                    this.onSubmit = {
+                        props.setValue("")
+                        props.setOpen(false)
+                    }
+                    DialogActions {
+                        Submit { +(translations[NEXT_TRANSLATION] ?: "") }
+                    }
                 }
             }
         }

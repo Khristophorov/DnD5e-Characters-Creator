@@ -1,31 +1,23 @@
 package me.khrys.dnd.charcreator.client.components.buttons
 
-import com.ccfraser.muirwik.components.ButtonSize
-import com.ccfraser.muirwik.components.ButtonSize.medium
-import com.ccfraser.muirwik.components.FabColor.primary
-import com.ccfraser.muirwik.components.FabProps
-import com.ccfraser.muirwik.components.fab
 import me.khrys.dnd.charcreator.client.playSound
 import me.khrys.dnd.charcreator.common.BUTTON_SOUND_ID
-import org.w3c.dom.events.Event
-import react.RBuilder
-import styled.StyledHandler
+import mui.material.Fab
+import mui.material.FabColor.primary
+import mui.material.FabProps
+import mui.material.Size.medium
+import react.FC
 
-fun RBuilder.dFab(
-    size: ButtonSize = medium,
-    className: String? = null,
-    action: (Event) -> Unit,
-    handler: StyledHandler<FabProps>? = null
-) {
-    fab(
-        color = primary,
-        size = size
-    ) {
-        attrs.className = className
-        attrs.onClick = { event ->
+val Fab = FC<FabProps> { props ->
+    console.info("Rendering fab")
+    Fab {
+        this.size = props.size ?: medium
+        this.className = props.className
+        this.color = primary
+        this.onClick = { event ->
             playSound(BUTTON_SOUND_ID)
-            action(event)
+            props.onClick?.let { it(event) }
         }
-        handler?.let { handler() }
+        child(props.children)
     }
 }

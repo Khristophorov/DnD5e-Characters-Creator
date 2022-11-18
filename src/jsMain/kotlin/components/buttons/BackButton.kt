@@ -1,16 +1,18 @@
 package me.khrys.dnd.charcreator.client.components.buttons
 
-import kotlinx.css.Float.left
-import kotlinx.css.float
-import me.khrys.dnd.charcreator.client.components.dArrowBackIcon
-import org.w3c.dom.events.Event
-import react.RBuilder
-import styled.css
-import styled.styledDiv
+import csstype.Float
+import emotion.react.css
+import mui.icons.material.ArrowBack
+import mui.material.ButtonProps
+import react.FC
+import react.dom.html.ReactHTML.div
 
-fun RBuilder.dBackButton(action: (Event) -> Unit) {
-    styledDiv {
-        css { float = left }
-        dFab(action = action) { dArrowBackIcon() }
+val BackButton = FC<ButtonProps> { props ->
+    div {
+        css { float = Float.left }
+        Fab {
+            this.onClick = props.onClick
+            ArrowBack()
+        }
     }
 }

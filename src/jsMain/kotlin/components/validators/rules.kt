@@ -5,6 +5,7 @@ import me.khrys.dnd.charcreator.common.VALIDATION_DUPLICATE_NAME
 import me.khrys.dnd.charcreator.common.models.Character
 
 fun initValidators(characters: List<Character>) {
+    console.info("Initializing validators.")
     validatorFormRules.addValidationRule<String?>(VALIDATION_DUPLICATE_NAME) { name ->
         notDuplicate(name, characters)
     }

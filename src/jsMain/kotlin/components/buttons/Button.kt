@@ -1,24 +1,28 @@
 package me.khrys.dnd.charcreator.client.components.buttons
 
-import com.ccfraser.muirwik.components.ButtonColor.primary
-import com.ccfraser.muirwik.components.ButtonSize.small
-import com.ccfraser.muirwik.components.ButtonVariant.contained
-import com.ccfraser.muirwik.components.button
 import me.khrys.dnd.charcreator.client.playSound
 import me.khrys.dnd.charcreator.common.BUTTON_SOUND_ID
-import org.w3c.dom.events.Event
-import react.RBuilder
+import mui.material.Button
+import mui.material.ButtonColor.primary
+import mui.material.ButtonProps
+import mui.material.ButtonVariant.contained
+import mui.material.Size.small
+import org.w3c.dom.HTMLButtonElement
+import react.FC
+import react.dom.events.MouseEvent
 
-fun RBuilder.dButton(caption: String, action: (Event) -> Unit) {
-    button(
-        caption = caption,
-        color = primary,
-        variant = contained,
-        size = small
-    ) {
-        attrs.onClick = { event ->
+typealias ButtonAction = (MouseEvent<HTMLButtonElement, *>) -> Unit
+
+val Button = FC<ButtonProps> { props ->
+    Button {
+        +props.children
+        this.color = primary
+        this.variant = contained
+        this.size = small
+        this.onClick = { event ->
             playSound(BUTTON_SOUND_ID)
-            action(event)
+            props.onClick?.let { it(event) }
         }
+        this.type = props.type
     }
 }

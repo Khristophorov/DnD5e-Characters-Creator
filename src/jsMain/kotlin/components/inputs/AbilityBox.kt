@@ -1,16 +1,10 @@
 package me.khrys.dnd.charcreator.client.components.inputs
 
-import com.ccfraser.muirwik.components.TypographyAlign.center
-import com.ccfraser.muirwik.components.TypographyColor.textPrimary
-import com.ccfraser.muirwik.components.align
-import com.ccfraser.muirwik.components.avatar
-import com.ccfraser.muirwik.components.typography
-import kotlinx.html.InputType.number
-import kotlinx.html.classes
-import me.khrys.dnd.charcreator.client.components.inputs.texts.dCenteredLabel
-import me.khrys.dnd.charcreator.client.components.inputs.tooltips.dDelayedTooltip
+import csstype.ClassName
+import me.khrys.dnd.charcreator.client.components.inputs.texts.CenteredLabel
+import me.khrys.dnd.charcreator.client.components.inputs.tooltips.DelayedTooltip
 import me.khrys.dnd.charcreator.client.components.validators.InputProps
-import me.khrys.dnd.charcreator.client.components.validators.dTextValidator
+import me.khrys.dnd.charcreator.client.components.validators.TextValidator
 import me.khrys.dnd.charcreator.client.computeModifier
 import me.khrys.dnd.charcreator.common.ABILITY_MAXIMUM
 import me.khrys.dnd.charcreator.common.ABILITY_MINIMUM
@@ -21,37 +15,50 @@ import me.khrys.dnd.charcreator.common.CLASS_CENTER
 import me.khrys.dnd.charcreator.common.CLASS_ROUND_BORDERED
 import me.khrys.dnd.charcreator.common.VALIDATION_LOWER_0
 import me.khrys.dnd.charcreator.common.VALIDATION_UPPER_20
+import mui.material.Avatar
+import mui.material.Typography
+import mui.material.TypographyAlign.center
 import org.w3c.dom.events.InputEvent
-import react.RBuilder
-import styled.styledDiv
+import react.FC
+import react.Props
+import react.ReactNode
+import react.dom.html.InputType.number
+import react.dom.html.ReactHTML.div
 
-fun RBuilder.dAbilityBox(
-    title: String,
-    label: String,
-    value: Int,
-    translations: Map<String, String>,
-    readOnly: Boolean = false,
-    onChange: (InputEvent) -> Unit = {}
-) {
-    dDelayedTooltip(title) {
-        styledDiv {
-            attrs.classes = setOf(CLASS_ABILITY_BOX, CLASS_BORDERED, CLASS_CENTER)
-            dCenteredLabel(label)
-            dTextValidator(
-                value = value.toString(),
-                type = number,
-                inputProps = InputProps(readOnly = readOnly),
-                validators = arrayOf(VALIDATION_LOWER_0, VALIDATION_UPPER_20),
-                errorMessages = if (readOnly) emptyArray() else arrayOf(
-                    translations[ABILITY_MINIMUM] ?: "",
-                    translations[ABILITY_MAXIMUM] ?: ""
-                ),
-                onChange = onChange
-            )
-            avatar {
-                attrs.className = "$CLASS_CENTER $CLASS_ROUND_BORDERED $CLASS_BACKGROUND"
-                typography(text = computeModifier(value).toString(), color = textPrimary) {
-                    attrs.align = center
+external interface AbilityBoxProps : Props {
+    var title: String
+    var label: String
+    var value: Int
+    var translations: Map<String, String>
+    var readOnly: Boolean
+    var onChange: (InputEvent) -> Unit
+}
+
+val AbilityBox = FC<AbilityBoxProps> { props ->
+    console.info("Rendering ability box ${props.title}")
+    DelayedTooltip {
+        this.title = ReactNode(props.title)
+        div {
+            this.className = ClassName("$CLASS_ABILITY_BOX $CLASS_BORDERED $CLASS_CENTER")
+            CenteredLabel {
+                this.label = props.label
+            }
+            TextValidator {
+                this.value = props.value.toString()
+                this.type = number
+                this.inputProps = InputProps(readOnly = props.readOnly)
+                this.validators = arrayOf(VALIDATION_LOWER_0, VALIDATION_UPPER_20)
+                this.errorMessages = if (props.readOnly) emptyArray() else arrayOf(
+                    props.translations[ABILITY_MINIMUM] ?: "",
+                    props.translations[ABILITY_MAXIMUM] ?: ""
+                )
+                this.onChange = props.onChange
+            }
+            Avatar {
+                this.className = ClassName("$CLASS_CENTER $CLASS_ROUND_BORDERED $CLASS_BACKGROUND")
+                Typography {
+                    +computeModifier(props.value).toString()
+                    this.align = center
                 }
             }
         }

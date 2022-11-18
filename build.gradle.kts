@@ -12,22 +12,18 @@ version = "1.0-SNAPSHOT"
 // Kotlin dependencies
 val kotlinCoroutinesVersion = "1.6.4"
 val kotlinHtmlVersion = "0.8.0"
-val kotlinReactVersion = "17.0.2-pre.290-kotlin-1.6.10"
-val kotlinStyledVersion = "5.3.3-pre.290-kotlin-1.6.10"
-val kotlinCssJsVersion = "1.0.0-pre.290-kotlin-1.6.10"
+val kotlinReactVersion = "18.2.0-pre.376"
+val kotlinMuiVersion = "5.9.1-pre.376"
+val kotlinMuiIconsVersion = "5.8.4-pre.376"
+val kotlinEmotionVersion = "11.10.0-pre.376"
 val kotlinSerializationVersion = "1.3.3"
 val kmongoVersion = "4.7.0"
 val ktorVersion = "2.1.0"
 val slf4jVersion = "1.7.36"
-val muirwikVersion = "0.10.1"
 val mockkVersion = "1.12.5"
 
 // JavaScript dependencies
-val reactVersion = "17.0.2"
 val reactMaterialUiFormValidatorVersion = "3.0.1"
-val materialUiVersion = "5.3.0"
-val emotionReactVersion = "11.4.1"
-val emotionStyledVersion = "11.3.0"
 
 repositories {
     mavenCentral()
@@ -103,19 +99,11 @@ kotlin {
             dependencies {
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-react:$kotlinReactVersion")
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-react-dom:$kotlinReactVersion")
-                implementation("org.jetbrains.kotlin-wrappers:kotlin-styled:$kotlinStyledVersion")
-                implementation("org.jetbrains.kotlin-wrappers:kotlin-css-js:$kotlinCssJsVersion")
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-mui:$kotlinMuiVersion")
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-mui-icons:$kotlinMuiIconsVersion")
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-emotion:$kotlinEmotionVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
-                implementation("com.ccfraser.muirwik:muirwik-components:$muirwikVersion")
-                implementation(npm("@mui/material", materialUiVersion))
-                implementation(npm("@mui/icons-material", materialUiVersion))
-                implementation(npm("@mui/styled-engine-sc", materialUiVersion))
-                implementation(npm("@emotion/react", emotionReactVersion))
-                implementation(npm("@emotion/styled", emotionStyledVersion))
-                implementation(npm("react", reactVersion))
-                implementation(npm("react-dom", reactVersion))
-                implementation(npm("react-is", reactVersion))
                 implementation(npm("react-material-ui-form-validator", reactMaterialUiFormValidatorVersion))
             }
         }
@@ -135,10 +123,21 @@ tasks.getByName<KotlinWebpack>("jsBrowserProductionWebpack") {
     outputFileName = "output.js"
 }
 
+tasks.getByName<KotlinWebpack>("jsBrowserDevelopmentWebpack") {
+    outputFileName = "output.js"
+}
+
 tasks.getByName<Jar>("jvmJar") {
-    dependsOn(tasks.getByName("jsBrowserProductionWebpack"))
-    val jsBrowserProductionWebpack = tasks.getByName<KotlinWebpack>("jsBrowserProductionWebpack")
-    from(File(jsBrowserProductionWebpack.destinationDirectory, jsBrowserProductionWebpack.outputFileName))
+    val taskName = if (project.hasProperty("isProduction")
+        || project.gradle.startParameter.taskNames.contains("installDist")
+    ) {
+        "jsBrowserProductionWebpack"
+    } else {
+        "jsBrowserDevelopmentWebpack"
+    }
+    val webpackTask = tasks.getByName<KotlinWebpack>(taskName)
+    dependsOn(webpackTask)
+    from(File(webpackTask.destinationDirectory, webpackTask.outputFileName))
 }
 
 tasks.getByName<JavaExec>("run") {
