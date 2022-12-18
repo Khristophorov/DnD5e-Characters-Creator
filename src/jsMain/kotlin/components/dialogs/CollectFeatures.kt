@@ -11,7 +11,7 @@ import me.khrys.dnd.charcreator.client.components.inputs.choosers.ProficienciesC
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.ProficiencyChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.SkillChooser
 import me.khrys.dnd.charcreator.client.format
-import me.khrys.dnd.charcreator.client.useFeatureWindowSettings
+import me.khrys.dnd.charcreator.client.utils.useFeatureWindowSettings
 import me.khrys.dnd.charcreator.common.models.DnDFunction
 import me.khrys.dnd.charcreator.common.models.Feature
 import react.FC

@@ -7,7 +7,7 @@ import me.khrys.dnd.charcreator.client.components.inputs.ValidatedList
 import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
 import me.khrys.dnd.charcreator.client.components.validators.validatorFormRules
 import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
-import me.khrys.dnd.charcreator.client.value
+import me.khrys.dnd.charcreator.client.utils.value
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
 import me.khrys.dnd.charcreator.common.NEXT_TRANSLATION
 import me.khrys.dnd.charcreator.common.VALIDATION_REQUIRED

@@ -1,6 +1,7 @@
 package me.khrys.dnd.charcreator.client.components.inputs.tooltips
 
 import csstype.ClassName
+import dom.Element
 import me.khrys.dnd.charcreator.client.createDefaultTheme
 import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
 import me.khrys.dnd.charcreator.common.CLASS_DISABLE_POINTER
@@ -10,7 +11,6 @@ import mui.material.TooltipProps
 import mui.material.Typography
 import mui.material.styles.Theme
 import mui.material.styles.ThemeProvider
-import org.w3c.dom.Element
 import org.w3c.dom.events.EventTarget
 import react.FC
 import react.dom.DangerouslySetInnerHTML
@@ -23,37 +23,38 @@ fun createTooltipTheme(): Theme {
     return createDefaultTheme(
         js(
             """
-        {
-            components: {
-                MuiPopover: {
-                    styleOverrides: {
-                        paper: {
-                            color: '#fff',
-                            padding: '4px 8px',
-                            fontSize: '0.625rem',
-                            maxWidth: '300px',
-                            wordWrap: 'break-word',
-                            lineHeight: '1.4em',
-                            borderRadius: '4px',
-                            backgroundColor: 'rgba(97, 97, 97, 0.9)'
+            {
+                components: {
+                    MuiPopover: {
+                        styleOverrides: {
+                            paper: {
+                                color: '#fff',
+                                padding: '4px 8px',
+                                fontSize: '0.625rem',
+                                maxWidth: '300px',
+                                wordWrap: 'break-word',
+                                lineHeight: '1.4em',
+                                borderRadius: '4px',
+                                backgroundColor: 'rgba(97, 97, 97, 0.9)'
+                            }
                         }
                     }
                 }
             }
-        }"""
+            """
         )
     )
 }
 
 val Tooltip = FC<TooltipProps> { props ->
-    val (popoverAnchor, setAnchorE1) = useState<EventTarget?>(null)
+    val (popoverAnchor, setPopoverAnchor) = useState<EventTarget?>(null)
     div {
         ThemeProvider {
             this.theme = tooltipTheme
             Typography {
                 props.id?.let { this.id = it }
-                this.onMouseEnter = { event -> setAnchorE1(event.currentTarget) }
-                this.onMouseLeave = { setAnchorE1(null) }
+                this.onMouseEnter = { event -> setPopoverAnchor(event.currentTarget) }
+                this.onMouseLeave = { setPopoverAnchor(null) }
                 child(props.children)
             }
             Popover {
@@ -69,7 +70,7 @@ val Tooltip = FC<TooltipProps> { props ->
                     override var horizontal = "center"
                     override var vertical = "bottom"
                 }
-                this.onClose = { _, _ -> setAnchorE1(null) }
+                this.onClose = { _, _ -> setPopoverAnchor(null) }
 
                 div {
                     this.dangerouslySetInnerHTML =

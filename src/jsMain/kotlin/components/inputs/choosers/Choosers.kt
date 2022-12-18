@@ -9,7 +9,7 @@ import me.khrys.dnd.charcreator.client.components.dialogs.MultipleFeatureProps
 import me.khrys.dnd.charcreator.client.components.inputs.ValidatedList
 import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
 import me.khrys.dnd.charcreator.client.toFeature
-import me.khrys.dnd.charcreator.client.value
+import me.khrys.dnd.charcreator.client.utils.value
 import me.khrys.dnd.charcreator.common.NEXT_TRANSLATION
 import me.khrys.dnd.charcreator.common.VALIDATION_REQUIRED
 import me.khrys.dnd.charcreator.common.VALUE_SHOULD_BE_CHOSEN_TRANSLATION

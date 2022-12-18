@@ -1,5 +1,6 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
+import me.khrys.dnd.charcreator.client.FeatsContext
 import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.components.buttons.CheckboxWithLabel
 import me.khrys.dnd.charcreator.client.components.buttons.Submit
@@ -7,8 +8,8 @@ import me.khrys.dnd.charcreator.client.components.dialogs.CharBasedProps
 import me.khrys.dnd.charcreator.client.components.dialogs.CollectRaceFeatures
 import me.khrys.dnd.charcreator.client.components.inputs.ValidatedList
 import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
-import me.khrys.dnd.charcreator.client.loadRaces
-import me.khrys.dnd.charcreator.client.value
+import me.khrys.dnd.charcreator.client.utils.loadRaces
+import me.khrys.dnd.charcreator.client.utils.value
 import me.khrys.dnd.charcreator.common.ENTER_RACE_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.ENTER_RACE_TRANSLATION
 import me.khrys.dnd.charcreator.common.FEATS_SELECT_TRANSLATION
@@ -34,6 +35,7 @@ val CharRaceWindow = FC<CharBasedProps> { props ->
     val (openFeatures, setOpenFeatures) = useState(false)
     val (useFeats, setUseFeats) = useState(false)
     val translations = useContext(TranslationsContext)
+    val feats = useContext(FeatsContext)
     if (props.open && races.isEmpty()) {
         CircularProgress()
         loadRaces { setRaces(it) }
@@ -89,7 +91,7 @@ val CharRaceWindow = FC<CharBasedProps> { props ->
         this.open = openFeatures
         this.setOpen = { setOpenFeatures(it) }
         this.action = props.action
-        this.feats = props.feats
+        this.feats = feats
         this.useFeats = useFeats
     }
 }

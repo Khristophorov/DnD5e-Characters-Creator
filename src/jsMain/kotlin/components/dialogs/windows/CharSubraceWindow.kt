@@ -8,7 +8,7 @@ import me.khrys.dnd.charcreator.client.components.dialogs.CharBasedProps
 import me.khrys.dnd.charcreator.client.components.dialogs.CollectSubraceFeatures
 import me.khrys.dnd.charcreator.client.components.inputs.ValidatedList
 import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
-import me.khrys.dnd.charcreator.client.value
+import me.khrys.dnd.charcreator.client.utils.value
 import me.khrys.dnd.charcreator.common.CLASS_JUSTIFY_BETWEEN
 import me.khrys.dnd.charcreator.common.ENTER_SUBRACE_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.ENTER_SUBRACE_TRANSLATION

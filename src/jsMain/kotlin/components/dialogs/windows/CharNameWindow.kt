@@ -6,7 +6,7 @@ import me.khrys.dnd.charcreator.client.components.buttons.Submit
 import me.khrys.dnd.charcreator.client.components.dialogs.CharBasedProps
 import me.khrys.dnd.charcreator.client.components.validators.TextValidator
 import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
-import me.khrys.dnd.charcreator.client.value
+import me.khrys.dnd.charcreator.client.utils.value
 import me.khrys.dnd.charcreator.common.CHAR_NAME_EXISTS
 import me.khrys.dnd.charcreator.common.CLASS_JUSTIFY_BETWEEN
 import me.khrys.dnd.charcreator.common.ENTER_NAME_CONTENT_TRANSLATION

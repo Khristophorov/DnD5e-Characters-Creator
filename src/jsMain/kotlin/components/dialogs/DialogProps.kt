@@ -48,6 +48,5 @@ external interface CharBasedProps : Props {
     var setOpen: (Boolean) -> Unit
     var action: () -> Unit
     var backAction: ButtonAction
-    var feats: Map<String, Feat>
     var translations: Map<String, String>
 }

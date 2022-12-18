@@ -9,7 +9,7 @@ import me.khrys.dnd.charcreator.client.components.dialogs.CharBasedProps
 import me.khrys.dnd.charcreator.client.components.inputs.AbilityBox
 import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
 import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
-import me.khrys.dnd.charcreator.client.value
+import me.khrys.dnd.charcreator.client.utils.value
 import me.khrys.dnd.charcreator.common.CHARISMA_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.CHARISMA_TRANSLATION
 import me.khrys.dnd.charcreator.common.CLASS_INLINE

@@ -3,8 +3,6 @@ package me.khrys.dnd.charcreator.common
 const val TITLE = "D&D 5e character builder"
 const val ROOT = "root"
 
-const val DANGEROUS_HTML = "dangerouslySetInnerHTML"
-
 const val VALIDATION_REQUIRED = "required"
 const val VALIDATION_DUPLICATE_NAME = "duplicateName"
 const val VALIDATION_VALUE_ALREADY_PRESENT = "valueAlreadyPresent"
@@ -28,11 +26,6 @@ const val CLASS_FLOAT_LEFT = "floatLeft"
 const val CLASS_PADDINGS = "paddings"
 const val CLASS_DISABLE_POINTER = "disablePointer"
 
-const val CONTENT_TYPE = "Content-Type"
-const val TYPE_JSON = "application/json"
-
-const val METHOD_POST = "POST"
-
 const val LOGIN_SESSION = "LOGIN_SESSION"
 
 const val ROOT_URL = "/"
@@ -54,7 +47,6 @@ const val SPELLS_URL = "/spells"
 
 const val LOGOUT_TRANSLATION = "logout"
 const val NEXT_TRANSLATION = "next"
-const val FINISH_TRANSLATION = "finish"
 const val UPLOAD_TRANSLATION = "upload"
 const val SAVE_TRANSLATION = "save"
 const val ADD_HOVER_TRANSLATION = "add_hover"
@@ -66,7 +58,6 @@ const val ENTER_IMAGE_CONTENT_TRANSLATION = "enter_image_content"
 const val ENTER_ABILITIES_TRANSLATION = "enter_abilities"
 const val ENTER_ABILITIES_CONTENT_TRANSLATION = "enter_abilities_content"
 const val ENTER_SAVING_THROWS_TRANSLATION = "enter_saving_throws"
-const val ENTER_SAVING_THROWS_CONTENT_TRANSLATION = "enter_saving_throws_content"
 const val ENTER_SKILLS_TRANSLATION = "enter_skills"
 const val ENTER_RACE_TRANSLATION = "enter_race"
 const val ENTER_RACE_CONTENT_TRANSLATION = "enter_race_content"

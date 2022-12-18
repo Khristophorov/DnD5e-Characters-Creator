@@ -1,6 +1,6 @@
 package me.khrys.dnd.charcreator.client.components.buttons
 
-import me.khrys.dnd.charcreator.client.playSound
+import me.khrys.dnd.charcreator.client.utils.playSound
 import me.khrys.dnd.charcreator.common.BUTTON_SOUND_ID
 import mui.material.IconButton
 import mui.material.IconButtonProps

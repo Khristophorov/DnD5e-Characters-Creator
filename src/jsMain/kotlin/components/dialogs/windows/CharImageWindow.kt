@@ -9,8 +9,8 @@ import me.khrys.dnd.charcreator.client.components.dialogs.CharBasedProps
 import me.khrys.dnd.charcreator.client.components.validators.InputProps
 import me.khrys.dnd.charcreator.client.components.validators.TextValidator
 import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
-import me.khrys.dnd.charcreator.client.imageFromEvent
-import me.khrys.dnd.charcreator.client.value
+import me.khrys.dnd.charcreator.client.utils.imageFromEvent
+import me.khrys.dnd.charcreator.client.utils.value
 import me.khrys.dnd.charcreator.common.CLASS_DISABLED
 import me.khrys.dnd.charcreator.common.CLASS_JUSTIFY_BETWEEN
 import me.khrys.dnd.charcreator.common.ENTER_IMAGE_CONTENT_TRANSLATION

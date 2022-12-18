@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
-    kotlin("multiplatform") version "1.7.10"
-    kotlin("plugin.serialization") version "1.7.10"
+    kotlin("multiplatform") version "1.7.21"
+    kotlin("plugin.serialization") version "1.7.21"
     application
 }
 
@@ -12,15 +12,16 @@ version = "1.0-SNAPSHOT"
 // Kotlin dependencies
 val kotlinCoroutinesVersion = "1.6.4"
 val kotlinHtmlVersion = "0.8.0"
-val kotlinReactVersion = "18.2.0-pre.376"
-val kotlinMuiVersion = "5.9.1-pre.376"
-val kotlinMuiIconsVersion = "5.8.4-pre.376"
-val kotlinEmotionVersion = "11.10.0-pre.376"
-val kotlinSerializationVersion = "1.3.3"
-val kmongoVersion = "4.7.0"
-val ktorVersion = "2.1.0"
-val slf4jVersion = "1.7.36"
-val mockkVersion = "1.12.5"
+val kotlinReactVersion = "18.2.0-pre.445"
+val kotlinReactReduxVersion = "7.2.6-pre.445"
+val kotlinMuiVersion = "5.9.1-pre.445"
+val kotlinMuiIconsVersion = "5.10.9-pre.445"
+val kotlinEmotionVersion = "11.10.5-pre.445"
+val kotlinSerializationVersion = "1.4.1"
+val kmongoVersion = "4.7.2"
+val ktorVersion = "2.1.3"
+val slf4jVersion = "2.0.4"
+val mockkVersion = "1.13.2"
 
 // JavaScript dependencies
 val reactMaterialUiFormValidatorVersion = "3.0.1"
@@ -46,15 +47,21 @@ kotlin {
         browser {
             binaries.executable()
             webpackTask {
-                cssSupport.enabled = true
+                cssSupport {
+                    enabled = true
+                }
             }
             runTask {
-                cssSupport.enabled = true
+                cssSupport {
+                    enabled = true
+                }
             }
             testTask {
                 useKarma {
                     useChromeHeadless()
-                    webpackConfig.cssSupport.enabled = true
+                    webpackConfig.cssSupport {
+                        enabled = true
+                    }
                 }
             }
         }
@@ -104,6 +111,10 @@ kotlin {
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-emotion:$kotlinEmotionVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
+                implementation("io.ktor:ktor-client-core:$ktorVersion")
+                implementation("io.ktor:ktor-client-js:$ktorVersion")
+                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
                 implementation(npm("react-material-ui-form-validator", reactMaterialUiFormValidatorVersion))
             }
         }

@@ -1,9 +1,10 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
+import me.khrys.dnd.charcreator.client.FeatsContext
 import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.components.dialogs.DialogProps
-import me.khrys.dnd.charcreator.client.loadFeats
-import me.khrys.dnd.charcreator.client.storeCharacter
+import me.khrys.dnd.charcreator.client.utils.loadFeats
+import me.khrys.dnd.charcreator.client.utils.storeCharacter
 import me.khrys.dnd.charcreator.common.models.Feat
 import me.khrys.dnd.charcreator.common.models.emptyCharacter
 import mui.material.CircularProgress
@@ -25,19 +26,20 @@ val NewCharWindow = FC<DialogProps> { props ->
         CircularProgress()
         loadFeats { setFeats(it) }
     } else {
-        CharRaceWindow {
-            this.character = newCharacter
-            this.open = props.open
-            this.setOpen = props.setOpen
-            this.action = {
-                if (newCharacter.race.subraces.isEmpty()) {
-                    newCharacter.subrace = newCharacter.race
-                    setNameDialogOpen(true)
-                } else {
-                    setSubraceDialogOpen(true)
+        FeatsContext.Provider(feats) {
+            CharRaceWindow {
+                this.character = newCharacter
+                this.open = props.open
+                this.setOpen = props.setOpen
+                this.action = {
+                    if (newCharacter.race.subraces.isEmpty()) {
+                        newCharacter.subrace = newCharacter.race
+                        setNameDialogOpen(true)
+                    } else {
+                        setSubraceDialogOpen(true)
+                    }
                 }
             }
-            this.feats = feats
         }
         CharSubraceWindow {
             this.character = newCharacter

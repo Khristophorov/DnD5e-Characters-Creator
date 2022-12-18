@@ -1,7 +1,7 @@
 package me.khrys.dnd.charcreator.client.components.buttons
 
 import me.khrys.dnd.charcreator.client.components.inputs.tooltips.DelayedTooltip
-import me.khrys.dnd.charcreator.client.playSound
+import me.khrys.dnd.charcreator.client.utils.playSound
 import me.khrys.dnd.charcreator.common.BUTTON_SOUND_ID
 import mui.icons.material.RadioButtonChecked
 import mui.icons.material.RadioButtonUnchecked

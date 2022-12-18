@@ -6,6 +6,8 @@ import me.khrys.dnd.charcreator.client.components.buttons.AddCharacter
 import me.khrys.dnd.charcreator.client.components.buttons.CurrentCharacters
 import me.khrys.dnd.charcreator.client.components.buttons.LogoutButton
 import me.khrys.dnd.charcreator.client.components.validators.initValidators
+import me.khrys.dnd.charcreator.client.utils.loadCharacters
+import me.khrys.dnd.charcreator.client.utils.loadTranslations
 import me.khrys.dnd.charcreator.common.LOGOUT_TRANSLATION
 import me.khrys.dnd.charcreator.common.models.Character
 import mui.material.CircularProgress
@@ -15,21 +17,16 @@ import react.dom.html.ReactHTML.div
 import react.useState
 
 val MainDnd = FC<Props> {
-    val (isLoading, setLoading) = useState(true)
-    val (translations, setTranslations) = useState(emptyMap<String, String>())
-    val (characters, setCharacters) = useState(emptyList<Character>())
-    val (loadCharacters, setLoadCharacters) = useState(true)
+    val (translations, setTranslations) = useState<Map<String, String>?>(null)
+    val (characters, setCharacters) = useState<List<Character>?>(null)
 
-    if (isLoading) {
+    if (translations == null) {
         CircularProgress()
-        loadMainData(
-            loadTranslations = translations.isEmpty(),
-            loadCharacters = loadCharacters,
-            setLoadCharacters = { setLoadCharacters(it) },
-            setTranslations = { setTranslations(it) },
-            setCharacters = { setCharacters(it) },
-            setLoading = { setLoading(it) }
-        )
+        loadTranslations { setTranslations(it) }
+    }
+    else if (characters == null) {
+        CircularProgress()
+        loadCharacters { setCharacters(it) }
     } else {
         console.info("Rendering the app.")
         TranslationsContext.Provider(translations) {
@@ -39,40 +36,17 @@ val MainDnd = FC<Props> {
 
             CharactersContext.Provider(characters) {
                 initValidators(characters)
-                MainContent()
+                mainContent()
             }
         }
     }
 }
 
-private val MainContent = FC<Props> {
+private val mainContent = FC<Props> {
     console.info("Rendering content.")
     div {
         css { clear = both }
         AddCharacter()
         CurrentCharacters()
-    }
-}
-
-private fun loadMainData(
-    loadTranslations: Boolean,
-    loadCharacters: Boolean,
-    setLoadCharacters: (Boolean) -> Unit,
-    setTranslations: (Map<String, String>) -> Unit,
-    setCharacters: (List<Character>) -> Unit,
-    setLoading: (Boolean) -> Unit
-) {
-    console.info("Loading initial data")
-    if (loadTranslations) {
-        loadTranslations { setTranslations(it) }
-    }
-    if (!loadTranslations && loadCharacters) {
-        loadCharacters {
-            setCharacters(it)
-            setLoadCharacters(false)
-        }
-    }
-    if (!(loadTranslations || loadCharacters)) {
-        setLoading(false)
     }
 }

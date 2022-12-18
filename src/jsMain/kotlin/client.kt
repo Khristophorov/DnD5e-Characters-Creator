@@ -1,7 +1,7 @@
 package me.khrys.dnd.charcreator.client
 
-import kotlinx.browser.document
-import kotlinx.browser.window
+import browser.document
+import browser.window
 import me.khrys.dnd.charcreator.common.ROOT
 import mui.material.styles.ThemeProvider
 import react.FC
