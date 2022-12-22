@@ -9,7 +9,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import me.khrys.dnd.charcreator.common.models.Race
-import mongo.RacesService
 
 val racesList = listOf(Race("key", "description", features = emptyList()))
 

@@ -1,4 +1,4 @@
-package mongo
+package me.khrys.dnd.charcreator.server.mongo
 
 import com.mongodb.client.MongoCollection
 import me.khrys.dnd.charcreator.common.models.Race

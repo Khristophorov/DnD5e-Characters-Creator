@@ -7,8 +7,10 @@ import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.config.ApplicationConfig
+import io.ktor.server.http.content.files
 import io.ktor.server.http.content.resources
 import io.ktor.server.http.content.static
+import io.ktor.server.http.content.staticRootFolder
 import io.ktor.server.locations.KtorExperimentalLocationsAPI
 import io.ktor.server.locations.get
 import io.ktor.server.locations.location
@@ -17,6 +19,8 @@ import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.Route
 import io.ktor.server.sessions.sessions
 import io.ktor.util.pipeline.PipelineContext
+import me.khrys.dnd.charcreator.common.IMAGES
+import me.khrys.dnd.charcreator.common.IMAGES_FOLDER
 import me.khrys.dnd.charcreator.common.LOGIN_URL
 import me.khrys.dnd.charcreator.common.MONGO_URL_PARAM
 import me.khrys.dnd.charcreator.common.STATIC_URL
@@ -33,6 +37,7 @@ import me.khrys.dnd.charcreator.server.locations.Spells
 import me.khrys.dnd.charcreator.server.locations.Translations
 import me.khrys.dnd.charcreator.server.mongo.FeatsService
 import me.khrys.dnd.charcreator.server.mongo.MongoServiceFactory
+import me.khrys.dnd.charcreator.server.mongo.RacesService
 import me.khrys.dnd.charcreator.server.mongo.SpellsService
 import me.khrys.dnd.charcreator.server.mongo.TranslationService
 import me.khrys.dnd.charcreator.server.mongo.UserService
@@ -43,8 +48,8 @@ import me.khrys.dnd.charcreator.server.rest.races
 import me.khrys.dnd.charcreator.server.rest.saveCharacter
 import me.khrys.dnd.charcreator.server.rest.spells
 import me.khrys.dnd.charcreator.server.rest.translations
-import mongo.RacesService
 import org.litote.kmongo.KMongo
+import java.io.File
 
 fun Route.routing(config: ApplicationConfig, httpClient: HttpClient) {
     val mongoFactory = MongoServiceFactory(KMongo.createClient(config.property(MONGO_URL_PARAM).getString()))
@@ -53,6 +58,8 @@ fun Route.routing(config: ApplicationConfig, httpClient: HttpClient) {
     val racesService = RacesService(mongoFactory.getRaces())
     val featsService = FeatsService(mongoFactory.getFeats())
     val spellsService = SpellsService(mongoFactory.getSpells())
+
+    val imageFolder = config.property(IMAGES_FOLDER).getString()
 
     authenticate { authenticate(config, httpClient) }
     get<Index> { index(userService) }
@@ -64,6 +71,10 @@ fun Route.routing(config: ApplicationConfig, httpClient: HttpClient) {
     get<Spells> { call.spells(spellsService) }
     post<Characters> { call.saveCharacter(userService) }
     static(STATIC_URL) { resources() }
+    static(IMAGES) {
+        staticRootFolder = File(imageFolder)
+        files(".")
+    }
 }
 
 private fun Route.authenticate(config: ApplicationConfig?, httpClient: HttpClient) {

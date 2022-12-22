@@ -136,3 +136,6 @@ const val ABILITY_MINIMUM = "ability_minimum"
 const val ABILITY_MAXIMUM = "ability_maximum"
 
 const val MONGO_URL_PARAM = "ktor.mongo.url"
+
+const val IMAGES_FOLDER = "imagesFolder"
+const val IMAGES = "/images"

@@ -34,3 +34,6 @@ hs_err_pid*
 
 # JS generated
 /kotlin-js-store/
+
+# images
+/.images/
