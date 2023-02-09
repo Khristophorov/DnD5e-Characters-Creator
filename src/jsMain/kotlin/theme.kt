@@ -84,6 +84,13 @@ val defaultTheme = createDefaultTheme(
                         textAlign: 'center'
                     }
                 }
+            },
+            MuiAccordion: {
+                styleOverrides: {
+                    root: {
+                        maxWidth: '300px'
+                    }
+                }
             }
         }
     }

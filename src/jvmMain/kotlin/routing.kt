@@ -32,10 +32,12 @@ import me.khrys.dnd.charcreator.server.locations.Feats
 import me.khrys.dnd.charcreator.server.locations.Index
 import me.khrys.dnd.charcreator.server.locations.Login
 import me.khrys.dnd.charcreator.server.locations.Logout
+import me.khrys.dnd.charcreator.server.locations.Maneuvers
 import me.khrys.dnd.charcreator.server.locations.Races
 import me.khrys.dnd.charcreator.server.locations.Spells
 import me.khrys.dnd.charcreator.server.locations.Translations
 import me.khrys.dnd.charcreator.server.mongo.FeatsService
+import me.khrys.dnd.charcreator.server.mongo.ManeuversService
 import me.khrys.dnd.charcreator.server.mongo.MongoServiceFactory
 import me.khrys.dnd.charcreator.server.mongo.RacesService
 import me.khrys.dnd.charcreator.server.mongo.SpellsService
@@ -44,6 +46,7 @@ import me.khrys.dnd.charcreator.server.mongo.UserService
 import me.khrys.dnd.charcreator.server.pages.index
 import me.khrys.dnd.charcreator.server.rest.characters
 import me.khrys.dnd.charcreator.server.rest.feats
+import me.khrys.dnd.charcreator.server.rest.maneuvers
 import me.khrys.dnd.charcreator.server.rest.races
 import me.khrys.dnd.charcreator.server.rest.saveCharacter
 import me.khrys.dnd.charcreator.server.rest.spells
@@ -51,12 +54,15 @@ import me.khrys.dnd.charcreator.server.rest.translations
 import org.litote.kmongo.KMongo
 import java.io.File
 
+private const val ALL_FILES = "."
+
 fun Route.routing(config: ApplicationConfig, httpClient: HttpClient) {
     val mongoFactory = MongoServiceFactory(KMongo.createClient(config.property(MONGO_URL_PARAM).getString()))
     val userService = UserService(mongoFactory.getUsers())
     val translationService = TranslationService(mongoFactory.getTranslations())
     val racesService = RacesService(mongoFactory.getRaces())
     val featsService = FeatsService(mongoFactory.getFeats())
+    val maneuversService = ManeuversService(mongoFactory.getManeuvers())
     val spellsService = SpellsService(mongoFactory.getSpells())
 
     val imageFolder = config.property(IMAGES_FOLDER).getString()
@@ -68,12 +74,13 @@ fun Route.routing(config: ApplicationConfig, httpClient: HttpClient) {
     get<Characters> { call.characters(userService) }
     get<Races> { call.races(racesService) }
     get<Feats> { call.feats(featsService) }
+    get<Maneuvers> { call.maneuvers(maneuversService) }
     get<Spells> { call.spells(spellsService) }
     post<Characters> { call.saveCharacter(userService) }
     static(STATIC_URL) { resources() }
     static(IMAGES) {
         staticRootFolder = File(imageFolder)
-        files(".")
+        files(ALL_FILES)
     }
 }
 

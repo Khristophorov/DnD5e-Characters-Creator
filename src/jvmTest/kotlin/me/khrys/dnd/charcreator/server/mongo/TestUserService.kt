@@ -8,10 +8,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.justRun
 import io.mockk.mockkStatic
 import io.mockk.verify
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.User
 import me.khrys.dnd.charcreator.common.models.emptyRace
@@ -22,6 +18,10 @@ import me.khrys.dnd.charcreator.server.authentication.EMAIL
 import org.bson.conversions.Bson
 import org.litote.kmongo.findOne
 import org.litote.kmongo.save
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 val character = Character(
     name = "name",

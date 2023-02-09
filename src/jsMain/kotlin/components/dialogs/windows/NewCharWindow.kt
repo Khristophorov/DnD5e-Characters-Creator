@@ -1,11 +1,14 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
 import me.khrys.dnd.charcreator.client.FeatsContext
+import me.khrys.dnd.charcreator.client.ManeuversContext
 import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.components.dialogs.DialogProps
 import me.khrys.dnd.charcreator.client.utils.loadFeats
+import me.khrys.dnd.charcreator.client.utils.loadManeuvers
 import me.khrys.dnd.charcreator.client.utils.storeCharacter
 import me.khrys.dnd.charcreator.common.models.Feat
+import me.khrys.dnd.charcreator.common.models.Maneuver
 import me.khrys.dnd.charcreator.common.models.emptyCharacter
 import mui.material.CircularProgress
 import react.FC
@@ -21,22 +24,28 @@ val NewCharWindow = FC<DialogProps> { props ->
     val (abilitiesDialogOpen, setAbilitiesDialogOpen) = useState(false)
     val (newCharacter, setNewCharacter) = useState(emptyCharacter())
     val (feats, setFeats) = useState(emptyMap<String, Feat>())
+    val (maneuvers, setManeuvers) = useState(emptyMap<String, Maneuver>())
 
     if (props.open && feats.isEmpty()) {
         CircularProgress()
         loadFeats { setFeats(it) }
+    } else if (props.open && maneuvers.isEmpty()) {
+        CircularProgress()
+        loadManeuvers { setManeuvers(it) }
     } else {
         FeatsContext.Provider(feats) {
-            CharRaceWindow {
-                this.character = newCharacter
-                this.open = props.open
-                this.setOpen = props.setOpen
-                this.action = {
-                    if (newCharacter.race.subraces.isEmpty()) {
-                        newCharacter.subrace = newCharacter.race
-                        setNameDialogOpen(true)
-                    } else {
-                        setSubraceDialogOpen(true)
+            ManeuversContext.Provider(maneuvers) {
+                CharRaceWindow {
+                    this.character = newCharacter
+                    this.open = props.open
+                    this.setOpen = props.setOpen
+                    this.action = {
+                        if (newCharacter.race.subraces.isEmpty()) {
+                            newCharacter.subrace = newCharacter.race
+                            setNameDialogOpen(true)
+                        } else {
+                            setSubraceDialogOpen(true)
+                        }
                     }
                 }
             }

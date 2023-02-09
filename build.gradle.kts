@@ -20,7 +20,7 @@ val kotlinEmotionVersion = "11.10.5-pre.445"
 val kotlinSerializationVersion = "1.4.1"
 val kmongoVersion = "4.7.2"
 val ktorVersion = "2.1.3"
-val slf4jVersion = "2.0.4"
+val logbackVersion = "1.4.5"
 val mockkVersion = "1.13.2"
 
 // JavaScript dependencies
@@ -90,9 +90,9 @@ kotlin {
                 implementation("io.ktor:ktor-client-serialization:$ktorVersion")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+                implementation("ch.qos.logback:logback-classic:$logbackVersion")
                 implementation("org.litote.kmongo:kmongo:$kmongoVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinHtmlVersion")
-                implementation("org.slf4j:slf4j-simple:$slf4jVersion")
             }
         }
         val jvmTest by getting {
@@ -139,6 +139,7 @@ tasks.getByName<KotlinWebpack>("jsBrowserDevelopmentWebpack") {
 }
 
 tasks.getByName<Jar>("jvmJar") {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     val taskName = if (project.hasProperty("isProduction")
         || project.gradle.startParameter.taskNames.contains("installDist")
     ) {

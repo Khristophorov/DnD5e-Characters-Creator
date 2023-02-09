@@ -1,5 +1,6 @@
 package me.khrys.dnd.charcreator.client.components.inputs.choosers
 
+import me.khrys.dnd.charcreator.client.ManeuversContext
 import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.components.buttons.Submit
 import me.khrys.dnd.charcreator.client.components.dialogs.CollectFeatFeatures
@@ -13,7 +14,6 @@ import me.khrys.dnd.charcreator.client.utils.value
 import me.khrys.dnd.charcreator.common.NEXT_TRANSLATION
 import me.khrys.dnd.charcreator.common.VALIDATION_REQUIRED
 import me.khrys.dnd.charcreator.common.VALUE_SHOULD_BE_CHOSEN_TRANSLATION
-import me.khrys.dnd.charcreator.common.models.Feature
 import me.khrys.dnd.charcreator.common.models.emptyFeat
 import mui.material.Dialog
 import mui.material.DialogActions
@@ -186,22 +186,18 @@ val FeatsChooser = FC<FeatsProps> { props ->
 }
 
 val ManeuversChooser = FC<MultipleFeatureProps> { props ->
+    val maneuvers = useContext(ManeuversContext)
+    val filteredManeuvers = maneuvers.filter { (name, _) ->
+        !props.character.maneuvers.map { it._id }.contains(name)
+    }
     if (props.open) {
-        val values = mutableListOf<String>()
-        val features = props.character.features.map(Feature::name)
-        for (i in 1 until props.function.values.size) {
-            val value = props.function.values[i]
-            if (i % 2 != 0 && !features.contains(value)) {
-                values.add(value)
-            }
-        }
         ChooseSeveral {
             this.open = props.open
             this.setOpen = props.setOpen
             this.header = props.feature.name
             this.description = props.feature.description
             this.size = props.size
-            this.values = values
+            this.values = filteredManeuvers.keys.toList()
             this.setValue = props.setValue
         }
     }

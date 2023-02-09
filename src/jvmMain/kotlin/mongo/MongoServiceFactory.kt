@@ -4,6 +4,7 @@ import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import me.khrys.dnd.charcreator.common.models.Feat
+import me.khrys.dnd.charcreator.common.models.Maneuver
 import me.khrys.dnd.charcreator.common.models.Race
 import me.khrys.dnd.charcreator.common.models.Spell
 import me.khrys.dnd.charcreator.common.models.Translation
@@ -23,6 +24,8 @@ class MongoServiceFactory(client: MongoClient) {
     fun getRaces(): MongoCollection<Race> = db.getCollection()
 
     fun getFeats(): MongoCollection<Feat> = db.getCollection()
+
+    fun getManeuvers(): MongoCollection<Maneuver> = db.getCollection()
 
     fun getSpells(): MongoCollection<Spell> = db.getCollection()
 }

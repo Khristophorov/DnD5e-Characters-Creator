@@ -7,6 +7,7 @@ import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.applyFeatures
 import me.khrys.dnd.charcreator.client.components.buttons.CloseButton
 import me.khrys.dnd.charcreator.client.components.buttons.Submit
+import me.khrys.dnd.charcreator.client.components.dialogs.CharBasedProps
 import me.khrys.dnd.charcreator.client.components.dialogs.CharDialogProps
 import me.khrys.dnd.charcreator.client.components.dialogs.grids.AbilitiesGrid
 import me.khrys.dnd.charcreator.client.components.dialogs.grids.AbilitiesProps
@@ -22,6 +23,7 @@ import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
 import me.khrys.dnd.charcreator.client.computeArmorClass
 import me.khrys.dnd.charcreator.client.computePassiveSkill
 import me.khrys.dnd.charcreator.client.computeProficiencyBonus
+import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
 import me.khrys.dnd.charcreator.client.getInitiative
 import me.khrys.dnd.charcreator.common.ARMOR_CLASS_TRANSLATION
 import me.khrys.dnd.charcreator.common.CLASS_BORDERED
@@ -33,6 +35,7 @@ import me.khrys.dnd.charcreator.common.ENTER_RACE_TRANSLATION
 import me.khrys.dnd.charcreator.common.FEATURES_TRANSLATION
 import me.khrys.dnd.charcreator.common.INITIATIVE_TRANSLATION
 import me.khrys.dnd.charcreator.common.LANGUAGES_TRANSLATION
+import me.khrys.dnd.charcreator.common.MANEUVERS_TRANSLATION
 import me.khrys.dnd.charcreator.common.PASSIVE_PERCEPTION_TRANSLATION
 import me.khrys.dnd.charcreator.common.PROFICIENCIES_TRANSLATION
 import me.khrys.dnd.charcreator.common.PROFICIENCY_BONUS_CONTENT_TRANSLATION
@@ -42,27 +45,38 @@ import me.khrys.dnd.charcreator.common.SAVE_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPEED_TRANSLATION
 import me.khrys.dnd.charcreator.common.SUPERIORITY_DICES_TRANSLATION
 import me.khrys.dnd.charcreator.common.models.Character
+import me.khrys.dnd.charcreator.common.models.Maneuver
 import me.khrys.dnd.charcreator.common.models.SuperiorityDice
+import mui.material.Accordion
+import mui.material.AccordionDetails
+import mui.material.AccordionSummary
+import mui.material.Box
 import mui.material.Dialog
 import mui.material.DialogActions
 import mui.material.DialogContent
 import mui.material.DialogTitle
 import mui.material.Grid
+import mui.material.Tab
 import mui.material.Table
 import mui.material.TableBody
 import mui.material.TableCell
 import mui.material.TableContainer
 import mui.material.TableHead
 import mui.material.TableRow
+import mui.material.Tabs
 import mui.system.Breakpoint.xl
 import react.FC
 import react.Props
 import react.PropsWithChildren
 import react.ReactNode
+import react.dom.DangerouslySetInnerHTML
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.img
 import react.dom.html.ReactHTML.p
 import react.useContext
+import react.useState
+
+private const val MANEUVERS_INDEX = 0
 
 private external interface CharAbilitiesProps : Props {
     var value: String
@@ -83,6 +97,22 @@ private external interface ParametersProps : Props {
 private external interface MultiValueProps : Props {
     var translations: Map<String, String>
     var values: List<String>
+}
+
+private external interface CharPropsWithValue : CharBasedProps {
+    var value: Int
+    var setValue: (Int) -> Unit
+}
+
+private external interface TitleProps : Props {
+    var character: Character
+    var translations: Map<String, String>
+    var open: Boolean
+    var setOpen: (Boolean) -> Unit
+}
+
+private external interface ManeuversProps : Props {
+    var maneuvers: List<Maneuver>
 }
 
 val CharacterWindow = FC<CharDialogProps> { props ->
@@ -141,16 +171,72 @@ val CharacterWindow = FC<CharDialogProps> { props ->
 }
 
 private val SpecificParameters = FC<AbilitiesProps> { props ->
+    val showTabs = shouldShowTabs(props.character)
     Grid {
         this.item = true
         this.className = ClassName(CLASS_PADDINGS)
         Image {
             +props.character.image
         }
-        if (props.character.superiorityDices.isNotEmpty()) {
+        if (showTabs) {
+            val (tabValue, setTabValue) = useState(MANEUVERS_INDEX)
+
+            AdditionalTabs {
+                this.value = tabValue
+                this.setValue = { setTabValue(it) }
+                this.translations = props.translations
+                this.character = props.character
+            }
+            TabBoxes {
+                this.value = tabValue
+                this.character = props.character
+                this.translations = props.translations
+            }
+        }
+    }
+}
+
+private val AdditionalTabs = FC<CharPropsWithValue> { props ->
+    Tabs {
+        this.value = props.value
+        this.onChange = { _, newTabValue -> props.setValue(newTabValue as Int) }
+        if (props.character.maneuvers.isNotEmpty()) {
+            Tab {
+                this.label = ReactNode(props.translations[MANEUVERS_TRANSLATION] ?: "")
+            }
+        }
+    }
+}
+
+private val ManeuversBox = FC<ManeuversProps> { props ->
+    Grid {
+        this.container = true
+        Grid {
+            this.item = true
+            props.maneuvers.forEach { maneuver ->
+                Accordion {
+                    AccordionSummary {
+                        +maneuver._id
+                    }
+                    AccordionDetails {
+                        this.dangerouslySetInnerHTML =
+                            DangerousHTML(maneuver.description).unsafeCast<DangerouslySetInnerHTML>()
+                    }
+                }
+            }
+        }
+    }
+}
+
+private val TabBoxes = FC<CharPropsWithValue> { props ->
+    Box {
+        if (props.value == MANEUVERS_INDEX) {
             SuperiorityDices {
                 this.translations = props.translations
                 this.superiorityDices = props.character.superiorityDices
+            }
+            ManeuversBox {
+                this.maneuvers = props.character.maneuvers
             }
         }
     }
@@ -373,13 +459,6 @@ private val Abilities = FC<ParametersProps> { props ->
     }
 }
 
-private external interface TitleProps : Props {
-    var character: Character
-    var translations: Map<String, String>
-    var open: Boolean
-    var setOpen: (Boolean) -> Unit
-}
-
 private val Title = FC<TitleProps> { props ->
     DialogTitle {
         div {
@@ -436,3 +515,5 @@ private val SuperiorDices = FC<SuperiorDicesProps> { props ->
         }
     }
 }
+
+fun shouldShowTabs(character: Character) = character.maneuvers.isNotEmpty()

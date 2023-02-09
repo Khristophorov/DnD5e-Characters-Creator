@@ -22,14 +22,15 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockkStatic
 import io.mockk.verifySequence
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import me.khrys.dnd.charcreator.common.LOGIN_SESSION
 import me.khrys.dnd.charcreator.common.LOGIN_URL
 import me.khrys.dnd.charcreator.common.ROOT_URL
 import me.khrys.dnd.charcreator.server.models.LoginSession
+import org.slf4j.Logger
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 const val VALIDATION_URL = "http://validation-url/"
 const val TOKEN = "token"
@@ -51,14 +52,17 @@ const val USER_INFO_JSON = """
 
 class TestAuthentication {
 
-    @RelaxedMockK
-    lateinit var call: ApplicationCall
-
     @MockK
     lateinit var oauth: OAuth2
 
     @RelaxedMockK
+    lateinit var call: ApplicationCall
+
+    @RelaxedMockK
     lateinit var session: CurrentSession
+
+    @RelaxedMockK
+    lateinit var log: Logger
 
     private val httpClient = HttpClient(MockEngine) {
         install(ContentNegotiation) {
@@ -70,6 +74,7 @@ class TestAuthentication {
                 when (request.url.toString()) {
                     FULL_VALIDATION_URL ->
                         respond(USER_INFO_JSON, headers = headers)
+
                     else -> error("Unhandled ${request.url}")
                 }
             }
@@ -86,6 +91,7 @@ class TestAuthentication {
         every { call.authentication.principal<OAuth2>() } returns oauth
         every { oauth.accessToken } returns TOKEN
         every { call.sessions } returns session
+        every { call.application.environment.log } returns log
     }
 
     @Test
@@ -98,8 +104,10 @@ class TestAuthentication {
             call.sessions
             session.set(LOGIN_SESSION, loginSession)
         }
+        coVerify { call.application }
         coVerify { call.respondRedirect(ROOT_URL) }
-        confirmVerified(call, oauth, session)
+        coVerify { log.info("test@mail.com has logged in") }
+        confirmVerified(call, oauth, session, log)
     }
 
     @Test

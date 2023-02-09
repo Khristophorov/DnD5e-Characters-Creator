@@ -32,6 +32,7 @@ suspend fun authenticate(call: ApplicationCall, validationUrl: String?, httpClie
     val username = retrieveUsername(principal?.accessToken, validationUrl, httpClient)
     val loginSession = LoginSession(username)
     call.sessions.set(LOGIN_SESSION, loginSession)
+    call.application.environment.log.info("$username has logged in")
     call.respondRedirect(ROOT_URL)
 }
 

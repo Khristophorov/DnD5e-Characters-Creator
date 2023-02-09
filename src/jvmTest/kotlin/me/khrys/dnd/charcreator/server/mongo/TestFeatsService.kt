@@ -5,10 +5,10 @@ import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockkStatic
+import me.khrys.dnd.charcreator.common.models.Feat
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import me.khrys.dnd.charcreator.common.models.Feat
 
 val featsList = listOf(Feat(_id = "name", description = "description", functions = emptyList()))
 

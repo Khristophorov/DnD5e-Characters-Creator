@@ -29,6 +29,7 @@ data class Character(
     var features: List<Feature>,
     var proficiencies: List<String> = emptyList(),
     var languages: List<String> = emptyList(),
+    var maneuvers: List<Maneuver> = emptyList(),
     var spells: List<Spell> = emptyList(),
     var bonuses: CharBonuses = CharBonuses(),
     var superiorityDices: List<SuperiorityDice> = emptyList()
@@ -123,6 +124,13 @@ data class Feat(
     val functions: List<DnDFunction> = emptyList(),
     val filters: List<Filter> = emptyList(),
     val source: String = ""
+)
+
+@Serializable
+data class Maneuver(
+    val _id: String,
+    val description: String,
+    val source: String
 )
 
 @Serializable

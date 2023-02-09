@@ -1,5 +1,6 @@
 package me.khrys.dnd.charcreator.client.components.dialogs
 
+import me.khrys.dnd.charcreator.client.ManeuversContext
 import me.khrys.dnd.charcreator.client.components.dialogs.windows.InformWindow
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.AbilityChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.ElementChooser
@@ -15,6 +16,7 @@ import me.khrys.dnd.charcreator.client.utils.useFeatureWindowSettings
 import me.khrys.dnd.charcreator.common.models.DnDFunction
 import me.khrys.dnd.charcreator.common.models.Feature
 import react.FC
+import react.useContext
 import react.useState
 
 val CollectRaceFeatures = FC<CharDialogProps> { props ->
@@ -332,22 +334,18 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
         }
     }
     ManeuversChooser {
+        val maneuversMap = useContext(ManeuversContext)
         val functionValues = maneuvers.function.values
         this.open = shouldOpen(maneuvers.open)
         this.setOpen = { maneuvers.setOpen(it) }
         this.feature = maneuvers.feature
         this.function = maneuvers.function
         this.character = props.character
-        this.size = if (functionValues.isEmpty()) 0 else functionValues[0].toInt()
+        this.size = if (functionValues.isEmpty()) 0 else functionValues[1].toInt()
         this.setValue = { values ->
             console.info("Chosen maneuvers: $values")
             values.forEach { value ->
-                props.character.features += Feature(
-                    name = value,
-                    description = functionValues[functionValues.indexOf(value) + 1],
-                    functions = emptyList(),
-                    source = maneuvers.feature.source
-                )
+                maneuversMap[value]?.let { props.character.maneuvers += it }
             }
             endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
         }

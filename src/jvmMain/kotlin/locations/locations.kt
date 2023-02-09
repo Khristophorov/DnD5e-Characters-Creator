@@ -8,6 +8,7 @@ import me.khrys.dnd.charcreator.common.CHARACTERS_URL
 import me.khrys.dnd.charcreator.common.FEATS_URL
 import me.khrys.dnd.charcreator.common.LOGIN_URL
 import me.khrys.dnd.charcreator.common.LOGOUT_URL
+import me.khrys.dnd.charcreator.common.MANEUVERS_URL
 import me.khrys.dnd.charcreator.common.RACES_URL
 import me.khrys.dnd.charcreator.common.ROOT_URL
 import me.khrys.dnd.charcreator.common.SPELLS_URL
@@ -33,6 +34,9 @@ class Races
 
 @Location(FEATS_URL)
 class Feats
+
+@Location(MANEUVERS_URL)
+class Maneuvers
 
 @Location(SPELLS_URL)
 class Spells

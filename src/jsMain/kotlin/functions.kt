@@ -88,7 +88,9 @@ fun Character.clone() = Character(
     subrace = this.subrace,
     features = this.features,
     proficiencies = this.proficiencies,
-    languages = this.languages
+    languages = this.languages,
+    maneuvers = this.maneuvers,
+    spells = this.spells.toMutableList()
 )
 
 fun Abilities.clone() = Abilities(
