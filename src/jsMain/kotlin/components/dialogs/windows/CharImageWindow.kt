@@ -27,8 +27,8 @@ import mui.material.DialogTitle
 import org.w3c.dom.HTMLElement
 import org.w3c.files.FileReader
 import react.FC
-import react.dom.html.InputType.file
 import react.useState
+import web.html.InputType.file
 
 val CharImageWindow = FC<CharBasedProps> { props ->
     if (props.open) {

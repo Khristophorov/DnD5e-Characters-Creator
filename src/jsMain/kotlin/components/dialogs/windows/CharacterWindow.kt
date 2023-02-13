@@ -1,6 +1,7 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
 import csstype.ClassName
+import csstype.ObjectFit
 import csstype.px
 import emotion.react.css
 import me.khrys.dnd.charcreator.client.TranslationsContext
@@ -269,6 +270,7 @@ private val Image = FC<PropsWithChildren> { props ->
                 css {
                     width = 128.px
                     height = 128.px
+                    objectFit = ObjectFit.contain
                 }
             }
         }

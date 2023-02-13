@@ -10,8 +10,8 @@ import me.khrys.dnd.charcreator.common.VALIDATION_LOWER_0
 import me.khrys.dnd.charcreator.common.VALIDATION_UPPER_20
 import react.FC
 import react.Props
-import react.dom.html.InputType.number
 import react.dom.html.ReactHTML.div
+import web.html.InputType.number
 
 external interface TextBoxProps : Props {
     var value: String

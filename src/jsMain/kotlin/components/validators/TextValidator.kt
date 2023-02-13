@@ -3,7 +3,7 @@ package me.khrys.dnd.charcreator.client.components.validators
 import org.w3c.dom.events.InputEvent
 import react.ComponentType
 import react.PropsWithClassName
-import react.dom.html.InputType
+import web.html.InputType
 
 @JsModule("react-material-ui-form-validator")
 @JsNonModule

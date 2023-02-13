@@ -1,6 +1,5 @@
 package me.khrys.dnd.charcreator.client.components.buttons
 
-import dom.html.HTMLButtonElement
 import me.khrys.dnd.charcreator.client.utils.playSound
 import me.khrys.dnd.charcreator.common.BUTTON_SOUND_ID
 import mui.material.Button
@@ -10,6 +9,7 @@ import mui.material.ButtonVariant.contained
 import mui.material.Size.small
 import react.FC
 import react.dom.events.MouseEvent
+import web.html.HTMLButtonElement
 
 typealias ButtonAction = (MouseEvent<HTMLButtonElement, *>) -> Unit
 

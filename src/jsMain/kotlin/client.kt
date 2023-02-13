@@ -1,7 +1,5 @@
 package me.khrys.dnd.charcreator.client
 
-import browser.document
-import browser.window
 import me.khrys.dnd.charcreator.common.ROOT
 import mui.material.styles.ThemeProvider
 import react.FC
@@ -9,6 +7,8 @@ import react.Props
 import react.createElement
 import react.dom.client.createRoot
 import react.dom.html.ReactHTML.div
+import web.dom.document
+import web.window.window
 
 fun main() {
     window.onload = {
@@ -16,7 +16,7 @@ fun main() {
             console.info("Starting the app.")
             val mainElement = FC<Props> {
                 ThemeProvider {
-                    theme = defaultTheme
+                    this.theme = defaultTheme
                     div {
                         MainDnd()
                     }

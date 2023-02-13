@@ -1,7 +1,6 @@
 package me.khrys.dnd.charcreator.client.components.inputs.tooltips
 
 import csstype.ClassName
-import dom.Element
 import me.khrys.dnd.charcreator.client.createDefaultTheme
 import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
 import me.khrys.dnd.charcreator.common.CLASS_DISABLE_POINTER
@@ -16,6 +15,7 @@ import react.FC
 import react.dom.DangerouslySetInnerHTML
 import react.dom.html.ReactHTML.div
 import react.useState
+import web.dom.Element
 
 val tooltipTheme = createTooltipTheme()
 
@@ -53,7 +53,7 @@ val Tooltip = FC<TooltipProps> { props ->
             this.theme = tooltipTheme
             Typography {
                 props.id?.let { this.id = it }
-                this.onMouseEnter = { event -> setPopoverAnchor(event.currentTarget) }
+                this.onMouseEnter = { event -> setPopoverAnchor(event.currentTarget.unsafeCast<EventTarget>()) }
                 this.onMouseLeave = { setPopoverAnchor(null) }
                 child(props.children)
             }

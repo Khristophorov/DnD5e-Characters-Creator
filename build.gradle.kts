@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
-    kotlin("multiplatform") version "1.7.21"
-    kotlin("plugin.serialization") version "1.7.21"
+    kotlin("multiplatform") version "1.8.10"
+    kotlin("plugin.serialization") version "1.8.10"
     application
 }
 
@@ -12,16 +12,15 @@ version = "1.0-SNAPSHOT"
 // Kotlin dependencies
 val kotlinCoroutinesVersion = "1.6.4"
 val kotlinHtmlVersion = "0.8.0"
-val kotlinReactVersion = "18.2.0-pre.445"
-val kotlinReactReduxVersion = "7.2.6-pre.445"
-val kotlinMuiVersion = "5.9.1-pre.445"
-val kotlinMuiIconsVersion = "5.10.9-pre.445"
-val kotlinEmotionVersion = "11.10.5-pre.445"
+val kotlinReactVersion = "18.2.0-pre.494"
+val kotlinMuiVersion = "5.9.1-pre.494"
+val kotlinMuiIconsVersion = "5.10.9-pre.494"
+val kotlinEmotionVersion = "11.10.5-pre.494"
 val kotlinSerializationVersion = "1.4.1"
-val kmongoVersion = "4.7.2"
-val ktorVersion = "2.1.3"
+val kmongoVersion = "4.8.0"
+val ktorVersion = "2.2.3"
 val logbackVersion = "1.4.5"
-val mockkVersion = "1.13.2"
+val mockkVersion = "1.13.4"
 
 // JavaScript dependencies
 val reactMaterialUiFormValidatorVersion = "3.0.1"
@@ -48,19 +47,19 @@ kotlin {
             binaries.executable()
             webpackTask {
                 cssSupport {
-                    enabled = true
+                    enabled.set(true)
                 }
             }
             runTask {
                 cssSupport {
-                    enabled = true
+                    enabled.set(true)
                 }
             }
             testTask {
                 useKarma {
                     useChromeHeadless()
                     webpackConfig.cssSupport {
-                        enabled = true
+                        enabled.set(true)
                     }
                 }
             }

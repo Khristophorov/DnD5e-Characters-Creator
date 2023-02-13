@@ -2,6 +2,8 @@ package me.khrys.dnd.charcreator.client.components.inputs.choosers
 
 import me.khrys.dnd.charcreator.client.ManeuversContext
 import me.khrys.dnd.charcreator.client.TranslationsContext
+import me.khrys.dnd.charcreator.client.applyFeatures
+import me.khrys.dnd.charcreator.client.clone
 import me.khrys.dnd.charcreator.client.components.buttons.Submit
 import me.khrys.dnd.charcreator.client.components.dialogs.CollectFeatFeatures
 import me.khrys.dnd.charcreator.client.components.dialogs.FeatsProps
@@ -66,7 +68,9 @@ val ProficienciesChooser = FC<MultipleFeatureProps> { props ->
 
 val LanguageChooser = FC<FeatureProps<String>> { props ->
     if (props.open) {
-        val values = props.function.values.toList().filter { !props.character.languages.contains(it) }
+        val translations = useContext(TranslationsContext)
+        val filledCharacter = applyFeatures(props.character.clone(), translations)
+        val values = props.function.values.toList().filter { !filledCharacter.languages.contains(it) }
         ChooseOneOfMany {
             this.open = props.open
             this.setOpen = props.setOpen
@@ -80,7 +84,9 @@ val LanguageChooser = FC<FeatureProps<String>> { props ->
 
 val LanguagesChooser = FC<MultipleFeatureProps> { props ->
     if (props.open) {
-        val values = props.function.values.toList().filter { !props.character.languages.contains(it) }
+        val translations = useContext(TranslationsContext)
+        val filledCharacter = applyFeatures(props.character.clone(), translations)
+        val values = props.function.values.toList().filter { !filledCharacter.languages.contains(it) }
         ChooseSeveral {
             this.open = props.open
             this.setOpen = props.setOpen

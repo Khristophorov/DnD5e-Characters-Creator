@@ -22,8 +22,8 @@ import org.w3c.dom.events.InputEvent
 import react.FC
 import react.Props
 import react.ReactNode
-import react.dom.html.InputType.number
 import react.dom.html.ReactHTML.div
+import web.html.InputType.number
 
 external interface AbilityBoxProps : Props {
     var title: String
