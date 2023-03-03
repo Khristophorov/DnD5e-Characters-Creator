@@ -11,6 +11,8 @@ import react.PropsWithChildren
 external interface DialogProps : PropsWithChildren {
     var open: Boolean
     var setOpen: (Boolean) -> Unit
+    var header: String
+    var action: () -> (Unit)
 }
 
 external interface CharDialogProps : FeatsProps
@@ -19,6 +21,7 @@ external interface FeatureProps<T> : DialogProps {
     var character: Character
     var feature: Feature
     var function: DnDFunction
+    var value: T
     var setValue: (T) -> Unit
 }
 
@@ -31,7 +34,6 @@ external interface FeatsProps : DialogProps {
     var character: Character
     var feats: Map<String, Feat>
     var useFeats: Boolean
-    var action: () -> Unit
 }
 
 external interface MultipleFeaturesFeatsProps : DialogProps {
@@ -39,7 +41,6 @@ external interface MultipleFeaturesFeatsProps : DialogProps {
     var character: Character
     var feats: Map<String, Feat>
     var useFeats: Boolean
-    var action: () -> Unit
 }
 
 external interface CharBasedProps : Props {

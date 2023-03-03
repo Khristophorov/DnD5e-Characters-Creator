@@ -1,5 +1,6 @@
 package me.khrys.dnd.charcreator.client
 
+import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
 import kotlin.math.floor
 import me.khrys.dnd.charcreator.common.ACROBATICS_TRANSLATION
 import me.khrys.dnd.charcreator.common.ANIMAL_HANDLING_TRANSLATION
@@ -44,6 +45,7 @@ import me.khrys.dnd.charcreator.common.models.Filter.Param.WORE_TYPE
 import me.khrys.dnd.charcreator.common.models.SavingThrows
 import me.khrys.dnd.charcreator.common.models.Skills
 import me.khrys.dnd.charcreator.common.models.SuperiorityDice
+import react.dom.DangerouslySetInnerHTML
 
 fun computeModifier(ability: Int, proficiencyBonus: Int = 0, proficient: Boolean = false): Int {
     val defaultModifier = floor((ability - 10).toDouble() / 2).toInt()
@@ -62,7 +64,11 @@ fun computePassiveSkill(ability: Int, proficiencyBonus: Int = 0, proficient: Boo
     return computeModifier(ability, proficiencyBonus, proficient) + 10
 }
 
-fun toSignedString(number: Int): String = if (number > 0) "+$number" else number.toString()
+fun computeSpellLevel(level: Int, cantripTranslation: String, suffix: String?): String {
+    return if (level == 0) cantripTranslation else "$level$suffix"
+}
+
+fun Int.toSignedString() = if (this > 0) "+$this" else this.toString()
 
 fun applyFeatures(character: Character, translations: Map<String, String>): Character {
     val featuredCharacter = character.clone()
@@ -316,3 +322,5 @@ fun String.format(vararg values: String): String {
     values.forEach { newString = newString.replaceFirst("{}", it) }
     return newString
 }
+
+fun toDangerousHtml(value: String) = DangerousHTML(value).unsafeCast<DangerouslySetInnerHTML>()

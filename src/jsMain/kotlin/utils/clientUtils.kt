@@ -16,11 +16,13 @@ import me.khrys.dnd.charcreator.common.CHARACTERS_URL
 import me.khrys.dnd.charcreator.common.FEATS_URL
 import me.khrys.dnd.charcreator.common.MANEUVERS_URL
 import me.khrys.dnd.charcreator.common.RACES_URL
+import me.khrys.dnd.charcreator.common.SPELLS_URL
 import me.khrys.dnd.charcreator.common.TRANSLATIONS_URL
 import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.Feat
 import me.khrys.dnd.charcreator.common.models.Maneuver
 import me.khrys.dnd.charcreator.common.models.Race
+import me.khrys.dnd.charcreator.common.models.Spell
 import me.khrys.dnd.charcreator.common.models.Translation
 
 private val client = HttpClient {
@@ -64,6 +66,13 @@ fun loadManeuvers(setManeuvers: (Map<String, Maneuver>) -> Unit) {
     }
 }
 
+fun loadSpells(setSpells: (Map<String, Spell>) -> Unit) {
+    console.info("Loading spells.")
+    MainScope().launch {
+        setSpells(fetchSpells().associateBy { it._id })
+    }
+}
+
 fun storeCharacter(character: Character) = MainScope().launch {
     client.post(CHARACTERS_URL) {
         contentType(ContentType.Application.Json)
@@ -81,6 +90,8 @@ private suspend fun fetchRaces(): List<Race> = fetchModel(RACES_URL)
 private suspend fun fetchFeats(): List<Feat> = fetchModel(FEATS_URL)
 
 private suspend fun fetchManeuvers(): List<Maneuver> = fetchModel(MANEUVERS_URL)
+
+private suspend fun fetchSpells(): List<Spell> = fetchModel(SPELLS_URL)
 
 private suspend inline fun <reified T> fetchModel(url: String): T =
     client.get(url).body()

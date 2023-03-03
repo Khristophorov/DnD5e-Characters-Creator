@@ -2,7 +2,7 @@ package me.khrys.dnd.charcreator.client.components.inputs.tooltips
 
 import csstype.ClassName
 import me.khrys.dnd.charcreator.client.createDefaultTheme
-import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
+import me.khrys.dnd.charcreator.client.toDangerousHtml
 import me.khrys.dnd.charcreator.common.CLASS_DISABLE_POINTER
 import mui.material.Popover
 import mui.material.PopoverOrigin
@@ -12,7 +12,6 @@ import mui.material.styles.Theme
 import mui.material.styles.ThemeProvider
 import org.w3c.dom.events.EventTarget
 import react.FC
-import react.dom.DangerouslySetInnerHTML
 import react.dom.html.ReactHTML.div
 import react.useState
 import web.dom.Element
@@ -73,8 +72,7 @@ val Tooltip = FC<TooltipProps> { props ->
                 this.onClose = { _, _ -> setPopoverAnchor(null) }
 
                 div {
-                    this.dangerouslySetInnerHTML =
-                        DangerousHTML(props.title.toString()).unsafeCast<DangerouslySetInnerHTML>()
+                    this.dangerouslySetInnerHTML = toDangerousHtml(props.title.toString())
                 }
             }
         }

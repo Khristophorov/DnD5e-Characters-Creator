@@ -14,11 +14,10 @@ import react.ReactNode
 import react.createElement
 
 external interface CheckboxWithLabelProps : CheckboxProps {
-    var label: String
+    var label: ReactNode
 }
 
 val CheckboxWithLabel = FC<CheckboxWithLabelProps> { props ->
-    console.info("Rendering checkbox with label. Label: ${props.label}")
     val checkBox = FC<Props> {
         Checkbox {
             this.checked = props.checked
@@ -33,7 +32,7 @@ val CheckboxWithLabel = FC<CheckboxWithLabelProps> { props ->
     DelayedTooltip {
         this.title = ReactNode(props.title ?: "")
         FormControlLabel {
-            label = ReactNode(props.label)
+            label = props.label
             control = createElement(checkBox)
             checked = props.checked
         }

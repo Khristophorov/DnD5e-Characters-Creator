@@ -25,6 +25,7 @@ import mui.material.DialogContent
 import mui.material.DialogContentText
 import mui.material.DialogTitle
 import react.FC
+import react.ReactNode
 import react.useContext
 import react.useState
 
@@ -61,7 +62,7 @@ val CharRaceWindow = FC<CharBasedProps> { props ->
                     }
                     if (race.features.any { it.withFeats }) {
                         CheckboxWithLabel {
-                            this.label = translations[FEATS_SELECT_TRANSLATION] ?: ""
+                            this.label = ReactNode(translations[FEATS_SELECT_TRANSLATION] ?: "")
                             this.checked = useFeats
                             this.onChange = { _, value -> setUseFeats(value) }
                         }

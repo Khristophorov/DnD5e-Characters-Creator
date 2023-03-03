@@ -47,7 +47,7 @@ val SavingThrowsGridItem = FC<SavingThrowsGridItemProps> { props ->
                     css {
                         this.borderBottom = Border(1.px, solid, black)
                     }
-                    +toSignedString(modifier)
+                    +modifier.toSignedString()
                 }
                 span {
                     css {

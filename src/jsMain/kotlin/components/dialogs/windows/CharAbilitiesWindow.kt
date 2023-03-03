@@ -8,7 +8,7 @@ import me.khrys.dnd.charcreator.client.components.buttons.Submit
 import me.khrys.dnd.charcreator.client.components.dialogs.CharBasedProps
 import me.khrys.dnd.charcreator.client.components.inputs.AbilityBox
 import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
-import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
+import me.khrys.dnd.charcreator.client.toDangerousHtml
 import me.khrys.dnd.charcreator.client.utils.value
 import me.khrys.dnd.charcreator.common.CHARISMA_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.CHARISMA_TRANSLATION
@@ -36,7 +36,6 @@ import mui.material.DialogTitle
 import react.FC
 import react.Props
 import react.PropsWithChildren
-import react.dom.DangerouslySetInnerHTML
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.span
 import react.useState
@@ -194,8 +193,7 @@ private val Strength = FC<AbilitiesProps> { props ->
 private val Title = FC<PropsWithChildren> { props ->
     DialogContentText {
         span {
-            this.dangerouslySetInnerHTML =
-                DangerousHTML(props.children.toString()).unsafeCast<DangerouslySetInnerHTML>()
+            this.dangerouslySetInnerHTML = toDangerousHtml(props.children.toString())
         }
     }
 }

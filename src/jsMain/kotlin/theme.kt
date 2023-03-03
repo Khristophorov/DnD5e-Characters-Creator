@@ -85,6 +85,13 @@ val defaultTheme = createDefaultTheme(
                     }
                 }
             },
+            MuiTableContainer: {
+                styleOverrides: {
+                    root: {
+                        maxHeight: '440px'
+                    }
+                }
+            },
             MuiAccordion: {
                 styleOverrides: {
                     root: {

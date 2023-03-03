@@ -20,6 +20,7 @@ import me.khrys.dnd.charcreator.common.CLASS_BACKGROUND
 import me.khrys.dnd.charcreator.common.CLASS_BOLD
 import me.khrys.dnd.charcreator.common.CLASS_BORDERED
 import me.khrys.dnd.charcreator.common.CLASS_CENTER
+import me.khrys.dnd.charcreator.common.CLASS_COLLAPSED_CELL
 import me.khrys.dnd.charcreator.common.CLASS_DISABLED
 import me.khrys.dnd.charcreator.common.CLASS_DISABLE_POINTER
 import me.khrys.dnd.charcreator.common.CLASS_FLOAT_LEFT
@@ -100,6 +101,10 @@ suspend fun ApplicationCall.index() {
                 }
                 .${CLASS_DISABLE_POINTER} {
                     pointer-events: none;
+                }
+                .${CLASS_COLLAPSED_CELL} {
+                    padding-bottom: 0 !important;
+                    padding-top: 0 !important;
                 }
                 """
                 }

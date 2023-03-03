@@ -7,13 +7,12 @@ import csstype.px
 import emotion.react.css
 import me.khrys.dnd.charcreator.client.components.validators.SelectValidator
 import me.khrys.dnd.charcreator.client.components.validators.SelectValidatorProps
-import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
+import me.khrys.dnd.charcreator.client.toDangerousHtml
 import me.khrys.dnd.charcreator.common.CLASS_BORDERED
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
 import mui.material.MenuItem
 import react.FC
 import react.PropsWithChildren
-import react.dom.DangerouslySetInnerHTML
 import react.dom.html.ReactHTML.div
 import react.useState
 
@@ -74,6 +73,6 @@ private val DescriptionFrame = FC<PropsWithChildren> { props ->
             display = inlineBlock
             overflow = "auto".unsafeCast<Overflow>()
         }
-        this.dangerouslySetInnerHTML = DangerousHTML(props.children.toString()).unsafeCast<DangerouslySetInnerHTML>()
+        this.dangerouslySetInnerHTML = toDangerousHtml(props.children.toString())
     }
 }

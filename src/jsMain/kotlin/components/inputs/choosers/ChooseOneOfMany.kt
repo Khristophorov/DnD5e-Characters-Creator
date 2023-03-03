@@ -4,7 +4,7 @@ import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.components.buttons.Submit
 import me.khrys.dnd.charcreator.client.components.inputs.ValidatedList
 import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
-import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
+import me.khrys.dnd.charcreator.client.toDangerousHtml
 import me.khrys.dnd.charcreator.client.utils.value
 import me.khrys.dnd.charcreator.common.NEXT_TRANSLATION
 import me.khrys.dnd.charcreator.common.VALIDATION_REQUIRED
@@ -15,7 +15,6 @@ import mui.material.DialogContent
 import mui.material.DialogContentText
 import mui.material.DialogTitle
 import react.FC
-import react.dom.DangerouslySetInnerHTML
 import react.dom.html.ReactHTML.span
 import react.useContext
 import react.useState
@@ -32,7 +31,7 @@ val ChooseOneOfMany = FC<ChooserProps<String>> { props ->
             this.dividers = true
             DialogContentText {
                 span {
-                    dangerouslySetInnerHTML = DangerousHTML(props.description).unsafeCast<DangerouslySetInnerHTML>()
+                    dangerouslySetInnerHTML = toDangerousHtml(props.description)
                 }
             }
             ValidatorForm {

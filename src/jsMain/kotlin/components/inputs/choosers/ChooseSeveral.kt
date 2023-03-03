@@ -6,7 +6,7 @@ import me.khrys.dnd.charcreator.client.components.buttons.Submit
 import me.khrys.dnd.charcreator.client.components.inputs.ValidatedList
 import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
 import me.khrys.dnd.charcreator.client.components.validators.validatorFormRules
-import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
+import me.khrys.dnd.charcreator.client.toDangerousHtml
 import me.khrys.dnd.charcreator.client.utils.value
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
 import me.khrys.dnd.charcreator.common.NEXT_TRANSLATION
@@ -20,7 +20,6 @@ import mui.material.DialogContent
 import mui.material.DialogContentText
 import mui.material.DialogTitle
 import react.FC
-import react.dom.DangerouslySetInnerHTML
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.span
 import react.useContext
@@ -44,8 +43,7 @@ val ChooseSeveral = FC<ChooserProps<List<String>>> { props ->
             this.dividers = true
             DialogContentText {
                 span {
-                    this.dangerouslySetInnerHTML =
-                        DangerousHTML(props.description).unsafeCast<DangerouslySetInnerHTML>()
+                    this.dangerouslySetInnerHTML = toDangerousHtml(props.description)
                 }
             }
             ValidatorForm {

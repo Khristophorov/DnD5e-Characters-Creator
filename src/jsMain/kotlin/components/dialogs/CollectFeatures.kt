@@ -1,6 +1,7 @@
 package me.khrys.dnd.charcreator.client.components.dialogs
 
 import me.khrys.dnd.charcreator.client.ManeuversContext
+import me.khrys.dnd.charcreator.client.SpellsContext
 import me.khrys.dnd.charcreator.client.components.dialogs.windows.InformWindow
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.AbilityChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.ElementChooser
@@ -11,6 +12,7 @@ import me.khrys.dnd.charcreator.client.components.inputs.choosers.ManeuversChoos
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.ProficienciesChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.ProficiencyChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.SkillChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.SpellsChooser
 import me.khrys.dnd.charcreator.client.format
 import me.khrys.dnd.charcreator.client.utils.useFeatureWindowSettings
 import me.khrys.dnd.charcreator.common.models.DnDFunction
@@ -70,6 +72,7 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
     val ability = useFeatureWindowSettings()
     val element = useFeatureWindowSettings()
     val maneuvers = useFeatureWindowSettings()
+    val spells = useFeatureWindowSettings()
     val feats = useFeatureWindowSettings()
 
     val (numberOfNewFunctions, setNumberOfNewFunctions) = useState(-1)
@@ -152,6 +155,12 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
                         "Choose Maneuvers" -> {
                             newFunctions.add {
                                 maneuvers.setParams(true, feature, function)
+                            }
+                        }
+
+                        "Choose Spells" -> {
+                            newFunctions.add {
+                                spells.setParams(true, feature, function)
                             }
                         }
                     }
@@ -346,6 +355,21 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
             console.info("Chosen maneuvers: $values")
             values.forEach { value ->
                 maneuversMap[value]?.let { props.character.maneuvers += it }
+            }
+            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
+        }
+    }
+    SpellsChooser {
+        val spellsMap = useContext(SpellsContext)
+        this.open = shouldOpen(spells.open)
+        this.setOpen = { spells.setOpen(it) }
+        this.feature = spells.feature
+        this.function = spells.function
+        this.character = props.character
+        this.setValue = { spellsNames ->
+            console.log("Spells selected: $spellsNames")
+            spellsNames.forEach { spellName ->
+                spellsMap[spellName]?.let { props.character.spells += it }
             }
             endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
         }

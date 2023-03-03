@@ -24,9 +24,11 @@ import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
 import me.khrys.dnd.charcreator.client.computeArmorClass
 import me.khrys.dnd.charcreator.client.computePassiveSkill
 import me.khrys.dnd.charcreator.client.computeProficiencyBonus
-import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
+import me.khrys.dnd.charcreator.client.computeSpellLevel
 import me.khrys.dnd.charcreator.client.getInitiative
+import me.khrys.dnd.charcreator.client.toDangerousHtml
 import me.khrys.dnd.charcreator.common.ARMOR_CLASS_TRANSLATION
+import me.khrys.dnd.charcreator.common.CANTRIP_TRANSLATION
 import me.khrys.dnd.charcreator.common.CLASS_BORDERED
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
 import me.khrys.dnd.charcreator.common.CLASS_JUSTIFY_BETWEEN
@@ -44,9 +46,12 @@ import me.khrys.dnd.charcreator.common.PROFICIENCY_BONUS_TRANSLATION
 import me.khrys.dnd.charcreator.common.QUANTITY_TRANSLATION
 import me.khrys.dnd.charcreator.common.SAVE_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPEED_TRANSLATION
+import me.khrys.dnd.charcreator.common.SPELLS_TRANSLATION
+import me.khrys.dnd.charcreator.common.SPELL_LEVEL_SUFFIX_TRANSLATION
 import me.khrys.dnd.charcreator.common.SUPERIORITY_DICES_TRANSLATION
 import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.Maneuver
+import me.khrys.dnd.charcreator.common.models.Spell
 import me.khrys.dnd.charcreator.common.models.SuperiorityDice
 import mui.material.Accordion
 import mui.material.AccordionDetails
@@ -70,7 +75,6 @@ import react.FC
 import react.Props
 import react.PropsWithChildren
 import react.ReactNode
-import react.dom.DangerouslySetInnerHTML
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.img
 import react.dom.html.ReactHTML.p
@@ -78,6 +82,7 @@ import react.useContext
 import react.useState
 
 private const val MANEUVERS_INDEX = 0
+private const val SPELLS_INDEX = 1
 
 private external interface CharAbilitiesProps : Props {
     var value: String
@@ -114,6 +119,10 @@ private external interface TitleProps : Props {
 
 private external interface ManeuversProps : Props {
     var maneuvers: List<Maneuver>
+}
+
+private external interface SpellsProps : Props {
+    var spells: List<Spell>
 }
 
 val CharacterWindow = FC<CharDialogProps> { props ->
@@ -180,7 +189,7 @@ private val SpecificParameters = FC<AbilitiesProps> { props ->
             +props.character.image
         }
         if (showTabs) {
-            val (tabValue, setTabValue) = useState(MANEUVERS_INDEX)
+            val (tabValue, setTabValue) = useState(computeTabValue(props.character))
 
             AdditionalTabs {
                 this.value = tabValue
@@ -204,26 +213,13 @@ private val AdditionalTabs = FC<CharPropsWithValue> { props ->
         if (props.character.maneuvers.isNotEmpty()) {
             Tab {
                 this.label = ReactNode(props.translations[MANEUVERS_TRANSLATION] ?: "")
+                this.value = MANEUVERS_INDEX
             }
         }
-    }
-}
-
-private val ManeuversBox = FC<ManeuversProps> { props ->
-    Grid {
-        this.container = true
-        Grid {
-            this.item = true
-            props.maneuvers.forEach { maneuver ->
-                Accordion {
-                    AccordionSummary {
-                        +maneuver._id
-                    }
-                    AccordionDetails {
-                        this.dangerouslySetInnerHTML =
-                            DangerousHTML(maneuver.description).unsafeCast<DangerouslySetInnerHTML>()
-                    }
-                }
+        if (props.character.spells.isNotEmpty()) {
+            Tab {
+                this.label = ReactNode(props.translations[SPELLS_TRANSLATION] ?: "")
+                this.value = SPELLS_INDEX
             }
         }
     }
@@ -241,6 +237,32 @@ private val TabBoxes = FC<CharPropsWithValue> { props ->
             }
         }
     }
+    Box {
+        if (props.value == SPELLS_INDEX) {
+            SpellsBox {
+                this.spells = props.character.spells
+            }
+        }
+    }
+}
+
+private val ManeuversBox = FC<ManeuversProps> { props ->
+    Grid {
+        this.container = true
+        Grid {
+            this.item = true
+            props.maneuvers.forEach { maneuver ->
+                Accordion {
+                    AccordionSummary {
+                        +maneuver._id
+                    }
+                    AccordionDetails {
+                        this.dangerouslySetInnerHTML = toDangerousHtml(maneuver.description)
+                    }
+                }
+            }
+        }
+    }
 }
 
 private val SuperiorityDices = FC<SuperiorDicesProps> { props ->
@@ -255,6 +277,33 @@ private val SuperiorityDices = FC<SuperiorDicesProps> { props ->
             }
             CenteredBold {
                 +(props.translations[SUPERIORITY_DICES_TRANSLATION] ?: "")
+            }
+        }
+    }
+}
+
+private val SpellsBox = FC<SpellsProps> { props ->
+    val translations = useContext(TranslationsContext)
+    Grid {
+        this.container = true
+        Grid {
+            this.item = true
+            props.spells.sortedBy { it.level }.forEach { spell ->
+                Accordion {
+                    AccordionSummary {
+                        val spellLevel = computeSpellLevel(
+                            spell.level,
+                            translations[CANTRIP_TRANSLATION] ?: "",
+                            translations[SPELL_LEVEL_SUFFIX_TRANSLATION]
+                        )
+                        +"$spellLevel ${spell._id}"
+                    }
+                    AccordionDetails {
+                        SpellWindow {
+                            this.spell = spell
+                        }
+                    }
+                }
             }
         }
     }
@@ -518,4 +567,11 @@ private val SuperiorDices = FC<SuperiorDicesProps> { props ->
     }
 }
 
-fun shouldShowTabs(character: Character) = character.maneuvers.isNotEmpty()
+fun shouldShowTabs(character: Character) = character.maneuvers.isNotEmpty() || character.spells.isNotEmpty()
+
+fun computeTabValue(character: Character): Int {
+    if (character.maneuvers.isNotEmpty()) {
+        return MANEUVERS_INDEX
+    }
+    return SPELLS_INDEX
+}
