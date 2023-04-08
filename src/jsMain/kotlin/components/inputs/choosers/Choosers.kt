@@ -92,6 +92,23 @@ val ProficienciesChooser = FC<MultipleFeatureProps> { props ->
     }
 }
 
+val SkillsAndProficienciesChooser = FC<MultipleFeatureProps> { props ->
+    if (props.open) {
+        val values = props.function.values
+        val skillValues = values[2].split(", ")
+        val proficiencyValues = values[3].split(", ")
+        ChooseSeveral {
+            this.open = props.open
+            this.setOpen = props.setOpen
+            this.header = props.feature.name
+            this.description = props.feature.description
+            this.size = props.size
+            this.values = if (props.open) skillValues + proficiencyValues else emptyList()
+            this.setValue = props.setValue
+        }
+    }
+}
+
 val LanguageChooser = FC<FeatureProps<String>> { props ->
     if (props.open) {
         val translations = useContext(TranslationsContext)
@@ -197,6 +214,7 @@ val FeatsChooser = FC<FeatsProps> { props ->
                         this.onChange = { event ->
                             setFeat(props.feats[event.value()] ?: emptyFeat())
                         }
+                        this.useDescription = true
                         this.menuItems = props.feats.mapValues { it.value.description }
                         this.setDescription = { setDescription(it) }
                         this.description = description
@@ -264,8 +282,7 @@ val SpellsChooser = FC<MultipleFeatureProps> { props ->
                     this.onSubmit = {
                         if (chosenSpells.size < maxSpellsNumber) {
                             setOpenAlert(true)
-                        }
-                        else {
+                        } else {
                             props.setValue(chosenSpells)
                             props.setOpen(false)
                         }
@@ -293,8 +310,9 @@ val SpellsTable = FC<MultipleFeatureProps> { props ->
     val (openAlert, setOpenAlert) = useState(false)
     val values = props.function.values
     val maxSpellsNumber = values[0].toInt()
-    val maxLevel = values[1].toInt()
+    val level = values[1].toInt()
     val classes = values[2].split(", ")
+    val isMaxLevel = values.getOrNull(3).toBoolean()
     AlertDialog {
         this.open = openAlert
         this.action = { setOpenAlert(false) }
@@ -312,8 +330,9 @@ val SpellsTable = FC<MultipleFeatureProps> { props ->
             }
         }
         TableBody {
-            val filteredSpells = spells.values.filter { it.level <= maxLevel }
-                .filter { spell -> classes.any { spell.classes.contains(it) } }
+            val filteredSpells = spells.values.filter {
+                if (isMaxLevel) it.level == level else it.level <= level
+            }.filter { spell -> classes.any { spell.classes.contains(it) } }
             filteredSpells.forEach { spell ->
                 val (open, setOpen) = useState(false)
                 TableRow {

@@ -12,6 +12,7 @@ import me.khrys.dnd.charcreator.client.components.inputs.choosers.ManeuversChoos
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.ProficienciesChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.ProficiencyChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.SkillChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.SkillsAndProficienciesChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.SpellsChooser
 import me.khrys.dnd.charcreator.client.format
 import me.khrys.dnd.charcreator.client.utils.useFeatureWindowSettings
@@ -69,10 +70,12 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
     val language = useFeatureWindowSettings()
     val languages = useFeatureWindowSettings()
     val skill = useFeatureWindowSettings()
+    val skillsAndProficiencies = useFeatureWindowSettings()
     val ability = useFeatureWindowSettings()
     val element = useFeatureWindowSettings()
     val maneuvers = useFeatureWindowSettings()
     val spells = useFeatureWindowSettings()
+    val spells2 = useFeatureWindowSettings()
     val feats = useFeatureWindowSettings()
 
     val (numberOfNewFunctions, setNumberOfNewFunctions) = useState(-1)
@@ -131,9 +134,16 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
                             addFeature = false
                         }
 
-                        "Choose Skills" -> {
+                        "Choose Skill" -> {
                             newFunctions.add {
                                 skill.setParams(true, feature, function)
+                            }
+                            addFeature = false
+                        }
+
+                        "Choose Skills and Proficiencies" -> {
+                            newFunctions.add {
+                                skillsAndProficiencies.setParams(true, feature, function)
                             }
                             addFeature = false
                         }
@@ -161,6 +171,12 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
                         "Choose Spells" -> {
                             newFunctions.add {
                                 spells.setParams(true, feature, function)
+                            }
+                        }
+
+                        "Choose Spells2" -> {
+                            newFunctions.add {
+                                spells2.setParams(true, feature, function)
                             }
                         }
                     }
@@ -235,6 +251,43 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
                         source = proficiencies.feature.source
                     )
             }
+            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
+        }
+    }
+    SkillsAndProficienciesChooser {
+        this.open = shouldOpen(skillsAndProficiencies.open)
+        this.setOpen = { skillsAndProficiencies.setOpen(it) }
+        this.feature = skillsAndProficiencies.feature
+        this.function = skillsAndProficiencies.function
+        this.character = props.character
+        this.size =
+            if (skillsAndProficiencies.function.values.isEmpty()) 0 else skillsAndProficiencies.function.values[5].toInt()
+        this.setValue = { values ->
+            val skillsList = skillsAndProficiencies.function.values[2].split(", ")
+            val skillValues = mutableListOf<String>()
+            val proficiencyValues = mutableListOf<String>()
+            val featureFunctions = mutableListOf<DnDFunction>()
+            values.forEach {
+                if (skillsList.contains(it)) {
+                    skillValues += it
+                } else {
+                    proficiencyValues += it
+                }
+            }
+            if (skillValues.isNotEmpty()) {
+                featureFunctions += DnDFunction(skillsAndProficiencies.function.values[0], skillValues)
+            }
+            if (proficiencyValues.isNotEmpty()) {
+                featureFunctions += DnDFunction(skillsAndProficiencies.function.values[1], proficiencyValues)
+            }
+
+            props.character.features +=
+                Feature(
+                    name = skillsAndProficiencies.feature.name,
+                    description = skillsAndProficiencies.function.values[4].format(*values.toTypedArray()),
+                    functions = featureFunctions,
+                    source = skillsAndProficiencies.feature.source
+                )
             endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
         }
     }
@@ -365,6 +418,21 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
         this.setOpen = { spells.setOpen(it) }
         this.feature = spells.feature
         this.function = spells.function
+        this.character = props.character
+        this.setValue = { spellsNames ->
+            console.log("Spells selected: $spellsNames")
+            spellsNames.forEach { spellName ->
+                spellsMap[spellName]?.let { props.character.spells += it }
+            }
+            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
+        }
+    }
+    SpellsChooser {
+        val spellsMap = useContext(SpellsContext)
+        this.open = shouldOpen(spells2.open)
+        this.setOpen = { spells2.setOpen(it) }
+        this.feature = spells2.feature
+        this.function = spells2.function
         this.character = props.character
         this.setValue = { spellsNames ->
             console.log("Spells selected: $spellsNames")

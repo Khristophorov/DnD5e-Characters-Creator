@@ -1,7 +1,6 @@
 package me.khrys.dnd.charcreator.client
 
 import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
-import kotlin.math.floor
 import me.khrys.dnd.charcreator.common.ACROBATICS_TRANSLATION
 import me.khrys.dnd.charcreator.common.ANIMAL_HANDLING_TRANSLATION
 import me.khrys.dnd.charcreator.common.ARCANA_TRANSLATION
@@ -38,7 +37,9 @@ import me.khrys.dnd.charcreator.common.models.Filter.Param.CHARISMA
 import me.khrys.dnd.charcreator.common.models.Filter.Param.CONSTITUTION
 import me.khrys.dnd.charcreator.common.models.Filter.Param.DEXTERITY
 import me.khrys.dnd.charcreator.common.models.Filter.Param.INTELLIGENCE
+import me.khrys.dnd.charcreator.common.models.Filter.Param.LEFT_HAND_TYPE
 import me.khrys.dnd.charcreator.common.models.Filter.Param.PROFICIENCIES
+import me.khrys.dnd.charcreator.common.models.Filter.Param.RIGHT_HAND_TYPE
 import me.khrys.dnd.charcreator.common.models.Filter.Param.STRENGTH
 import me.khrys.dnd.charcreator.common.models.Filter.Param.WISDOM
 import me.khrys.dnd.charcreator.common.models.Filter.Param.WORE_TYPE
@@ -46,6 +47,7 @@ import me.khrys.dnd.charcreator.common.models.SavingThrows
 import me.khrys.dnd.charcreator.common.models.Skills
 import me.khrys.dnd.charcreator.common.models.SuperiorityDice
 import react.dom.DangerouslySetInnerHTML
+import kotlin.math.floor
 
 fun computeModifier(ability: Int, proficiencyBonus: Int = 0, proficient: Boolean = false): Int {
     val defaultModifier = floor((ability - 10).toDouble() / 2).toInt()
@@ -60,8 +62,8 @@ fun computeProficiencyBonus(level: Int): Int {
     else 6
 }
 
-fun computePassiveSkill(ability: Int, proficiencyBonus: Int = 0, proficient: Boolean = false): Int {
-    return computeModifier(ability, proficiencyBonus, proficient) + 10
+fun computePassiveSkill(ability: Int, proficiencyBonus: Int = 0, proficient: Boolean = false, bonus: Int = 0): Int {
+    return computeModifier(ability, proficiencyBonus, proficient) + 10 + bonus
 }
 
 fun computeSpellLevel(level: Int, cantripTranslation: String, suffix: String?): String {
@@ -148,8 +150,17 @@ fun Character.applyFeature(feature: Feature, translations: Map<String, String>) 
             "Increase Charisma" -> increaseCharisma(function.values[0].toInt())
             "Increase Wisdom" -> increaseWisdom(function.values[0].toInt())
             "Increase Ability" -> increaseAbility(function.values[0], function.values[1].toInt(), translations)
+            "Increase Ability with saving throws" -> increaseAbilityAndSavingThrows(
+                function.values[0],
+                function.values[1].toInt(),
+                translations
+            )
+
             "Increase HP by Level" -> increaseHPByLevel(function.values[0].toInt())
             "Increase Initiative" -> increaseInitiative(function.values[0].toInt())
+            "Increase Perception" -> increasePerception(function.values[0].toInt())
+            "Increase Investigation" -> increaseInvestigation(function.values[0].toInt())
+            "Increase Speed" -> increaseSpeed(function.values[0].toInt())
             "Increase Armor Class" -> increaseArmorClass(function.values[0].toInt())
             "Set Speed" -> setSpeed(function.values[0].toInt())
             "Add Proficiencies" -> setProficiencies(function.values)
@@ -211,8 +222,54 @@ fun Character.increaseAbility(abilityName: String, value: Int, translations: Map
     }
 }
 
+fun Character.increaseAbilityAndSavingThrows(abilityName: String, value: Int, translations: Map<String, String>) {
+    when (abilityName) {
+        translations[STRENGTH_TRANSLATION] -> {
+            increaseStrength(value)
+            this.savingThrows.strength = true
+        }
+
+        translations[DEXTERITY_TRANSLATION] -> {
+            increaseDexterity(value)
+            this.savingThrows.dexterity = true
+        }
+
+        translations[CONSTITUTION_TRANSLATION] -> {
+            increaseConstitution(value)
+            this.savingThrows.constitution = true
+        }
+
+        translations[INTELLIGENCE_TRANSLATION] -> {
+            increaseIntelligence(value)
+            this.savingThrows.intelligence = true
+        }
+
+        translations[WISDOM_TRANSLATION] -> {
+            increaseWisdom(value)
+            this.savingThrows.wisdom = true
+        }
+
+        translations[CHARISMA_TRANSLATION] -> {
+            increaseCharisma(value)
+            this.savingThrows.charisma = true
+        }
+    }
+}
+
 fun Character.increaseInitiative(value: Int) {
     this.bonuses.initiative += value
+}
+
+fun Character.increasePerception(value: Int) {
+    this.bonuses.perception += value
+}
+
+fun Character.increaseInvestigation(value: Int) {
+    this.bonuses.investigation += value
+}
+
+fun Character.increaseSpeed(value: Int) {
+    this.speed += value
 }
 
 fun Character.increaseArmorClass(value: Int) {
@@ -299,6 +356,8 @@ fun Filter.apply(character: Character): Boolean {
     val dataSet = when (this.param.toString()) {
         PROFICIENCIES.toString() -> character.proficiencies
         WORE_TYPE.toString() -> emptyList()
+        LEFT_HAND_TYPE.toString() -> emptyList()
+        RIGHT_HAND_TYPE.toString() -> emptyList()
         else -> emptyList()
     }
     val dataNum = when (this.param.toString()) {

@@ -46,7 +46,9 @@ data class SuperiorityDice(
 
 @Serializable
 data class CharBonuses(
-    var initiative: Int = 0
+    var initiative: Int = 0,
+    var perception: Int = 0,
+    var investigation: Int = 0
 )
 
 @Serializable
@@ -143,6 +145,8 @@ data class Filter(
     enum class Param {
         PROFICIENCIES,
         WORE_TYPE,
+        LEFT_HAND_TYPE,
+        RIGHT_HAND_TYPE,
         STRENGTH,
         DEXTERITY,
         CONSTITUTION,

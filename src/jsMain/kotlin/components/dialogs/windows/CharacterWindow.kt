@@ -39,6 +39,7 @@ import me.khrys.dnd.charcreator.common.FEATURES_TRANSLATION
 import me.khrys.dnd.charcreator.common.INITIATIVE_TRANSLATION
 import me.khrys.dnd.charcreator.common.LANGUAGES_TRANSLATION
 import me.khrys.dnd.charcreator.common.MANEUVERS_TRANSLATION
+import me.khrys.dnd.charcreator.common.PASSIVE_INVESTIGATION_TRANSLATION
 import me.khrys.dnd.charcreator.common.PASSIVE_PERCEPTION_TRANSLATION
 import me.khrys.dnd.charcreator.common.PROFICIENCIES_TRANSLATION
 import me.khrys.dnd.charcreator.common.PROFICIENCY_BONUS_CONTENT_TRANSLATION
@@ -412,6 +413,11 @@ private val MainParameters = FC<ParametersProps> { props ->
             this.character = props.character
             this.proficiencyBonus = props.proficiencyBonus
         }
+        PassiveInvestigation {
+            this.translations = props.translations
+            this.character = props.character
+            this.proficiencyBonus = props.proficiencyBonus
+        }
         LanguageAndProficiencies {
             this.translations = props.translations
             this.character = props.character
@@ -456,7 +462,23 @@ private val PassivePerception = FC<ParametersProps> { props ->
             this.value = computePassiveSkill(
                 ability = props.character.abilities.wisdom,
                 proficiencyBonus = props.proficiencyBonus,
-                proficient = props.character.skills.perception
+                proficient = props.character.skills.perception,
+                bonus = props.character.bonuses.perception
+            ).toString()
+        }
+    }
+}
+
+private val PassiveInvestigation = FC<ParametersProps> { props ->
+    Grid {
+        this.item = true
+        OneValueInput {
+            this.header = props.translations[PASSIVE_INVESTIGATION_TRANSLATION] ?: ""
+            this.value = computePassiveSkill(
+                ability = props.character.abilities.intelligence,
+                proficiencyBonus = props.proficiencyBonus,
+                proficient = props.character.skills.investigation,
+                bonus = props.character.bonuses.investigation
             ).toString()
         }
     }
