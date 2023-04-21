@@ -11,7 +11,7 @@ import me.khrys.dnd.charcreator.common.VALIDATION_UPPER_20
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
-import web.html.InputType.number
+import web.html.InputType.Companion.number
 
 external interface TextBoxProps : Props {
     var value: String
@@ -25,7 +25,7 @@ val TextBox = FC<TextBoxProps> { props ->
         TextValidator {
             this.value = props.value
             this.type = number
-            this.inputProps = InputProps(readOnly = true)
+            this.inputProps = InputProps(readonly = "true")
             this.validators = if (props.validate) arrayOf(VALIDATION_LOWER_0, VALIDATION_UPPER_20) else emptyArray()
         }
         CenteredLabel {

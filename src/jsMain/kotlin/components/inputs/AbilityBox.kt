@@ -17,13 +17,13 @@ import me.khrys.dnd.charcreator.common.VALIDATION_LOWER_0
 import me.khrys.dnd.charcreator.common.VALIDATION_UPPER_20
 import mui.material.Avatar
 import mui.material.Typography
-import mui.material.TypographyAlign.center
+import mui.material.TypographyAlign.Companion.center
 import org.w3c.dom.events.InputEvent
 import react.FC
 import react.Props
 import react.ReactNode
 import react.dom.html.ReactHTML.div
-import web.html.InputType.number
+import web.html.InputType.Companion.number
 
 external interface AbilityBoxProps : Props {
     var title: String
@@ -44,9 +44,10 @@ val AbilityBox = FC<AbilityBoxProps> { props ->
                 this.label = props.label
             }
             TextValidator {
+                var readonly = if (props.readOnly == undefined) "false" else props.readOnly.toString()
                 this.value = props.value.toString()
                 this.type = number
-                this.inputProps = InputProps(readOnly = props.readOnly)
+                this.inputProps = InputProps(readonly = readonly)
                 this.validators = arrayOf(VALIDATION_LOWER_0, VALIDATION_UPPER_20)
                 this.errorMessages = if (props.readOnly) emptyArray() else arrayOf(
                     props.translations[ABILITY_MINIMUM] ?: "",

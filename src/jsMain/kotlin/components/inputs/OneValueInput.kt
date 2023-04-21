@@ -12,7 +12,7 @@ import me.khrys.dnd.charcreator.common.CLASS_TEXT_CENTER
 import mui.material.Avatar
 import mui.material.Input
 import mui.material.Typography
-import mui.material.TypographyAlign.center
+import mui.material.TypographyAlign.Companion.center
 import react.FC
 import react.PropsWithClassName
 import react.ReactNode

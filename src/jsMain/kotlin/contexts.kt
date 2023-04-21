@@ -7,12 +7,12 @@ import me.khrys.dnd.charcreator.common.models.Spell
 import react.Context
 import react.createContext
 
-val TranslationsContext: Context<Map<String, String>> = createContext()
+val TranslationsContext: Context<Map<String, String>> = createContext(emptyMap())
 
-val CharactersContext: Context<List<Character>> = createContext()
+val CharactersContext: Context<List<Character>> = createContext(emptyList())
 
-val FeatsContext: Context<Map<String, Feat>> = createContext()
+val FeatsContext: Context<Map<String, Feat>> = createContext(emptyMap())
 
-val ManeuversContext: Context<Map<String, Maneuver>> = createContext()
+val ManeuversContext: Context<Map<String, Maneuver>> = createContext(emptyMap())
 
-val SpellsContext: Context<Map<String, Spell>> = createContext()
+val SpellsContext: Context<Map<String, Spell>> = createContext(emptyMap())

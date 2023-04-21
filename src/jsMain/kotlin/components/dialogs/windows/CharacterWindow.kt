@@ -71,7 +71,7 @@ import mui.material.TableContainer
 import mui.material.TableHead
 import mui.material.TableRow
 import mui.material.Tabs
-import mui.system.Breakpoint.xl
+import mui.system.Breakpoint.Companion.xl
 import react.FC
 import react.Props
 import react.PropsWithChildren

@@ -7,10 +7,8 @@ import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.config.ApplicationConfig
-import io.ktor.server.http.content.files
-import io.ktor.server.http.content.resources
-import io.ktor.server.http.content.static
-import io.ktor.server.http.content.staticRootFolder
+import io.ktor.server.http.content.staticFiles
+import io.ktor.server.http.content.staticResources
 import io.ktor.server.locations.KtorExperimentalLocationsAPI
 import io.ktor.server.locations.get
 import io.ktor.server.locations.location
@@ -54,7 +52,7 @@ import me.khrys.dnd.charcreator.server.rest.translations
 import org.litote.kmongo.KMongo
 import java.io.File
 
-private const val ALL_FILES = "."
+private const val ASSETS = "assets"
 
 fun Route.routing(config: ApplicationConfig, httpClient: HttpClient) {
     val mongoFactory = MongoServiceFactory(KMongo.createClient(config.property(MONGO_URL_PARAM).getString()))
@@ -77,11 +75,8 @@ fun Route.routing(config: ApplicationConfig, httpClient: HttpClient) {
     get<Maneuvers> { call.maneuvers(maneuversService) }
     get<Spells> { call.spells(spellsService) }
     post<Characters> { call.saveCharacter(userService) }
-    static(STATIC_URL) { resources() }
-    static(IMAGES) {
-        staticRootFolder = File(imageFolder)
-        files(ALL_FILES)
-    }
+    staticResources(STATIC_URL, ASSETS)
+    staticFiles(IMAGES, File(imageFolder))
 }
 
 private fun Route.authenticate(config: ApplicationConfig?, httpClient: HttpClient) {

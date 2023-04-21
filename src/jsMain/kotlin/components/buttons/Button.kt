@@ -3,9 +3,9 @@ package me.khrys.dnd.charcreator.client.components.buttons
 import me.khrys.dnd.charcreator.client.utils.playSound
 import me.khrys.dnd.charcreator.common.BUTTON_SOUND_ID
 import mui.material.Button
-import mui.material.ButtonColor.primary
+import mui.material.ButtonColor.Companion.primary
 import mui.material.ButtonProps
-import mui.material.ButtonVariant.contained
+import mui.material.ButtonVariant.Companion.contained
 import mui.material.Size.small
 import react.FC
 import react.dom.events.MouseEvent

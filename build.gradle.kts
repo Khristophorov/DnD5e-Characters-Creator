@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
-    kotlin("multiplatform") version "1.8.10"
-    kotlin("plugin.serialization") version "1.8.10"
+    kotlin("multiplatform") version "1.8.20"
+    kotlin("plugin.serialization") version "1.8.20"
     application
 }
 
@@ -12,15 +12,15 @@ version = "1.0-SNAPSHOT"
 // Kotlin dependencies
 val kotlinCoroutinesVersion = "1.6.4"
 val kotlinHtmlVersion = "0.8.0"
-val kotlinReactVersion = "18.2.0-pre.494"
-val kotlinMuiVersion = "5.9.1-pre.494"
-val kotlinMuiIconsVersion = "5.10.9-pre.494"
-val kotlinEmotionVersion = "11.10.5-pre.494"
-val kotlinSerializationVersion = "1.4.1"
-val kmongoVersion = "4.8.0"
-val ktorVersion = "2.2.3"
-val logbackVersion = "1.4.5"
-val mockkVersion = "1.13.4"
+val kotlinReactVersion = "18.2.0-pre.538"
+val kotlinMuiVersion = "5.10.3-pre.538"
+val kotlinMuiIconsVersion = "5.11.11-pre.538"
+val kotlinEmotionVersion = "11.10.6-pre.538"
+val kotlinSerializationVersion = "1.5.0"
+val kmongoVersion = "4.9.0"
+val ktorVersion = "2.3.0"
+val logbackVersion = "1.4.6"
+val mockkVersion = "1.13.5"
 
 // JavaScript dependencies
 val reactMaterialUiFormValidatorVersion = "3.0.1"
@@ -42,7 +42,7 @@ kotlin {
         }
         withJava()
     }
-    js(LEGACY) {
+    js(IR) {
         browser {
             binaries.executable()
             webpackTask {
@@ -148,7 +148,9 @@ tasks.getByName<Jar>("jvmJar") {
     }
     val webpackTask = tasks.getByName<KotlinWebpack>(taskName)
     dependsOn(webpackTask)
-    from(File(webpackTask.destinationDirectory, webpackTask.outputFileName))
+    from(File(webpackTask.destinationDirectory, webpackTask.outputFileName)) {
+        into("assets")
+    }
 }
 
 tasks.getByName<JavaExec>("run") {

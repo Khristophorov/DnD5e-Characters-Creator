@@ -382,4 +382,6 @@ fun String.format(vararg values: String): String {
     return newString
 }
 
-fun toDangerousHtml(value: String) = DangerousHTML(value).unsafeCast<DangerouslySetInnerHTML>()
+fun toDangerousHtml(value: String) = object: DangerousHTML {
+    override var __html = value
+}.unsafeCast<DangerouslySetInnerHTML>()

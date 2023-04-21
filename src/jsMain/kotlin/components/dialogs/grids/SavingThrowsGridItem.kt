@@ -3,7 +3,7 @@ package me.khrys.dnd.charcreator.client.components.dialogs.grids
 import csstype.Border
 import csstype.ClassName
 import csstype.LineStyle.Companion.solid
-import csstype.NamedColor.black
+import csstype.NamedColor.Companion.black
 import csstype.Padding
 import csstype.px
 import emotion.react.css

@@ -28,7 +28,7 @@ import org.w3c.dom.HTMLElement
 import org.w3c.files.FileReader
 import react.FC
 import react.useState
-import web.html.InputType.file
+import web.html.InputType.Companion.file
 
 val CharImageWindow = FC<CharBasedProps> { props ->
     if (props.open) {
