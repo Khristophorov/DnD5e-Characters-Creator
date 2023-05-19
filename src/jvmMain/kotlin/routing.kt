@@ -27,6 +27,7 @@ import me.khrys.dnd.charcreator.server.authentication.authenticate
 import me.khrys.dnd.charcreator.server.authentication.logout
 import me.khrys.dnd.charcreator.server.locations.Characters
 import me.khrys.dnd.charcreator.server.locations.Feats
+import me.khrys.dnd.charcreator.server.locations.Image
 import me.khrys.dnd.charcreator.server.locations.Index
 import me.khrys.dnd.charcreator.server.locations.Login
 import me.khrys.dnd.charcreator.server.locations.Logout
@@ -44,6 +45,7 @@ import me.khrys.dnd.charcreator.server.mongo.UserService
 import me.khrys.dnd.charcreator.server.pages.index
 import me.khrys.dnd.charcreator.server.rest.characters
 import me.khrys.dnd.charcreator.server.rest.feats
+import me.khrys.dnd.charcreator.server.rest.image
 import me.khrys.dnd.charcreator.server.rest.maneuvers
 import me.khrys.dnd.charcreator.server.rest.races
 import me.khrys.dnd.charcreator.server.rest.saveCharacter
@@ -68,6 +70,7 @@ fun Route.routing(config: ApplicationConfig, httpClient: HttpClient) {
     authenticate { authenticate(config, httpClient) }
     get<Index> { index(userService) }
     get<Logout> { logout(call) }
+    get<Image> { call.image(userService, it.name) }
     get<Translations> { call.translations(translationService) }
     get<Characters> { call.characters(userService) }
     get<Races> { call.races(racesService) }

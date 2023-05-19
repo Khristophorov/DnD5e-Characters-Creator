@@ -46,6 +46,7 @@ const val RACES_URL = "/races"
 const val FEATS_URL = "/feats"
 const val MANEUVERS_URL = "/maneuvers"
 const val SPELLS_URL = "/spells"
+const val IMAGE_URL = "/image"
 
 const val LOGOUT_TRANSLATION = "logout"
 const val NEXT_TRANSLATION = "next"

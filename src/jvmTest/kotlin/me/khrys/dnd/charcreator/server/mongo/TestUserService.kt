@@ -87,6 +87,6 @@ class TestUserService {
 
         val characters = service.readCharacters(EMAIL)
 
-        assertEquals(listOf(character), characters, "Incorrect characters are received")
+        assertEquals(listOf(character), characters, "Incorrect characters received")
     }
 }

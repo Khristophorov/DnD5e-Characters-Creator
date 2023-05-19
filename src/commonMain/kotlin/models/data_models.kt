@@ -5,7 +5,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class User(
     val _id: String,
-    val characters: List<Character> = emptyList()
+    val characters: List<Character> = emptyList(),
+    val images: Map<String, String> = emptyMap()
 )
 
 @Serializable

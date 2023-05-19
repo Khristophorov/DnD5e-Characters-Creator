@@ -6,6 +6,7 @@ import io.ktor.server.locations.KtorExperimentalLocationsAPI
 import io.ktor.server.locations.Location
 import me.khrys.dnd.charcreator.common.CHARACTERS_URL
 import me.khrys.dnd.charcreator.common.FEATS_URL
+import me.khrys.dnd.charcreator.common.IMAGE_URL
 import me.khrys.dnd.charcreator.common.LOGIN_URL
 import me.khrys.dnd.charcreator.common.LOGOUT_URL
 import me.khrys.dnd.charcreator.common.MANEUVERS_URL
@@ -40,3 +41,6 @@ class Maneuvers
 
 @Location(SPELLS_URL)
 class Spells
+
+@Location("${IMAGE_URL}/{name}")
+data class Image(val name: String)
