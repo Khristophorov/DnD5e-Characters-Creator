@@ -5,8 +5,10 @@ import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.DnDFunction
 import me.khrys.dnd.charcreator.common.models.Feat
 import me.khrys.dnd.charcreator.common.models.Feature
+import react.FC
 import react.Props
 import react.PropsWithChildren
+import react.memo
 
 external interface DialogProps : PropsWithChildren {
     var open: Boolean
@@ -43,11 +45,10 @@ external interface MultipleFeaturesFeatsProps : DialogProps {
     var useFeats: Boolean
 }
 
-external interface CharBasedProps : Props {
+external interface CharBasedProps : DialogProps {
     var character: Character
-    var open: Boolean
-    var setOpen: (Boolean) -> Unit
-    var action: () -> Unit
     var backAction: ButtonAction
     var translations: Map<String, String>
 }
+
+fun <T : DialogProps> memoDialog(component: FC<T>) = memo(component) { p1, p2 -> p1.open == p2.open }

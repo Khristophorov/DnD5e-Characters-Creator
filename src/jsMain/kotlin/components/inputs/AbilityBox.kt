@@ -44,7 +44,7 @@ val AbilityBox = FC<AbilityBoxProps> { props ->
                 this.label = props.label
             }
             TextValidator {
-                var readonly = if (props.readOnly == undefined) "false" else props.readOnly.toString()
+                val readonly = if (props.readOnly == undefined) "false" else props.readOnly.toString()
                 this.value = props.value.toString()
                 this.type = number
                 this.inputProps = InputProps(readonly = readonly)

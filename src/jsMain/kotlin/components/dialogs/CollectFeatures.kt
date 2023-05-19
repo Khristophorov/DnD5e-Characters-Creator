@@ -3,26 +3,30 @@ package me.khrys.dnd.charcreator.client.components.dialogs
 import me.khrys.dnd.charcreator.client.ManeuversContext
 import me.khrys.dnd.charcreator.client.SpellsContext
 import me.khrys.dnd.charcreator.client.components.dialogs.windows.InformWindow
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.AbilityChooser
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.ElementChooser
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.FeatsChooser
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.LanguageChooser
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.LanguagesChooser
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.ManeuversChooser
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.ProficienciesChooser
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.ProficiencyChooser
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.SkillChooser
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.SkillsAndProficienciesChooser
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.SpellsChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.*
 import me.khrys.dnd.charcreator.client.format
-import me.khrys.dnd.charcreator.client.utils.useFeatureWindowSettings
 import me.khrys.dnd.charcreator.common.models.DnDFunction
 import me.khrys.dnd.charcreator.common.models.Feature
-import react.FC
-import react.useContext
-import react.useState
+import react.*
 
-val CollectRaceFeatures = FC<CharDialogProps> { props ->
+val DEFAULT_NODE = ReactNode("")
+
+val WINDOW_FUNCTIONS = listOf(
+    "Inform",
+    "Choose Ability",
+    "Choose Element",
+    "Choose Feat",
+    "Choose Language",
+    "Choose Languages",
+    "Choose Maneuver",
+    "Choose Proficiencies",
+    "Choose Proficiency",
+    "Choose Skill",
+    "Choose Skills and Proficiencies",
+    "Choose Spells"
+)
+
+val CollectRaceFeatures = memoDialog(FC<CharDialogProps> { props ->
     if (props.open) {
         val features = props.character.race.features
         console.info("Loading features for race: ${props.character.race._id}")
@@ -36,9 +40,9 @@ val CollectRaceFeatures = FC<CharDialogProps> { props ->
             this.action = props.action
         }
     }
-}
+})
 
-val CollectSubraceFeatures = FC<CharDialogProps> { props ->
+val CollectSubraceFeatures = memoDialog(FC<CharDialogProps> { props ->
     if (props.open) {
         val features = props.character.subrace.features
         console.info("Loading features for subrace: ${props.character.subrace._id}")
@@ -50,7 +54,7 @@ val CollectSubraceFeatures = FC<CharDialogProps> { props ->
             this.action = props.action
         }
     }
-}
+})
 
 val CollectFeatFeatures: FC<FeatsProps> = FC { props ->
     console.info("Loading feat features for ${props.feature.name}")
@@ -64,206 +68,295 @@ val CollectFeatFeatures: FC<FeatsProps> = FC { props ->
 }
 
 val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
-    val inform = useFeatureWindowSettings()
-    val proficiency = useFeatureWindowSettings()
-    val proficiencies = useFeatureWindowSettings()
-    val language = useFeatureWindowSettings()
-    val languages = useFeatureWindowSettings()
-    val skill = useFeatureWindowSettings()
-    val skillsAndProficiencies = useFeatureWindowSettings()
-    val ability = useFeatureWindowSettings()
-    val element = useFeatureWindowSettings()
-    val maneuvers = useFeatureWindowSettings()
-    val spells = useFeatureWindowSettings()
-    val spells2 = useFeatureWindowSettings()
-    val feats = useFeatureWindowSettings()
-
-    val (numberOfNewFunctions, setNumberOfNewFunctions) = useState(-1)
-
-    val (featsFeatures, setFeatsFeatures) = useState(false)
-
-    if (!props.open && numberOfNewFunctions >= 0) {
-        setNumberOfNewFunctions(-1)
-    }
-    if (props.open && numberOfNewFunctions < 0) {
-        val newFunctions = mutableListOf<() -> Unit>()
-        props.features.filter { filterFeature(it, props.useFeats) }.forEach { feature ->
-            if (feature.functions.isEmpty()) {
-                props.character.features += feature
-            } else {
-                var addFeature = true
-                feature.functions.forEach { function ->
-                    when (function.name) {
-                        "Inform" -> {
-                            newFunctions.add {
-                                inform.setParams(true, feature, function)
-                            }
-                            addFeature = false
-                        }
-
-                        "Choose Proficiency" -> {
-                            newFunctions.add {
-                                proficiency.setParams(true, feature, function)
-                            }
-                            addFeature = false
-                        }
-
-                        "Choose Proficiencies" -> {
-                            newFunctions.add {
-                                proficiencies.setParams(true, feature, function)
-                            }
-                            addFeature = false
-                        }
-
-                        "Choose Language" -> {
-                            newFunctions.add {
-                                language.setParams(true, feature, function)
-                            }
-                        }
-
-                        "Choose Languages" -> {
-                            newFunctions.add {
-                                languages.setParams(true, feature, function)
-                            }
-                        }
-
-                        "Choose Ability" -> {
-                            newFunctions.add {
-                                ability.setParams(true, feature, function)
-                            }
-                            addFeature = false
-                        }
-
-                        "Choose Skill" -> {
-                            newFunctions.add {
-                                skill.setParams(true, feature, function)
-                            }
-                            addFeature = false
-                        }
-
-                        "Choose Skills and Proficiencies" -> {
-                            newFunctions.add {
-                                skillsAndProficiencies.setParams(true, feature, function)
-                            }
-                            addFeature = false
-                        }
-
-                        "Choose Element" -> {
-                            newFunctions.add {
-                                element.setParams(true, feature, function)
-                            }
-                            addFeature = false
-                        }
-
-                        "Choose Feat" -> {
-                            newFunctions.add {
-                                feats.setParams(true, feature, function)
-                            }
-                            addFeature = false
-                        }
-
-                        "Choose Maneuvers" -> {
-                            newFunctions.add {
-                                maneuvers.setParams(true, feature, function)
-                            }
-                        }
-
-                        "Choose Spells" -> {
-                            newFunctions.add {
-                                spells.setParams(true, feature, function)
-                            }
-                        }
-
-                        "Choose Spells2" -> {
-                            newFunctions.add {
-                                spells2.setParams(true, feature, function)
-                            }
-                        }
-                    }
-                }
-                if (addFeature) {
-                    props.character.features += feature
+    val (child, setChild) = useState(DEFAULT_NODE)
+    if (props.open) {
+        if (child == DEFAULT_NODE) {
+            val functionFeatures = mutableListOf<FC<DialogProps>>()
+            val functionsIterator = functionFeatures.iterator()
+            val nextAction = {
+                if (functionsIterator.hasNext()) {
+                    setChild(createElement(functionsIterator.next()))
+                } else {
+                    props.action()
+                    props.setOpen(false)
                 }
             }
+            props.features.filter { filterFeature(it, props.useFeats) }.forEach { feature ->
+                if (feature.functions.isEmpty()) {
+                    props.character.features += feature
+                } else {
+                    if (hasWindowFunctions(feature)) {
+                        feature.functions.forEach { function ->
+                            when (function.name) {
+                                "Inform" -> {
+                                    functionFeatures
+                                        .add(inform(feature, function, props, nextAction))
+                                }
+
+                                "Choose Proficiency" -> {
+                                    functionFeatures
+                                        .add(proficiencyChooser(feature, function, props, nextAction))
+                                }
+
+                                "Choose Proficiencies" -> {
+                                    functionFeatures
+                                        .add(proficienciesChooser(feature, function, props, nextAction))
+                                }
+
+                                "Choose Language" -> {
+                                    functionFeatures
+                                        .add(languageChooser(feature, function, props, nextAction))
+                                }
+
+                                "Choose Languages" -> {
+                                    functionFeatures
+                                        .add(languagesChooser(feature, function, props, nextAction))
+                                }
+
+                                "Choose Skill" -> {
+                                    functionFeatures
+                                        .add(skillChooser(feature, function, props, nextAction))
+                                }
+
+                                "Choose Feat" -> {
+                                    functionFeatures
+                                        .add(featChooser(feature, props, nextAction))
+                                }
+
+                                "Choose Element" -> {
+                                    functionFeatures
+                                        .add(elementChooser(feature, function, props, nextAction))
+                                }
+
+                                "Choose Ability" -> {
+                                    functionFeatures
+                                        .add(abilityChooser(feature, function, props, nextAction))
+                                }
+
+                                "Choose Maneuver" -> {
+                                    functionFeatures
+                                        .add(maneuverChooser(feature, function, props, nextAction))
+                                }
+
+                                "Choose Spells" -> {
+                                    functionFeatures
+                                        .add(spellsChooser(feature, function, props, nextAction))
+                                }
+
+                                "Choose Skills and Proficiencies" -> {
+                                    functionFeatures
+                                        .add(skillsAndProficienciesChooser(feature, function, props, nextAction))
+                                }
+                            }
+                            if (function.addFeature) {
+                                props.character.features += feature
+                            }
+                        }
+                    } else {
+                        props.character.features += feature
+                    }
+                }
+            }
+            nextAction()
         }
-        setNumberOfNewFunctions(newFunctions.size)
-        newFunctions.forEach { it() }
-        if (newFunctions.isEmpty()) {
-            props.action()
-            props.setOpen(false)
-        }
+        this.child(child)
     }
+}
 
-    fun shouldOpen(open: Boolean) = open && !props.useFeats || open && props.useFeats && !featsFeatures
-
+private fun inform(
+    feature: Feature,
+    function: DnDFunction,
+    props: MultipleFeaturesFeatsProps,
+    nextAction: () -> Unit
+) = FC<DialogProps> {
+    val (open, setOpen) = useState(true)
     InformWindow {
-        this.open = shouldOpen(inform.open)
-        this.setOpen = { inform.setOpen(it) }
-        this.feature = inform.feature
+        this.open = open
+        this.setOpen = { setOpen(it) }
+        this.feature = feature
         this.setValue = {
-            console.info("Info for ${inform.feature.name}")
+            console.info("Info for ${feature.name}")
             props.character.features +=
                 Feature(
-                    name = inform.feature.name,
-                    description = inform.function.values[0],
+                    name = feature.name,
+                    description = function.values[0],
                     functions = emptyList(),
-                    source = inform.feature.source
+                    source = feature.source
                 )
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
+            nextAction()
         }
     }
+}
+
+private fun proficiencyChooser(
+    feature: Feature,
+    function: DnDFunction,
+    props: MultipleFeaturesFeatsProps,
+    nextAction: () -> Unit
+) = FC<DialogProps> {
+    val (open, setOpen) = useState(true)
     ProficiencyChooser {
-        this.open = shouldOpen(proficiency.open)
-        this.setOpen = { proficiency.setOpen(it) }
-        this.feature = proficiency.feature
-        this.function = proficiency.function
+        this.open = open
+        this.setOpen = { setOpen(it) }
+        this.feature = feature
+        this.function = function
         this.character = props.character
         this.setValue = { value ->
             console.info("Chosen proficiency: $value")
             props.character.features +=
                 Feature(
-                    name = proficiency.feature.name,
-                    description = proficiency.function.values[1].format(value),
-                    functions = listOf(DnDFunction(proficiency.function.values[0], listOf(value))),
-                    source = proficiency.feature.source
+                    name = feature.name,
+                    description = function.values[1].format(value),
+                    functions = listOf(DnDFunction(function.values[0], listOf(value))),
+                    source = feature.source
                 )
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
+            nextAction()
         }
     }
+}
+
+private fun proficienciesChooser(
+    feature: Feature,
+    function: DnDFunction,
+    props: MultipleFeaturesFeatsProps,
+    nextAction: () -> Unit
+) = FC<DialogProps> {
+    val (open, setOpen) = useState(true)
     ProficienciesChooser {
-        this.open = shouldOpen(proficiencies.open)
-        this.setOpen = { proficiencies.setOpen(it) }
-        this.feature = proficiencies.feature
-        this.function = proficiencies.function
+        this.open = open
+        this.setOpen = { setOpen(it) }
+        this.feature = feature
+        this.function = function
         this.character = props.character
-        this.size = if (proficiencies.function.values.isEmpty()) 0 else proficiencies.function.values[2].toInt()
+        this.size = if (function.values.isEmpty()) 0 else function.values[2].toInt()
         this.setValue = { values ->
             console.info("Chosen proficiencies: $values")
-            val featureFunctions = listOf(DnDFunction(proficiencies.function.values[0], values))
-            if (props.character.hasFeature(proficiencies.feature.name)) {
-                props.character.features.filter { it.name == proficiencies.feature.name }[0].functions += featureFunctions
+            val featureFunctions = listOf(DnDFunction(function.values[0], values))
+            if (props.character.hasFeature(feature.name)) {
+                props.character.features.filter { it.name == feature.name }[0].functions += featureFunctions
             } else {
                 props.character.features +=
                     Feature(
-                        name = proficiencies.feature.name,
-                        description = proficiencies.function.values[1].format(*values.toTypedArray()),
+                        name = feature.name,
+                        description = function.values[1].format(*values.toTypedArray()),
                         functions = featureFunctions,
-                        source = proficiencies.feature.source
+                        source = feature.source
                     )
             }
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
+            nextAction()
         }
     }
+}
+
+private fun languageChooser(
+    feature: Feature,
+    function: DnDFunction,
+    props: MultipleFeaturesFeatsProps,
+    nextAction: () -> Unit
+) = FC<DialogProps> {
+    val (open, setOpen) = useState(true)
+    LanguageChooser {
+        this.open = open
+        this.setOpen = { setOpen(it) }
+        this.feature = feature
+        this.function = function
+        this.character = props.character
+        this.setValue = { value ->
+            console.info("Chosen language: $value")
+            val functions =
+                if (props.character.hasFeature(feature.name))
+                    props.character.features.filter { feature.name == it.name }[0].functions
+                else emptyList()
+            val languageFeature = Feature(
+                name = feature.name,
+                description = function.values[1].format(value),
+                functions = functions + arrayOf(DnDFunction(function.values[0], listOf(value))),
+                source = feature.source
+            )
+            val filteredFeatures = props.character.features.filter { feature.name != it.name }
+            props.character.features = filteredFeatures + languageFeature
+            nextAction()
+        }
+    }
+}
+
+private fun languagesChooser(
+    feature: Feature,
+    function: DnDFunction,
+    props: MultipleFeaturesFeatsProps,
+    nextAction: () -> Unit
+) = FC<DialogProps> {
+    val (open, setOpen) = useState(true)
+    LanguagesChooser {
+        this.open = open
+        this.setOpen = { setOpen(it) }
+        this.feature = feature
+        this.function = function
+        this.character = props.character
+        this.size = if (function.values.isEmpty()) 0 else function.values[2].toInt()
+        this.setValue = { values ->
+            console.info("Chosen languages: $values")
+            val functions =
+                if (props.character.hasFeature(feature.name))
+                    props.character.features.filter { feature.name == it.name }[0].functions
+                else emptyList()
+            val languageFeature = Feature(
+                name = feature.name,
+                description = function.values[1].format(*values.toTypedArray()),
+                functions = functions + arrayOf(DnDFunction(function.values[0], values)),
+                source = feature.source
+            )
+            val filteredFeatures = props.character.features.filter { feature.name != it.name }
+            props.character.features = filteredFeatures + languageFeature
+            nextAction()
+        }
+    }
+}
+
+private fun skillChooser(
+    feature: Feature,
+    function: DnDFunction,
+    props: MultipleFeaturesFeatsProps,
+    nextAction: () -> Unit
+) = FC<DialogProps> {
+    val (open, setOpen) = useState(true)
+    SkillChooser {
+        this.open = open
+        this.setOpen = { setOpen(it) }
+        this.feature = feature
+        this.function = function
+        this.character = props.character
+        this.setValue = { value ->
+            console.info("Chosen skill: $value")
+            props.character.features +=
+                Feature(
+                    name = feature.name,
+                    description = function.values[1].format(value),
+                    functions = listOf(DnDFunction(function.values[0], listOf(value))),
+                    source = feature.source
+                )
+            nextAction()
+        }
+    }
+}
+
+private fun skillsAndProficienciesChooser(
+    feature: Feature,
+    function: DnDFunction,
+    props: MultipleFeaturesFeatsProps,
+    nextAction: () -> Unit
+) = FC<DialogProps> {
+    val (open, setOpen) = useState(true)
     SkillsAndProficienciesChooser {
-        this.open = shouldOpen(skillsAndProficiencies.open)
-        this.setOpen = { skillsAndProficiencies.setOpen(it) }
-        this.feature = skillsAndProficiencies.feature
-        this.function = skillsAndProficiencies.function
+        this.open = open
+        this.setOpen = { setOpen(it) }
+        this.feature = feature
+        this.function = function
         this.character = props.character
         this.size =
-            if (skillsAndProficiencies.function.values.isEmpty()) 0 else skillsAndProficiencies.function.values[5].toInt()
+            if (function.values.isEmpty()) 0 else function.values[5].toInt()
         this.setValue = { values ->
-            val skillsList = skillsAndProficiencies.function.values[2].split(", ")
+            val skillsList = function.values[2].split(", ")
             val skillValues = mutableListOf<String>()
             val proficiencyValues = mutableListOf<String>()
             val featureFunctions = mutableListOf<DnDFunction>()
@@ -275,207 +368,143 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
                 }
             }
             if (skillValues.isNotEmpty()) {
-                featureFunctions += DnDFunction(skillsAndProficiencies.function.values[0], skillValues)
+                featureFunctions += DnDFunction(function.values[0], skillValues)
             }
             if (proficiencyValues.isNotEmpty()) {
-                featureFunctions += DnDFunction(skillsAndProficiencies.function.values[1], proficiencyValues)
+                featureFunctions += DnDFunction(function.values[1], proficiencyValues)
             }
 
             props.character.features +=
                 Feature(
-                    name = skillsAndProficiencies.feature.name,
-                    description = skillsAndProficiencies.function.values[4].format(*values.toTypedArray()),
+                    name = feature.name,
+                    description = function.values[4].format(*values.toTypedArray()),
                     functions = featureFunctions,
-                    source = skillsAndProficiencies.feature.source
+                    source = feature.source
                 )
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
+            nextAction()
         }
     }
-    LanguageChooser {
-        this.open = shouldOpen(language.open)
-        this.setOpen = { language.setOpen(it) }
-        this.feature = language.feature
-        this.function = language.function
-        this.character = props.character
-        this.setValue = { value ->
-            console.info("Chosen language: $value")
-            val functions =
-                if (props.character.hasFeature(language.feature.name))
-                    props.character.features.filter { language.feature.name == it.name }[0].functions
-                else emptyList()
-            val feature = Feature(
-                name = language.feature.name,
-                description = language.function.values[1].format(value),
-                functions = functions + arrayOf(DnDFunction(language.function.values[0], listOf(value))),
-                source = language.feature.source
-            )
-            val filteredFeatures = props.character.features.filter { language.feature.name != it.name }
-            props.character.features = filteredFeatures + feature
+}
 
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
-        }
-    }
-    LanguagesChooser {
-        this.open = shouldOpen(languages.open)
-        this.setOpen = { languages.setOpen(it) }
-        this.feature = languages.feature
-        this.function = languages.function
+private fun featChooser(
+    feature: Feature,
+    props: MultipleFeaturesFeatsProps,
+    nextAction: () -> Unit
+) = FC<DialogProps> {
+    val (open, setOpen) = useState(true)
+    FeatChooser {
+        this.open = open
+        this.setOpen = { setOpen(it) }
         this.character = props.character
-        this.size = if (languages.function.values.isEmpty()) 0 else languages.function.values[2].toInt()
-        this.setValue = { values ->
-            console.info("Chosen languages: $values")
-            val functions =
-                if (props.character.hasFeature(languages.feature.name))
-                    props.character.features.filter { languages.feature.name == it.name }[0].functions
-                else emptyList()
-            val feature = Feature(
-                name = languages.feature.name,
-                description = languages.function.values[1].format(*values.toTypedArray()),
-                functions = functions + arrayOf(DnDFunction(languages.function.values[0], values)),
-                source = languages.feature.source
-            )
-            val filteredFeatures = props.character.features.filter { languages.feature.name != it.name }
-            props.character.features = filteredFeatures + feature
+        this.feature = feature
+        this.feats = props.feats
+        this.action = nextAction
+    }
+}
 
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
-        }
-    }
-    AbilityChooser {
-        this.open = shouldOpen(ability.open)
-        this.setOpen = { ability.setOpen(it) }
-        this.feature = ability.feature
-        this.function = ability.function
-        this.character = props.character
-        this.setValue = { value ->
-            console.info("Chosen ability: $value")
-            props.character.features +=
-                Feature(
-                    name = ability.feature.name,
-                    description = ability.function.values[1].format(value),
-                    functions = ability.feature.functions.filter { it.name != ability.function.name } +
-                            DnDFunction(ability.function.values[0], listOf(value, ability.function.values[2])),
-                    source = ability.feature.source
-                )
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
-        }
-    }
-    SkillChooser {
-        this.open = shouldOpen(skill.open)
-        this.setOpen = { skill.setOpen(it) }
-        this.feature = skill.feature
-        this.function = skill.function
-        this.character = props.character
-        this.setValue = { value ->
-            console.info("Chosen skill: $value")
-            props.character.features +=
-                Feature(
-                    name = skill.feature.name,
-                    description = skill.function.values[1].format(value),
-                    functions = listOf(DnDFunction(skill.function.values[0], listOf(value))),
-                    source = skill.feature.source
-                )
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
-        }
-    }
+private fun elementChooser(
+    feature: Feature,
+    function: DnDFunction,
+    props: MultipleFeaturesFeatsProps,
+    nextAction: () -> Unit
+) = FC<DialogProps> {
+    val (open, setOpen) = useState(true)
     ElementChooser {
-        this.open = shouldOpen(element.open)
-        this.setOpen = { element.setOpen(it) }
-        this.feature = element.feature
-        this.function = element.function
+        this.open = open
+        this.setOpen = { setOpen(it) }
+        this.feature = feature
+        this.function = function
         this.character = props.character
         this.setValue = { value ->
             console.info("Chosen element: $value")
             props.character.features +=
                 Feature(
-                    name = element.feature.name,
-                    description = element.function.values[0].format(value),
+                    name = feature.name,
+                    description = function.values[0].format(value),
                     functions = emptyList(),
-                    source = element.feature.source
+                    source = feature.source
                 )
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
-        }
-    }
-    ManeuversChooser {
-        val maneuversMap = useContext(ManeuversContext)
-        val functionValues = maneuvers.function.values
-        this.open = shouldOpen(maneuvers.open)
-        this.setOpen = { maneuvers.setOpen(it) }
-        this.feature = maneuvers.feature
-        this.function = maneuvers.function
-        this.character = props.character
-        this.size = if (functionValues.isEmpty()) 0 else functionValues[1].toInt()
-        this.setValue = { values ->
-            console.info("Chosen maneuvers: $values")
-            values.forEach { value ->
-                maneuversMap[value]?.let { props.character.maneuvers += it }
-            }
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
-        }
-    }
-    SpellsChooser {
-        val spellsMap = useContext(SpellsContext)
-        this.open = shouldOpen(spells.open)
-        this.setOpen = { spells.setOpen(it) }
-        this.feature = spells.feature
-        this.function = spells.function
-        this.character = props.character
-        this.setValue = { spellsNames ->
-            console.log("Spells selected: $spellsNames")
-            spellsNames.forEach { spellName ->
-                spellsMap[spellName]?.let { props.character.spells += it }
-            }
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
-        }
-    }
-    SpellsChooser {
-        val spellsMap = useContext(SpellsContext)
-        this.open = shouldOpen(spells2.open)
-        this.setOpen = { spells2.setOpen(it) }
-        this.feature = spells2.feature
-        this.function = spells2.function
-        this.character = props.character
-        this.setValue = { spellsNames ->
-            console.log("Spells selected: $spellsNames")
-            spellsNames.forEach { spellName ->
-                spellsMap[spellName]?.let { props.character.spells += it }
-            }
-            endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
-        }
-    }
-    if (props.useFeats) {
-        console.info("Use feats.")
-        if (feats.open && !featsFeatures) {
-            setFeatsFeatures(true)
-        }
-        FeatsChooser {
-            this.open = feats.open
-            this.setOpen = { feats.setOpen(it) }
-            this.character = props.character
-            this.feature = feats.feature
-            this.feats = props.feats
-            this.action = {
-                if (featsFeatures) {
-                    setFeatsFeatures(false)
-                }
-                endAction(numberOfNewFunctions, { setNumberOfNewFunctions(it) }, props.action, props.setOpen)
-            }
+            nextAction()
         }
     }
 }
 
-private fun endAction(
-    numberOfNewFunctions: Int,
-    setNumberOfNewFunctions: (Int) -> Unit,
-    action: () -> Unit,
-    setOpen: (Boolean) -> Unit
-) {
-    val newNumberOfNewFunctions = numberOfNewFunctions - 1
-    setNumberOfNewFunctions(newNumberOfNewFunctions)
-    if (newNumberOfNewFunctions == 0) {
-        action()
-        setOpen(false)
+private fun abilityChooser(
+    feature: Feature,
+    function: DnDFunction,
+    props: MultipleFeaturesFeatsProps,
+    nextAction: () -> Unit
+) = FC<DialogProps> {
+    val (open, setOpen) = useState(true)
+    AbilityChooser {
+        this.open = open
+        this.setOpen = { setOpen(it) }
+        this.feature = feature
+        this.function = function
+        this.character = props.character
+        this.setValue = { value ->
+            console.info("Chosen ability: $value")
+            props.character.features +=
+                Feature(
+                    name = feature.name,
+                    description = function.values[1].format(value),
+                    functions = feature.functions.filter { it.name != function.name } +
+                            DnDFunction(function.values[0], listOf(value, function.values[2])),
+                    source = feature.source
+                )
+            nextAction()
+        }
+    }
+}
+
+private fun maneuverChooser(
+    feature: Feature,
+    function: DnDFunction,
+    props: MultipleFeaturesFeatsProps,
+    nextAction: () -> Unit
+) = FC<DialogProps> {
+    val (open, setOpen) = useState(true)
+    ManeuverChooser {
+        val maneuversMap = useContext(ManeuversContext)
+        this.open = open
+        this.setOpen = { setOpen(it) }
+        this.feature = feature
+        this.function = function
+        this.character = props.character
+        this.setValue = { value ->
+            console.info("Chosen maneuver: $value")
+            maneuversMap[value]?.let { props.character.maneuvers += it }
+            nextAction()
+        }
+    }
+}
+
+private fun spellsChooser(
+    feature: Feature,
+    function: DnDFunction,
+    props: MultipleFeaturesFeatsProps,
+    nextAction: () -> Unit
+) = FC<DialogProps> {
+    val (open, setOpen) = useState(true)
+    SpellsChooser {
+        val spellsMap = useContext(SpellsContext)
+        this.open = open
+        this.setOpen = { setOpen(it) }
+        this.feature = feature
+        this.function = function
+        this.character = props.character
+        this.setValue = { spellsNames ->
+            console.log("Spells selected: $spellsNames")
+            spellsNames.forEach { spellName ->
+                spellsMap[spellName]?.let { props.character.spells += it }
+            }
+            nextAction()
+        }
     }
 }
 
 private fun filterFeature(feature: Feature, useFeats: Boolean) =
     (useFeats && (feature.withFeats || !feature.withoutFeats)) || !(useFeats || feature.withFeats)
+
+private fun hasWindowFunctions(feature: Feature) =
+    feature.functions.map { it.name }.any { WINDOW_FUNCTIONS.contains(it) }

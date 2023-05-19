@@ -12,6 +12,7 @@ import me.khrys.dnd.charcreator.client.components.dialogs.CollectFeatFeatures
 import me.khrys.dnd.charcreator.client.components.dialogs.FeatsProps
 import me.khrys.dnd.charcreator.client.components.dialogs.FeatureProps
 import me.khrys.dnd.charcreator.client.components.dialogs.MultipleFeatureProps
+import me.khrys.dnd.charcreator.client.components.dialogs.memoDialog
 import me.khrys.dnd.charcreator.client.components.dialogs.windows.SpellWindow
 import me.khrys.dnd.charcreator.client.components.inputs.ValidatedList
 import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
@@ -34,6 +35,7 @@ import me.khrys.dnd.charcreator.common.TOO_MANY_CHECKS_TRANSLATION
 import me.khrys.dnd.charcreator.common.VALIDATION_REQUIRED
 import me.khrys.dnd.charcreator.common.VALUE_SHOULD_BE_CHOSEN_TRANSLATION
 import me.khrys.dnd.charcreator.common.models.emptyFeat
+import me.khrys.dnd.charcreator.common.models.emptyManeuver
 import mui.material.Checkbox
 import mui.material.Collapse
 import mui.material.Dialog
@@ -63,7 +65,7 @@ external interface ChooserProps<T> : Props {
     var size: Int
 }
 
-val ProficiencyChooser = FC<FeatureProps<String>> { props ->
+val ProficiencyChooser = memoDialog(FC<FeatureProps<String>> { props ->
     if (props.open) {
         val values = props.function.values.toList().filter { !props.character.proficiencies.contains(it) }
         ChooseOneOfMany {
@@ -75,7 +77,7 @@ val ProficiencyChooser = FC<FeatureProps<String>> { props ->
             this.setValue = props.setValue
         }
     }
-}
+})
 
 val ProficienciesChooser = FC<MultipleFeatureProps> { props ->
     if (props.open) {
@@ -109,7 +111,7 @@ val SkillsAndProficienciesChooser = FC<MultipleFeatureProps> { props ->
     }
 }
 
-val LanguageChooser = FC<FeatureProps<String>> { props ->
+val LanguageChooser = memoDialog(FC<FeatureProps<String>> { props ->
     if (props.open) {
         val translations = useContext(TranslationsContext)
         val filledCharacter = applyFeatures(props.character.clone(), translations)
@@ -123,7 +125,7 @@ val LanguageChooser = FC<FeatureProps<String>> { props ->
             this.setValue = props.setValue
         }
     }
-}
+})
 
 val LanguagesChooser = FC<MultipleFeatureProps> { props ->
     if (props.open) {
@@ -142,7 +144,7 @@ val LanguagesChooser = FC<MultipleFeatureProps> { props ->
     }
 }
 
-val SkillChooser = FC<FeatureProps<String>> { props ->
+val SkillChooser = memoDialog(FC<FeatureProps<String>> { props ->
     if (props.open) {
         val values = props.function.values
         ChooseOneOfMany {
@@ -154,7 +156,7 @@ val SkillChooser = FC<FeatureProps<String>> { props ->
             this.setValue = props.setValue
         }
     }
-}
+})
 
 val AbilityChooser = FC<FeatureProps<String>> { props ->
     if (props.open) {
@@ -184,7 +186,7 @@ val ElementChooser = FC<FeatureProps<String>> { props ->
     }
 }
 
-val FeatsChooser = FC<FeatsProps> { props ->
+val FeatChooser = FC<FeatsProps> { props ->
     val (feat, setFeat) = useState(emptyFeat())
     val (description, setDescription) = useState("")
     val (openFeatures, setOpenFeatures) = useState(false)
@@ -235,20 +237,48 @@ val FeatsChooser = FC<FeatsProps> { props ->
     }
 }
 
-val ManeuversChooser = FC<MultipleFeatureProps> { props ->
+val ManeuverChooser = FC<FeatureProps<String>> { props ->
+    val (maneuver, setManeuver) = useState(emptyManeuver())
+    val (description, setDescription) = useState("")
     val maneuvers = useContext(ManeuversContext)
+    val translations = useContext(TranslationsContext)
     val filteredManeuvers = maneuvers.filter { (name, _) ->
         !props.character.maneuvers.map { it._id }.contains(name)
     }
     if (props.open) {
-        ChooseSeveral {
+        Dialog {
             this.open = props.open
-            this.setOpen = props.setOpen
-            this.header = props.feature.name
-            this.description = props.feature.description
-            this.size = props.size
-            this.values = filteredManeuvers.keys.toList()
-            this.setValue = props.setValue
+            DialogTitle {
+                +props.feature.name
+            }
+            DialogContent {
+                this.dividers = true
+                DialogContentText {
+                    span {
+                        dangerouslySetInnerHTML = toDangerousHtml(props.feature.description)
+                    }
+                }
+                ValidatorForm {
+                    this.onSubmit = {
+                        props.setOpen(false)
+                        props.setValue(maneuver._id)
+                    }
+                    ValidatedList {
+                        this.label = props.feature.name
+                        this.value = maneuver._id
+                        this.validators = arrayOf(VALIDATION_REQUIRED)
+                        this.errorMessages = arrayOf(translations[VALUE_SHOULD_BE_CHOSEN_TRANSLATION] ?: "")
+                        this.onChange = { setManeuver(maneuvers[it.value()] ?: emptyManeuver()) }
+                        this.useDescription = true
+                        this.menuItems = filteredManeuvers.mapValues { it.value.description }
+                        this.setDescription = { setDescription(it) }
+                        this.description = description
+                    }
+                    DialogActions {
+                        Submit { +(translations[NEXT_TRANSLATION] ?: "") }
+                    }
+                }
+            }
         }
     }
 }

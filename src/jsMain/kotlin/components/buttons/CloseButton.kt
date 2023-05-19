@@ -5,7 +5,6 @@ import emotion.react.css
 import mui.icons.material.Close
 import mui.material.ButtonProps
 import react.FC
-import react.Props
 import react.dom.html.ReactHTML.div
 
 val CloseButton = FC<ButtonProps> { props ->

@@ -6,6 +6,7 @@ import me.khrys.dnd.charcreator.client.components.buttons.CheckboxWithLabel
 import me.khrys.dnd.charcreator.client.components.buttons.Submit
 import me.khrys.dnd.charcreator.client.components.dialogs.CharBasedProps
 import me.khrys.dnd.charcreator.client.components.dialogs.CollectRaceFeatures
+import me.khrys.dnd.charcreator.client.components.dialogs.memoDialog
 import me.khrys.dnd.charcreator.client.components.inputs.ValidatedList
 import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
 import me.khrys.dnd.charcreator.client.utils.loadRaces
@@ -29,7 +30,7 @@ import react.ReactNode
 import react.useContext
 import react.useState
 
-val CharRaceWindow = FC<CharBasedProps> { props ->
+val CharRaceWindow = memoDialog(FC<CharBasedProps> { props ->
     val (races, setRaces) = useState(emptyMap<String, Race>())
     val (race, setRace) = useState(emptyRace())
     val (description, setDescription) = useState("")
@@ -95,4 +96,4 @@ val CharRaceWindow = FC<CharBasedProps> { props ->
         this.feats = feats
         this.useFeats = useFeats
     }
-}
+})

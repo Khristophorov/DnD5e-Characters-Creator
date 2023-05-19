@@ -21,6 +21,7 @@ import react.useState
 val NewCharWindow = FC<DialogProps> { props ->
     console.info("Rendering new character window.")
     val translations = useContext(TranslationsContext)
+    val (raceOpen, setRaceOpen) = useState(true)
     val (subraceDialogOpen, setSubraceDialogOpen) = useState(false)
     val (nameDialogOpen, setNameDialogOpen) = useState(false)
     val (imageDialogOpen, setImageDialogOpen) = useState(false)
@@ -39,14 +40,14 @@ val NewCharWindow = FC<DialogProps> { props ->
     } else if (props.open && spells.isEmpty()) {
         CircularProgress()
         loadSpells { setSpells(it) }
-    } else {
+    } else if (props.open) {
         FeatsContext.Provider(feats) {
             SpellsContext.Provider(spells) {
                 ManeuversContext.Provider(maneuvers) {
                     CharRaceWindow {
                         this.character = newCharacter
-                        this.open = props.open
-                        this.setOpen = props.setOpen
+                        this.open = raceOpen
+                        this.setOpen = { setRaceOpen(it) }
                         this.action = {
                             if (newCharacter.race.subraces.isEmpty()) {
                                 newCharacter.subrace = newCharacter.race
@@ -56,59 +57,59 @@ val NewCharWindow = FC<DialogProps> { props ->
                             }
                         }
                     }
+                    CharSubraceWindow {
+                        this.character = newCharacter
+                        this.open = subraceDialogOpen
+                        this.backAction = {
+                            setSubraceDialogOpen(false)
+                            setRaceOpen(true)
+                        }
+                        this.action = {
+                            setSubraceDialogOpen(false)
+                            setNameDialogOpen(true)
+                        }
+                    }
+                    CharNameWindow {
+                        this.translations = translations
+                        this.character = newCharacter
+                        this.open = nameDialogOpen
+                        this.backAction = {
+                            setNameDialogOpen(false)
+                            setRaceOpen(true)
+                        }
+                        this.action = {
+                            setNameDialogOpen(false)
+                            setImageDialogOpen(true)
+                        }
+                    }
+                    CharImageWindow {
+                        this.translations = translations
+                        this.character = newCharacter
+                        this.open = imageDialogOpen
+                        this.backAction = {
+                            setImageDialogOpen(false)
+                            setNameDialogOpen(true)
+                        }
+                        this.action = {
+                            setImageDialogOpen(false)
+                            setAbilitiesDialogOpen(true)
+                        }
+                    }
+                    CharAbilitiesWindow {
+                        this.translations = translations
+                        this.character = newCharacter
+                        this.open = abilitiesDialogOpen
+                        this.backAction = {
+                            setAbilitiesDialogOpen(false)
+                            setImageDialogOpen(true)
+                        }
+                        this.action = {
+                            setAbilitiesDialogOpen(false)
+                            storeCharacter(newCharacter)
+                            setNewCharacter(emptyCharacter())
+                        }
+                    }
                 }
-            }
-        }
-        CharSubraceWindow {
-            this.character = newCharacter
-            this.open = subraceDialogOpen
-            this.backAction = {
-                setSubraceDialogOpen(false)
-                props.setOpen(true)
-            }
-            this.action = {
-                setSubraceDialogOpen(false)
-                setNameDialogOpen(true)
-            }
-        }
-        CharNameWindow {
-            this.translations = translations
-            this.character = newCharacter
-            this.open = nameDialogOpen
-            this.backAction = {
-                setNameDialogOpen(false)
-                props.setOpen(true)
-            }
-            this.action = {
-                setNameDialogOpen(false)
-                setImageDialogOpen(true)
-            }
-        }
-        CharImageWindow {
-            this.translations = translations
-            this.character = newCharacter
-            this.open = imageDialogOpen
-            this.backAction = {
-                setImageDialogOpen(false)
-                setNameDialogOpen(true)
-            }
-            this.action = {
-                setImageDialogOpen(false)
-                setAbilitiesDialogOpen(true)
-            }
-        }
-        CharAbilitiesWindow {
-            this.translations = translations
-            this.character = newCharacter
-            this.open = abilitiesDialogOpen
-            this.backAction = {
-                setAbilitiesDialogOpen(false)
-                setImageDialogOpen(true)
-            }
-            this.action = {
-                setAbilitiesDialogOpen(false)
-                storeCharacter(newCharacter)
-                setNewCharacter(emptyCharacter())
             }
         }
     }

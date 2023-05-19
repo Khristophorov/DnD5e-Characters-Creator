@@ -116,7 +116,8 @@ data class Feature(
 @Serializable
 data class DnDFunction(
     val name: String,
-    val values: List<String> = emptyList()
+    val values: List<String> = emptyList(),
+    val addFeature: Boolean = false
 )
 
 @Serializable
@@ -198,6 +199,8 @@ fun emptyCharacter() =
 fun emptyRace() = Race("", "", emptyList())
 
 fun emptyFeat() = Feat("", "")
+
+fun emptyManeuver() = Maneuver("", "", "")
 
 fun initialAbilities() = Abilities(10, 10, 10, 10, 10, 10)
 
