@@ -26,6 +26,7 @@ const val CLASS_FLOAT_LEFT = "floatLeft"
 const val CLASS_PADDINGS = "paddings"
 const val CLASS_DISABLE_POINTER = "disablePointer"
 const val CLASS_COLLAPSED_CELL = "collapsedCell"
+const val CLASS_FEATURES_WIDTH = "featuresWidth"
 
 const val LOGIN_SESSION = "LOGIN_SESSION"
 

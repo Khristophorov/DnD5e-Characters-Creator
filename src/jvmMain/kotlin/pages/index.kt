@@ -23,6 +23,7 @@ import me.khrys.dnd.charcreator.common.CLASS_CENTER
 import me.khrys.dnd.charcreator.common.CLASS_COLLAPSED_CELL
 import me.khrys.dnd.charcreator.common.CLASS_DISABLED
 import me.khrys.dnd.charcreator.common.CLASS_DISABLE_POINTER
+import me.khrys.dnd.charcreator.common.CLASS_FEATURES_WIDTH
 import me.khrys.dnd.charcreator.common.CLASS_FLOAT_LEFT
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
 import me.khrys.dnd.charcreator.common.CLASS_JUSTIFY_BETWEEN
@@ -105,6 +106,9 @@ suspend fun ApplicationCall.index() {
                 .${CLASS_COLLAPSED_CELL} {
                     padding-bottom: 0 !important;
                     padding-top: 0 !important;
+                }
+                .${CLASS_FEATURES_WIDTH} {
+                    width: 240px;
                 }
                 """
                 }

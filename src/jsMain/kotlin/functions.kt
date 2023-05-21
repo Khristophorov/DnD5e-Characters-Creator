@@ -38,6 +38,7 @@ import me.khrys.dnd.charcreator.common.models.Filter.Param.CONSTITUTION
 import me.khrys.dnd.charcreator.common.models.Filter.Param.DEXTERITY
 import me.khrys.dnd.charcreator.common.models.Filter.Param.INTELLIGENCE
 import me.khrys.dnd.charcreator.common.models.Filter.Param.LEFT_HAND_TYPE
+import me.khrys.dnd.charcreator.common.models.Filter.Param.LEVEL
 import me.khrys.dnd.charcreator.common.models.Filter.Param.PROFICIENCIES
 import me.khrys.dnd.charcreator.common.models.Filter.Param.RIGHT_HAND_TYPE
 import me.khrys.dnd.charcreator.common.models.Filter.Param.STRENGTH
@@ -45,6 +46,7 @@ import me.khrys.dnd.charcreator.common.models.Filter.Param.WISDOM
 import me.khrys.dnd.charcreator.common.models.Filter.Param.WORE_TYPE
 import me.khrys.dnd.charcreator.common.models.SavingThrows
 import me.khrys.dnd.charcreator.common.models.Skills
+import me.khrys.dnd.charcreator.common.models.Spell
 import me.khrys.dnd.charcreator.common.models.SuperiorityDice
 import react.dom.DangerouslySetInnerHTML
 import kotlin.math.floor
@@ -72,13 +74,17 @@ fun computeSpellLevel(level: Int, cantripTranslation: String, suffix: String?): 
 
 fun Int.toSignedString() = if (this > 0) "+$this" else this.toString()
 
-fun applyFeatures(character: Character, translations: Map<String, String>): Character {
+fun applyFeatures(
+    character: Character,
+    translations: Map<String, String>,
+    spells: Map<String, Spell> = emptyMap()
+): Character {
     val featuredCharacter = character.clone()
     character.features.forEach { feature ->
         val accept =
             feature.filters.isEmpty() || feature.filters.map { it.apply(character) }.reduce { old, new -> old && new }
         if (accept) {
-            featuredCharacter.applyFeature(feature, translations)
+            featuredCharacter.applyFeature(feature, translations, spells)
         }
     }
     return featuredCharacter
@@ -140,7 +146,7 @@ fun Skills.clone() = Skills(
     survival = this.survival
 )
 
-fun Character.applyFeature(feature: Feature, translations: Map<String, String>) {
+fun Character.applyFeature(feature: Feature, translations: Map<String, String>, spells: Map<String, Spell>) {
     feature.functions.forEach { function ->
         when (function.name) {
             "Increase Strength" -> increaseStrength(function.values[0].toInt())
@@ -167,6 +173,7 @@ fun Character.applyFeature(feature: Feature, translations: Map<String, String>) 
             "Add Languages" -> addLanguages(function.values)
             "Add Skills" -> addSkills(function.values, translations)
             "Add Superiority Dices" -> addSuperiorityDices(Dice.valueOf(function.values[0]), function.values[1].toInt())
+            "Add Spells" -> addSpells(function.values, spells)
         }
     }
 }
@@ -344,6 +351,12 @@ fun Character.addSuperiorityDices(dice: Dice, quantity: Int) {
     }
 }
 
+fun Character.addSpells(spellsNames: List<String>, spells: Map<String, Spell>) {
+    spellsNames.filter { !this.spells.map { spell -> spell._id }.contains(it) }
+        .mapNotNull { spells[it] }
+        .forEach { this.spells = this.spells + it }
+}
+
 fun Feat.toFeature(): Feature = Feature(
     name = this._id,
     description = this.description,
@@ -353,26 +366,26 @@ fun Feat.toFeature(): Feature = Feature(
 )
 
 fun Filter.apply(character: Character): Boolean {
-    val dataSet = when (this.param.toString()) {
-        PROFICIENCIES.toString() -> character.proficiencies
-        WORE_TYPE.toString() -> emptyList()
-        LEFT_HAND_TYPE.toString() -> emptyList()
-        RIGHT_HAND_TYPE.toString() -> emptyList()
+    val dataSet = when (this.param) {
+        PROFICIENCIES -> character.proficiencies
+        WORE_TYPE -> emptyList()
+        LEFT_HAND_TYPE -> emptyList()
+        RIGHT_HAND_TYPE -> emptyList()
         else -> emptyList()
     }
-    val dataNum = when (this.param.toString()) {
-        STRENGTH.toString() -> character.abilities.strength
-        DEXTERITY.toString() -> character.abilities.dexterity
-        CONSTITUTION.toString() -> character.abilities.constitution
-        INTELLIGENCE.toString() -> character.abilities.intelligence
-        WISDOM.toString() -> character.abilities.wisdom
-        CHARISMA.toString() -> character.abilities.charisma
+    val dataNum = when (this.param) {
+        STRENGTH -> character.abilities.strength
+        DEXTERITY -> character.abilities.dexterity
+        CONSTITUTION -> character.abilities.constitution
+        INTELLIGENCE -> character.abilities.intelligence
+        WISDOM -> character.abilities.wisdom
+        CHARISMA -> character.abilities.charisma
+        LEVEL -> character.getCombinedLevel()
         else -> 0
     }
-    return when (this.comparator.toString()) {
-        CONTAINS.toString() -> dataSet.contains(value)
-        EQUALS_OR_HIGHER.toString() -> dataNum >= value.toInt()
-        else -> throw IllegalArgumentException("Unsupported value for the comparator: ${this.comparator}")
+    return when (this.comparator) {
+        CONTAINS -> dataSet.contains(value)
+        EQUALS_OR_HIGHER -> dataNum >= value.toInt()
     }
 }
 
@@ -382,6 +395,6 @@ fun String.format(vararg values: String): String {
     return newString
 }
 
-fun toDangerousHtml(value: String) = object: DangerousHTML {
+fun toDangerousHtml(value: String) = object : DangerousHTML {
     override var __html = value
 }.unsafeCast<DangerouslySetInnerHTML>()

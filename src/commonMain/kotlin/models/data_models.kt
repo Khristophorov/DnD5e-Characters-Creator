@@ -154,7 +154,8 @@ data class Filter(
         CONSTITUTION,
         INTELLIGENCE,
         WISDOM,
-        CHARISMA
+        CHARISMA,
+        LEVEL
     }
 
     @Serializable

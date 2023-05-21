@@ -7,9 +7,11 @@ import me.khrys.dnd.charcreator.client.components.buttons.CurrentCharacters
 import me.khrys.dnd.charcreator.client.components.buttons.LogoutButton
 import me.khrys.dnd.charcreator.client.components.validators.initValidators
 import me.khrys.dnd.charcreator.client.utils.loadCharacters
+import me.khrys.dnd.charcreator.client.utils.loadSpells
 import me.khrys.dnd.charcreator.client.utils.loadTranslations
 import me.khrys.dnd.charcreator.common.LOGOUT_TRANSLATION
 import me.khrys.dnd.charcreator.common.models.Character
+import me.khrys.dnd.charcreator.common.models.Spell
 import mui.material.CircularProgress
 import react.FC
 import react.Props
@@ -19,6 +21,7 @@ import react.useState
 val MainDnd = FC<Props> {
     val (translations, setTranslations) = useState<Map<String, String>?>(null)
     val (characters, setCharacters) = useState<List<Character>?>(null)
+    val (spells, setSpells) = useState(emptyMap<String, Spell>())
 
     if (translations == null) {
         CircularProgress()
@@ -27,6 +30,9 @@ val MainDnd = FC<Props> {
     else if (characters == null) {
         CircularProgress()
         loadCharacters { setCharacters(it) }
+    } else if (spells.isEmpty()) {
+        CircularProgress()
+        loadSpells { setSpells(it) }
     } else {
         console.info("Rendering the app.")
         TranslationsContext.Provider(translations) {
@@ -35,8 +41,10 @@ val MainDnd = FC<Props> {
             }
 
             CharactersContext.Provider(characters) {
-                initValidators(characters)
-                mainContent()
+                SpellsContext.Provider(spells) {
+                    initValidators(characters)
+                    mainContent()
+                }
             }
         }
     }

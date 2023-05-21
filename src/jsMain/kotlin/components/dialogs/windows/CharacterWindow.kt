@@ -4,6 +4,7 @@ import csstype.ClassName
 import csstype.ObjectFit
 import csstype.px
 import emotion.react.css
+import me.khrys.dnd.charcreator.client.SpellsContext
 import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.applyFeatures
 import me.khrys.dnd.charcreator.client.components.buttons.CloseButton
@@ -30,6 +31,7 @@ import me.khrys.dnd.charcreator.client.toDangerousHtml
 import me.khrys.dnd.charcreator.common.ARMOR_CLASS_TRANSLATION
 import me.khrys.dnd.charcreator.common.CANTRIP_TRANSLATION
 import me.khrys.dnd.charcreator.common.CLASS_BORDERED
+import me.khrys.dnd.charcreator.common.CLASS_FEATURES_WIDTH
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
 import me.khrys.dnd.charcreator.common.CLASS_JUSTIFY_BETWEEN
 import me.khrys.dnd.charcreator.common.CLASS_PADDINGS
@@ -129,11 +131,12 @@ private external interface SpellsProps : Props {
 val CharacterWindow = FC<CharDialogProps> { props ->
     console.info("Loading character window for ${props.character.name}")
     val translations = useContext(TranslationsContext)
+    val spells = useContext(SpellsContext)
     Dialog {
         this.open = props.open
         this.fullScreen = true
         this.maxWidth = xl
-        val character = applyFeatures(props.character, translations)
+        val character = applyFeatures(props.character, translations, spells)
         Title {
             this.open = props.open
             this.setOpen = props.setOpen
@@ -335,7 +338,7 @@ private val Features = FC<AbilitiesProps> { props ->
             Grid {
                 this.item = true
                 div {
-                    this.className = ClassName(CLASS_BORDERED)
+                    this.className = ClassName("$CLASS_BORDERED $CLASS_FEATURES_WIDTH")
                     props.character.features.forEach { feature ->
                         TextWithTooltip {
                             this.title = ReactNode(feature.description)
