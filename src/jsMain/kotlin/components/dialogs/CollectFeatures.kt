@@ -22,6 +22,7 @@ val WINDOW_FUNCTIONS = listOf(
     "Choose Proficiencies",
     "Choose Proficiency",
     "Choose Skill",
+    "Choose Skills",
     "Choose Skills and Proficiencies",
     "Choose Spells"
 )
@@ -116,6 +117,11 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
                                 "Choose Skill" -> {
                                     functionFeatures
                                         .add(skillChooser(feature, function, props, nextAction))
+                                }
+
+                                "Choose Skills" -> {
+                                    functionFeatures
+                                        .add(skillsChooser(feature, function, props, nextAction))
                                 }
 
                                 "Choose Feat" -> {
@@ -333,6 +339,34 @@ private fun skillChooser(
                     name = feature.name,
                     description = function.values[1].format(value),
                     functions = listOf(DnDFunction(function.values[0], listOf(value))),
+                    source = feature.source
+                )
+            nextAction()
+        }
+    }
+}
+
+private fun skillsChooser(
+    feature: Feature,
+    function: DnDFunction,
+    props: MultipleFeaturesFeatsProps,
+    nextAction: () -> Unit
+) = FC<DialogProps> {
+    val (open, setOpen) = useState(true)
+    SkillsChooser {
+        this.open = open
+        this.setOpen = { setOpen(it) }
+        this.feature = feature
+        this.function = function
+        this.character = props.character
+        this.size = if (function.values.isEmpty()) 0 else function.values[1].toInt()
+        this.setValue = { values ->
+            console.info("Chosen skills: $values")
+            props.character.features +=
+                Feature(
+                    name = feature.name,
+                    description = function.values[2].format(*values.toTypedArray()),
+                    functions = listOf(DnDFunction(function.values[0], values)),
                     source = feature.source
                 )
             nextAction()

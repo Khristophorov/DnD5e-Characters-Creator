@@ -158,6 +158,20 @@ val SkillChooser = memoDialog(FC<FeatureProps<String>> { props ->
     }
 })
 
+val SkillsChooser = FC<MultipleFeatureProps> { props ->
+    if (props.open) {
+        ChooseSeveral {
+            this.open = props.open
+            this.setOpen = props.setOpen
+            this.header = props.feature.name
+            this.description = props.feature.description
+            this.size = props.size
+            this.values = if (props.open) props.function.values.subList(3, props.function.values.size) else emptyList()
+            this.setValue = props.setValue
+        }
+    }
+}
+
 val AbilityChooser = FC<FeatureProps<String>> { props ->
     if (props.open) {
         val values = props.function.values
