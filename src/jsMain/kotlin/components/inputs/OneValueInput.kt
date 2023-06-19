@@ -1,6 +1,5 @@
 package me.khrys.dnd.charcreator.client.components.inputs
 
-import csstype.ClassName
 import me.khrys.dnd.charcreator.client.components.inputs.tooltips.DelayedTooltip
 import me.khrys.dnd.charcreator.common.CLASS_BACKGROUND
 import me.khrys.dnd.charcreator.common.CLASS_BOLD
@@ -17,6 +16,7 @@ import react.FC
 import react.PropsWithClassName
 import react.ReactNode
 import react.dom.html.ReactHTML.div
+import web.cssom.ClassName
 
 external interface OneValueProps : PropsWithClassName {
     var header: String

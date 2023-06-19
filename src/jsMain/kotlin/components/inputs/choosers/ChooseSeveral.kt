@@ -1,6 +1,5 @@
 package me.khrys.dnd.charcreator.client.components.inputs.choosers
 
-import csstype.ClassName
 import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.components.buttons.Submit
 import me.khrys.dnd.charcreator.client.components.inputs.ValidatedList
@@ -24,6 +23,7 @@ import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.span
 import react.useContext
 import react.useState
+import web.cssom.ClassName
 
 val ChooseSeveral = FC<ChooserProps<List<String>>> { props ->
     val (chosenValues, setChosenValues) = useState(emptyList<String>())

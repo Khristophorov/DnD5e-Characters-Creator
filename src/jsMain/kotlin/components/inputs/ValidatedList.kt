@@ -1,9 +1,5 @@
 package me.khrys.dnd.charcreator.client.components.inputs
 
-import csstype.ClassName
-import csstype.Display.Companion.inlineBlock
-import csstype.Overflow
-import csstype.px
 import emotion.react.css
 import me.khrys.dnd.charcreator.client.components.validators.SelectValidator
 import me.khrys.dnd.charcreator.client.components.validators.SelectValidatorProps
@@ -15,6 +11,10 @@ import react.FC
 import react.PropsWithChildren
 import react.dom.html.ReactHTML.div
 import react.useState
+import web.cssom.ClassName
+import web.cssom.Display.Companion.inlineBlock
+import web.cssom.Overflow
+import web.cssom.px
 
 external interface ValidatedListProps : SelectValidatorProps {
     var description: String

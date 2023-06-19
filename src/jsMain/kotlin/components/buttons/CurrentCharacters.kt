@@ -1,7 +1,5 @@
 package me.khrys.dnd.charcreator.client.components.buttons
 
-import csstype.ClassName
-import csstype.FlexWrap.Companion.wrap
 import emotion.react.css
 import me.khrys.dnd.charcreator.client.CharactersContext
 import me.khrys.dnd.charcreator.client.components.dialogs.windows.CharacterWindow
@@ -11,6 +9,8 @@ import react.Props
 import react.dom.html.ReactHTML.div
 import react.useContext
 import react.useState
+import web.cssom.ClassName
+import web.cssom.FlexWrap.Companion.wrap
 
 var CurrentCharacters = FC<Props> {
     console.info("Rendering characters.")

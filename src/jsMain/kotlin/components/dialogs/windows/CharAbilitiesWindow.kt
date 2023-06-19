@@ -1,7 +1,5 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
-import csstype.ClassName
-import csstype.FlexWrap.Companion.wrap
 import emotion.react.css
 import me.khrys.dnd.charcreator.client.components.buttons.BackButton
 import me.khrys.dnd.charcreator.client.components.buttons.Submit
@@ -39,6 +37,8 @@ import react.PropsWithChildren
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.span
 import react.useState
+import web.cssom.ClassName
+import web.cssom.FlexWrap.Companion.wrap
 
 private external interface AbilitiesProps : Props {
     var translations: Map<String, String>

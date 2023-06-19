@@ -1,8 +1,5 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
-import csstype.ClassName
-import csstype.ObjectFit
-import csstype.px
 import emotion.react.css
 import me.khrys.dnd.charcreator.client.SpellsContext
 import me.khrys.dnd.charcreator.client.TranslationsContext
@@ -83,6 +80,9 @@ import react.dom.html.ReactHTML.img
 import react.dom.html.ReactHTML.p
 import react.useContext
 import react.useState
+import web.cssom.ClassName
+import web.cssom.ObjectFit
+import web.cssom.px
 
 private const val MANEUVERS_INDEX = 0
 private const val SPELLS_INDEX = 1

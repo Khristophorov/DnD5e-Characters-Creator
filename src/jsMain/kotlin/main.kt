@@ -1,6 +1,5 @@
 package me.khrys.dnd.charcreator.client
 
-import csstype.Clear.Companion.both
 import emotion.react.css
 import me.khrys.dnd.charcreator.client.components.buttons.AddCharacter
 import me.khrys.dnd.charcreator.client.components.buttons.CurrentCharacters
@@ -17,6 +16,7 @@ import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
 import react.useState
+import web.cssom.Clear.Companion.both
 
 val MainDnd = FC<Props> {
     val (translations, setTranslations) = useState<Map<String, String>?>(null)

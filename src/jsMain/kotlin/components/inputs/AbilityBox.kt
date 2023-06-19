@@ -1,6 +1,5 @@
 package me.khrys.dnd.charcreator.client.components.inputs
 
-import csstype.ClassName
 import me.khrys.dnd.charcreator.client.components.inputs.texts.CenteredLabel
 import me.khrys.dnd.charcreator.client.components.inputs.tooltips.DelayedTooltip
 import me.khrys.dnd.charcreator.client.components.validators.InputProps
@@ -23,6 +22,7 @@ import react.FC
 import react.Props
 import react.ReactNode
 import react.dom.html.ReactHTML.div
+import web.cssom.ClassName
 import web.html.InputType.Companion.number
 
 external interface AbilityBoxProps : Props {

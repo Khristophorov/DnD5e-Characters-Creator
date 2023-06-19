@@ -1,6 +1,5 @@
 package me.khrys.dnd.charcreator.client.components.inputs.choosers
 
-import csstype.ClassName
 import me.khrys.dnd.charcreator.client.ManeuversContext
 import me.khrys.dnd.charcreator.client.SpellsContext
 import me.khrys.dnd.charcreator.client.TranslationsContext
@@ -54,6 +53,7 @@ import react.Props
 import react.dom.html.ReactHTML.span
 import react.useContext
 import react.useState
+import web.cssom.ClassName
 
 external interface ChooserProps<T> : Props {
     var open: Boolean

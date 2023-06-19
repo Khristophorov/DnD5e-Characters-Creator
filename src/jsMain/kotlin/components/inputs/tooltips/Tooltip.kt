@@ -1,6 +1,5 @@
 package me.khrys.dnd.charcreator.client.components.inputs.tooltips
 
-import csstype.ClassName
 import me.khrys.dnd.charcreator.client.createDefaultTheme
 import me.khrys.dnd.charcreator.client.toDangerousHtml
 import me.khrys.dnd.charcreator.common.CLASS_DISABLE_POINTER
@@ -14,6 +13,7 @@ import org.w3c.dom.events.EventTarget
 import react.FC
 import react.dom.html.ReactHTML.div
 import react.useState
+import web.cssom.ClassName
 import web.dom.Element
 
 val tooltipTheme = createTooltipTheme()

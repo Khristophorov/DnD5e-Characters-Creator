@@ -1,8 +1,8 @@
 package me.khrys.dnd.charcreator.client
 
-import csstype.Color
 import mui.material.styles.Theme
 import mui.material.styles.createTheme
+import web.cssom.Color
 
 val defaultTheme = createDefaultTheme(
     js("""

@@ -1,6 +1,5 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
-import csstype.ClassName
 import me.khrys.dnd.charcreator.client.components.buttons.BackButton
 import me.khrys.dnd.charcreator.client.components.buttons.Submit
 import me.khrys.dnd.charcreator.client.components.dialogs.CharBasedProps
@@ -23,6 +22,7 @@ import mui.material.DialogContentText
 import mui.material.DialogTitle
 import react.FC
 import react.useState
+import web.cssom.ClassName
 
 val CharNameWindow = FC<CharBasedProps> { props ->
     if (props.open) {

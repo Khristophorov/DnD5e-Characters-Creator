@@ -1,6 +1,5 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
-import csstype.ClassName
 import kotlinx.browser.document
 import me.khrys.dnd.charcreator.client.components.buttons.BackButton
 import me.khrys.dnd.charcreator.client.components.buttons.Button
@@ -28,6 +27,7 @@ import org.w3c.dom.HTMLElement
 import org.w3c.files.FileReader
 import react.FC
 import react.useState
+import web.cssom.ClassName
 import web.html.InputType.Companion.file
 
 val CharImageWindow = FC<CharBasedProps> { props ->

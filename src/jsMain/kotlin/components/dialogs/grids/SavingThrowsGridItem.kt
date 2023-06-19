@@ -1,11 +1,5 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.grids
 
-import csstype.Border
-import csstype.ClassName
-import csstype.LineStyle.Companion.solid
-import csstype.NamedColor.Companion.black
-import csstype.Padding
-import csstype.px
 import emotion.react.css
 import me.khrys.dnd.charcreator.client.components.dialogs.SavingThrowsItem
 import me.khrys.dnd.charcreator.client.components.inputs.tooltips.DelayedTooltip
@@ -21,6 +15,12 @@ import react.ReactNode
 import react.createElement
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.span
+import web.cssom.Border
+import web.cssom.ClassName
+import web.cssom.LineStyle.Companion.solid
+import web.cssom.NamedColor.Companion.black
+import web.cssom.Padding
+import web.cssom.px
 
 external interface SavingThrowsGridItemProps : Props {
     var item: SavingThrowsItem

@@ -1,6 +1,5 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
-import csstype.TextAlign
 import emotion.react.css
 import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.computeSpellLevel
@@ -23,6 +22,7 @@ import react.dom.html.ReactHTML.h3
 import react.dom.html.ReactHTML.i
 import react.dom.html.ReactHTML.p
 import react.useContext
+import web.cssom.TextAlign
 
 external interface SpellProps : Props {
     var spell: Spell

@@ -3,11 +3,26 @@ package me.khrys.dnd.charcreator.client.components.dialogs
 import me.khrys.dnd.charcreator.client.ManeuversContext
 import me.khrys.dnd.charcreator.client.SpellsContext
 import me.khrys.dnd.charcreator.client.components.dialogs.windows.InformWindow
-import me.khrys.dnd.charcreator.client.components.inputs.choosers.*
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.AbilityChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.ElementChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.FeatChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.LanguageChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.LanguagesChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.ManeuverChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.ProficienciesChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.ProficiencyChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.SkillChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.SkillsAndProficienciesChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.SkillsChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.SpellsChooser
 import me.khrys.dnd.charcreator.client.format
 import me.khrys.dnd.charcreator.common.models.DnDFunction
 import me.khrys.dnd.charcreator.common.models.Feature
-import react.*
+import react.FC
+import react.ReactNode
+import react.createElement
+import react.useContext
+import react.useState
 
 val DEFAULT_NODE = ReactNode("")
 

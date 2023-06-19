@@ -1,6 +1,5 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.grids
 
-import csstype.ClassName
 import me.khrys.dnd.charcreator.client.components.dialogs.SavingThrowsItem
 import me.khrys.dnd.charcreator.client.components.inputs.CenteredBold
 import me.khrys.dnd.charcreator.common.ACROBATICS_CONTENT_TRANSLATION
@@ -45,6 +44,7 @@ import me.khrys.dnd.charcreator.common.models.Character
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
+import web.cssom.ClassName
 
 external interface SkillsProps : Props {
     var character: Character

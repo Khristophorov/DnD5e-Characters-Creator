@@ -1,6 +1,5 @@
 package me.khrys.dnd.charcreator.client.components.inputs.texts
 
-import csstype.ClassName
 import me.khrys.dnd.charcreator.client.components.validators.InputProps
 import me.khrys.dnd.charcreator.client.components.validators.TextValidator
 import me.khrys.dnd.charcreator.common.CLASS_ABILITY_BOX
@@ -11,6 +10,7 @@ import me.khrys.dnd.charcreator.common.VALIDATION_UPPER_20
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
+import web.cssom.ClassName
 import web.html.InputType.Companion.number
 
 external interface TextBoxProps : Props {

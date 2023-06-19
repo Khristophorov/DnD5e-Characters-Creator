@@ -1,6 +1,5 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.grids
 
-import csstype.ClassName
 import me.khrys.dnd.charcreator.client.components.dialogs.SavingThrowsItem
 import me.khrys.dnd.charcreator.client.components.inputs.CenteredBold
 import me.khrys.dnd.charcreator.common.CHARISMA_TRANSLATION
@@ -13,6 +12,7 @@ import me.khrys.dnd.charcreator.common.STRENGTH_TRANSLATION
 import me.khrys.dnd.charcreator.common.WISDOM_TRANSLATION
 import react.FC
 import react.dom.html.ReactHTML.div
+import web.cssom.ClassName
 
 val SavingThrowsGrid = FC<SkillsProps> { props ->
     div {

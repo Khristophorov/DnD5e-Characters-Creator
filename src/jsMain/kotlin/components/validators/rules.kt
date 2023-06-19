@@ -1,7 +1,7 @@
 package me.khrys.dnd.charcreator.client.components.validators
 
-import me.khrys.dnd.charcreator.common.VALIDATION_VALUE_ALREADY_PRESENT
 import me.khrys.dnd.charcreator.common.VALIDATION_DUPLICATE_NAME
+import me.khrys.dnd.charcreator.common.VALIDATION_VALUE_ALREADY_PRESENT
 import me.khrys.dnd.charcreator.common.models.Character
 
 fun initValidators(characters: List<Character>) {

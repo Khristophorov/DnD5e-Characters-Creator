@@ -6,7 +6,6 @@ import me.khrys.dnd.charcreator.common.models.DnDFunction
 import me.khrys.dnd.charcreator.common.models.Feat
 import me.khrys.dnd.charcreator.common.models.Feature
 import react.FC
-import react.Props
 import react.PropsWithChildren
 import react.memo
 

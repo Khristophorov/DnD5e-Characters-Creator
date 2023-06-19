@@ -1,12 +1,12 @@
 package me.khrys.dnd.charcreator.client.components.inputs.texts
 
-import csstype.WhiteSpace.Companion.preWrap
-import csstype.px
 import emotion.react.css
 import me.khrys.dnd.charcreator.client.components.inputs.tooltips.Tooltip
 import mui.material.TooltipProps
 import react.FC
 import react.dom.html.ReactHTML.span
+import web.cssom.WhiteSpace.Companion.preWrap
+import web.cssom.px
 
 val TextWithTooltip = FC<TooltipProps> { props ->
     Tooltip {
