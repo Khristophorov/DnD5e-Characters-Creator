@@ -4,6 +4,7 @@ import me.khrys.dnd.charcreator.client.FeatsContext
 import me.khrys.dnd.charcreator.client.ManeuversContext
 import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.components.dialogs.DialogProps
+import me.khrys.dnd.charcreator.client.setDefaultHitPoints
 import me.khrys.dnd.charcreator.client.utils.loadFeats
 import me.khrys.dnd.charcreator.client.utils.loadManeuvers
 import me.khrys.dnd.charcreator.client.utils.storeCharacter
@@ -18,8 +19,9 @@ import react.useState
 val NewCharWindow = FC<DialogProps> { props ->
     console.info("Rendering new character window.")
     val translations = useContext(TranslationsContext)
-    val (raceOpen, setRaceOpen) = useState(true)
+    val (raceDialogOpen, setRaceDialogOpen) = useState(true)
     val (subraceDialogOpen, setSubraceDialogOpen) = useState(false)
+    val (classDialogOpen, setClassDialogOpen) = useState(false)
     val (nameDialogOpen, setNameDialogOpen) = useState(false)
     val (imageDialogOpen, setImageDialogOpen) = useState(false)
     val (abilitiesDialogOpen, setAbilitiesDialogOpen) = useState(false)
@@ -38,12 +40,12 @@ val NewCharWindow = FC<DialogProps> { props ->
             ManeuversContext.Provider(maneuvers) {
                 CharRaceWindow {
                     this.character = newCharacter
-                    this.open = raceOpen
-                    this.setOpen = { setRaceOpen(it) }
+                    this.open = raceDialogOpen
+                    this.setOpen = { setRaceDialogOpen(it) }
                     this.action = {
                         if (newCharacter.race.subraces.isEmpty()) {
                             newCharacter.subrace = newCharacter.race
-                            setNameDialogOpen(true)
+                            setClassDialogOpen(true)
                         } else {
                             setSubraceDialogOpen(true)
                         }
@@ -54,11 +56,23 @@ val NewCharWindow = FC<DialogProps> { props ->
                     this.open = subraceDialogOpen
                     this.backAction = {
                         setSubraceDialogOpen(false)
-                        setRaceOpen(true)
+                        setRaceDialogOpen(true)
                     }
                     this.action = {
                         setSubraceDialogOpen(false)
+                        setClassDialogOpen(true)
+                    }
+                }
+                CharClassWindow {
+                    this.character = newCharacter
+                    this.open = classDialogOpen
+                    this.backAction = {
+                        setRaceDialogOpen(true)
+                        setClassDialogOpen(false)
+                    }
+                    this.action = {
                         setNameDialogOpen(true)
+                        setClassDialogOpen(false)
                     }
                 }
                 CharNameWindow {
@@ -67,7 +81,7 @@ val NewCharWindow = FC<DialogProps> { props ->
                     this.open = nameDialogOpen
                     this.backAction = {
                         setNameDialogOpen(false)
-                        setRaceOpen(true)
+                        setClassDialogOpen(true)
                     }
                     this.action = {
                         setNameDialogOpen(false)
@@ -97,6 +111,7 @@ val NewCharWindow = FC<DialogProps> { props ->
                     }
                     this.action = {
                         setAbilitiesDialogOpen(false)
+                        newCharacter.setDefaultHitPoints()
                         storeCharacter(newCharacter)
                         setNewCharacter(emptyCharacter())
                     }

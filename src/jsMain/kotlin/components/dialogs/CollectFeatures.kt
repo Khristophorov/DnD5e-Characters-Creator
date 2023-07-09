@@ -72,6 +72,23 @@ val CollectSubraceFeatures = memoDialog(FC<CharDialogProps> { props ->
     }
 })
 
+val CollectClassFeatures = memoDialog(FC<CharDialogProps> { props ->
+    if (props.open) {
+        val features = props.character.classes.filter { it.second._id == props.className }[0]
+            .second.features[props.classLevel] ?: emptyList()
+        console.info("Loading features for class: ${props.className}")
+        CollectFeatures {
+            this.open = props.open
+            this.setOpen = props.setOpen
+            this.character = props.character
+            this.features = features
+            this.feats = props.feats
+            this.useFeats = props.useFeats
+            this.action = props.action
+        }
+    }
+})
+
 val CollectFeatFeatures: FC<FeatsProps> = FC { props ->
     console.info("Loading feat features for ${props.feature.name}")
     CollectFeatures {

@@ -18,6 +18,7 @@ import me.khrys.dnd.charcreator.common.CLASS_ABILITY_BOX
 import me.khrys.dnd.charcreator.common.CLASS_ROUND_BORDERED
 import me.khrys.dnd.charcreator.common.CLASS_BACKGROUND
 import me.khrys.dnd.charcreator.common.CLASS_BOLD
+import me.khrys.dnd.charcreator.common.CLASS_WIDE_ABILITY_BOX
 import me.khrys.dnd.charcreator.common.CLASS_BORDERED
 import me.khrys.dnd.charcreator.common.CLASS_CENTER
 import me.khrys.dnd.charcreator.common.CLASS_COLLAPSED_CELL
@@ -72,7 +73,16 @@ suspend fun ApplicationCall.index() {
                     font-weight: bold;
                     margin: 5px;
                 }
+                .${CLASS_WIDE_ABILITY_BOX} {
+                    width: 300px;
+                    font-weight: bold;
+                    margin: 5px;
+                }
                 .${CLASS_ABILITY_BOX} input {
+                    font-size: 250%;
+                    text-align: center;
+                }
+                .${CLASS_WIDE_ABILITY_BOX} input {
                     font-size: 250%;
                     text-align: center;
                 }

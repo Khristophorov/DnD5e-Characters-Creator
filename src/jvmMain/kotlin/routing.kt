@@ -26,6 +26,7 @@ import me.khrys.dnd.charcreator.common.models.User
 import me.khrys.dnd.charcreator.server.authentication.authenticate
 import me.khrys.dnd.charcreator.server.authentication.logout
 import me.khrys.dnd.charcreator.server.locations.Characters
+import me.khrys.dnd.charcreator.server.locations.Classes
 import me.khrys.dnd.charcreator.server.locations.Feats
 import me.khrys.dnd.charcreator.server.locations.Image
 import me.khrys.dnd.charcreator.server.locations.Index
@@ -35,6 +36,7 @@ import me.khrys.dnd.charcreator.server.locations.Maneuvers
 import me.khrys.dnd.charcreator.server.locations.Races
 import me.khrys.dnd.charcreator.server.locations.Spells
 import me.khrys.dnd.charcreator.server.locations.Translations
+import me.khrys.dnd.charcreator.server.mongo.ClassesService
 import me.khrys.dnd.charcreator.server.mongo.FeatsService
 import me.khrys.dnd.charcreator.server.mongo.ManeuversService
 import me.khrys.dnd.charcreator.server.mongo.MongoServiceFactory
@@ -44,6 +46,7 @@ import me.khrys.dnd.charcreator.server.mongo.TranslationService
 import me.khrys.dnd.charcreator.server.mongo.UserService
 import me.khrys.dnd.charcreator.server.pages.index
 import me.khrys.dnd.charcreator.server.rest.characters
+import me.khrys.dnd.charcreator.server.rest.classes
 import me.khrys.dnd.charcreator.server.rest.feats
 import me.khrys.dnd.charcreator.server.rest.image
 import me.khrys.dnd.charcreator.server.rest.maneuvers
@@ -61,6 +64,7 @@ fun Route.routing(config: ApplicationConfig, httpClient: HttpClient) {
     val userService = UserService(mongoFactory.getUsers())
     val translationService = TranslationService(mongoFactory.getTranslations())
     val racesService = RacesService(mongoFactory.getRaces())
+    val classesService = ClassesService(mongoFactory.getClasses())
     val featsService = FeatsService(mongoFactory.getFeats())
     val maneuversService = ManeuversService(mongoFactory.getManeuvers())
     val spellsService = SpellsService(mongoFactory.getSpells())
@@ -74,6 +78,7 @@ fun Route.routing(config: ApplicationConfig, httpClient: HttpClient) {
     get<Translations> { call.translations(translationService) }
     get<Characters> { call.characters(userService) }
     get<Races> { call.races(racesService) }
+    get<Classes> { call.classes(classesService) }
     get<Feats> { call.feats(featsService) }
     get<Maneuvers> { call.maneuvers(maneuversService) }
     get<Spells> { call.spells(spellsService) }

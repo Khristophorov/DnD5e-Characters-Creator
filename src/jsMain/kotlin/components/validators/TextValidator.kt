@@ -12,7 +12,7 @@ private external val formValidatorModule: dynamic
 @Suppress("UnsafeCastFromDynamic")
 val TextValidator: ComponentType<TextValidatorProps> = formValidatorModule.TextValidator
 
-data class InputProps(val accept: String = "", val readonly: String = "false")
+data class InputProps(val accept: String? = null, val readonly: String? = null)
 
 external interface TextValidatorProps : PropsWithClassName {
     var id: String

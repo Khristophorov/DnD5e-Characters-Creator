@@ -14,6 +14,7 @@ import me.khrys.dnd.charcreator.client.components.dialogs.grids.SavingThrowsGrid
 import me.khrys.dnd.charcreator.client.components.dialogs.grids.SkillsGrid
 import me.khrys.dnd.charcreator.client.components.inputs.CenteredBold
 import me.khrys.dnd.charcreator.client.components.inputs.OneValueInput
+import me.khrys.dnd.charcreator.client.components.inputs.texts.CenteredLabel
 import me.khrys.dnd.charcreator.client.components.inputs.texts.TextBox
 import me.khrys.dnd.charcreator.client.components.inputs.texts.TextWithTooltip
 import me.khrys.dnd.charcreator.client.components.inputs.texts.TitledInput
@@ -27,14 +28,19 @@ import me.khrys.dnd.charcreator.client.getInitiative
 import me.khrys.dnd.charcreator.client.toDangerousHtml
 import me.khrys.dnd.charcreator.common.ARMOR_CLASS_TRANSLATION
 import me.khrys.dnd.charcreator.common.CANTRIP_TRANSLATION
+import me.khrys.dnd.charcreator.common.CLASS_ABILITY_BOX
 import me.khrys.dnd.charcreator.common.CLASS_BORDERED
+import me.khrys.dnd.charcreator.common.CLASS_CENTER
 import me.khrys.dnd.charcreator.common.CLASS_FEATURES_WIDTH
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
 import me.khrys.dnd.charcreator.common.CLASS_JUSTIFY_BETWEEN
 import me.khrys.dnd.charcreator.common.CLASS_PADDINGS
+import me.khrys.dnd.charcreator.common.CLASS_WIDE_ABILITY_BOX
 import me.khrys.dnd.charcreator.common.DICE_TRANSLATION
 import me.khrys.dnd.charcreator.common.ENTER_RACE_TRANSLATION
 import me.khrys.dnd.charcreator.common.FEATURES_TRANSLATION
+import me.khrys.dnd.charcreator.common.HIT_DICE_TRANSLATION
+import me.khrys.dnd.charcreator.common.HIT_POINTS_TRANSLATION
 import me.khrys.dnd.charcreator.common.INITIATIVE_TRANSLATION
 import me.khrys.dnd.charcreator.common.LANGUAGES_TRANSLATION
 import me.khrys.dnd.charcreator.common.MANEUVERS_TRANSLATION
@@ -83,6 +89,8 @@ import react.useState
 import web.cssom.ClassName
 import web.cssom.ObjectFit
 import web.cssom.px
+import web.html.InputType.Companion.number
+import web.html.InputType.Companion.text
 
 private const val MANEUVERS_INDEX = 0
 private const val SPELLS_INDEX = 1
@@ -105,7 +113,7 @@ private external interface ParametersProps : Props {
 
 private external interface MultiValueProps : Props {
     var translations: Map<String, String>
-    var values: List<String>
+    var values: Collection<String>
 }
 
 private external interface CharPropsWithValue : CharBasedProps {
@@ -377,6 +385,20 @@ private val AdditionalAbilities = FC<AbilitiesProps> { props ->
                         this.translations = props.translations
                     }
                 }
+                div {
+                    this.className = ClassName(CLASS_INLINE)
+                    HitPoints {
+                        this.value = props.character.hitPoints.toString()
+                        this.translations = props.translations
+                    }
+                }
+                div {
+                    this.className = ClassName(CLASS_INLINE)
+                    HitDice {
+                        this.character = props.character
+                        this.translations = props.translations
+                    }
+                }
             }
         }
     }
@@ -386,6 +408,8 @@ private val Speed = FC<CharAbilitiesProps> { props ->
     TextBox {
         this.value = props.value
         this.label = props.translations[SPEED_TRANSLATION] ?: ""
+        this.type = number
+        this.classes = CLASS_ABILITY_BOX
     }
 }
 
@@ -393,6 +417,8 @@ private val Initiative = FC<CharAbilitiesProps> { props ->
     TextBox {
         this.value = props.value
         this.label = props.translations[INITIATIVE_TRANSLATION] ?: ""
+        this.type = number
+        this.classes = CLASS_ABILITY_BOX
     }
 }
 
@@ -400,6 +426,34 @@ private val ArmorClass = FC<CharAbilitiesProps> { props ->
     TextBox {
         this.value = props.value
         this.label = props.translations[ARMOR_CLASS_TRANSLATION] ?: ""
+        this.type = number
+        this.classes = CLASS_ABILITY_BOX
+    }
+}
+
+private val HitPoints = FC<CharAbilitiesProps> { props ->
+    TextBox {
+        this.value = props.value
+        this.label = props.translations[HIT_POINTS_TRANSLATION] ?: ""
+        this.type = number
+        this.classes = CLASS_WIDE_ABILITY_BOX
+    }
+}
+
+private val HitDice = FC<CharBasedProps> { props ->
+    div {
+        className = ClassName("$CLASS_WIDE_ABILITY_BOX $CLASS_BORDERED $CLASS_CENTER")
+        props.character.classes.map { it.second }.forEach {
+            TextBox {
+                this.value = it.hitDice.name
+                this.label = it._id
+                this.type = text
+                this.classes = CLASS_ABILITY_BOX
+            }
+        }
+        CenteredLabel {
+            this.label = props.translations[HIT_DICE_TRANSLATION] ?: ""
+        }
     }
 }
 

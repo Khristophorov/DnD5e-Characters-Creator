@@ -13,12 +13,14 @@ import kotlinx.browser.window
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import me.khrys.dnd.charcreator.common.CHARACTERS_URL
+import me.khrys.dnd.charcreator.common.CLASSES_URL
 import me.khrys.dnd.charcreator.common.FEATS_URL
 import me.khrys.dnd.charcreator.common.MANEUVERS_URL
 import me.khrys.dnd.charcreator.common.RACES_URL
 import me.khrys.dnd.charcreator.common.SPELLS_URL
 import me.khrys.dnd.charcreator.common.TRANSLATIONS_URL
 import me.khrys.dnd.charcreator.common.models.Character
+import me.khrys.dnd.charcreator.common.models.Class
 import me.khrys.dnd.charcreator.common.models.Feat
 import me.khrys.dnd.charcreator.common.models.Maneuver
 import me.khrys.dnd.charcreator.common.models.Race
@@ -49,6 +51,13 @@ fun loadRaces(setRaces: (Map<String, Race>) -> Unit) {
     console.info("Loading races.")
     MainScope().launch {
         setRaces(fetchRaces().associateBy { it._id })
+    }
+}
+
+fun loadClasses(setClasses: (Map<String, Class>) -> Unit) {
+    console.info("Loading classes.")
+    MainScope().launch {
+        setClasses(fetchClasses().associateBy { it._id })
     }
 }
 
@@ -86,6 +95,8 @@ private suspend fun fetchTranslations(): List<Translation> = fetchModel(TRANSLAT
 private suspend fun fetchCharacters(): List<Character> = fetchModel(CHARACTERS_URL)
 
 private suspend fun fetchRaces(): List<Race> = fetchModel(RACES_URL)
+
+private suspend fun fetchClasses(): List<Class> = fetchModel(CLASSES_URL)
 
 private suspend fun fetchFeats(): List<Feat> = fetchModel(FEATS_URL)
 

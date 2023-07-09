@@ -100,11 +100,13 @@ fun Character.clone() = Character(
     speed = this.speed,
     race = this.race,
     subrace = this.subrace,
+    classes = this.classes.toList(),
     features = this.features,
     proficiencies = this.proficiencies,
     languages = this.languages,
     maneuvers = this.maneuvers,
-    spells = this.spells.toMutableList()
+    spells = this.spells.toList(),
+    superiorityDices = this.superiorityDices.toList()
 )
 
 fun Abilities.clone() = Abilities(
@@ -156,7 +158,7 @@ fun Character.applyFeature(feature: Feature, translations: Map<String, String>, 
             "Increase Charisma" -> increaseCharisma(function.values[0].toInt())
             "Increase Wisdom" -> increaseWisdom(function.values[0].toInt())
             "Increase Ability" -> increaseAbility(function.values[0], function.values[1].toInt(), translations)
-            "Increase Ability with saving throws" -> increaseAbilityAndSavingThrows(
+            "Increase Ability with Saving Throws" -> increaseAbilityAndSavingThrows(
                 function.values[0],
                 function.values[1].toInt(),
                 translations
@@ -171,6 +173,7 @@ fun Character.applyFeature(feature: Feature, translations: Map<String, String>, 
             "Set Speed" -> setSpeed(function.values[0].toInt())
             "Add Proficiencies" -> setProficiencies(function.values)
             "Add Languages" -> addLanguages(function.values)
+            "Add Saving Throws" -> addSavingThrows(function.values, translations)
             "Add Skills" -> addSkills(function.values, translations)
             "Add Superiority Dices" -> addSuperiorityDices(Dice.valueOf(function.values[0]), function.values[1].toInt())
             "Add Spells" -> addSpells(function.values, spells)
@@ -295,6 +298,36 @@ fun Character.addLanguages(languages: List<String>) {
     this.languages += languages
 }
 
+fun Character.addSavingThrows(savingThrows: List<String>, translations: Map<String, String>) {
+    savingThrows.forEach {
+        when (it) {
+            translations[STRENGTH_TRANSLATION] -> {
+                this.savingThrows.strength = true
+            }
+
+            translations[DEXTERITY_TRANSLATION] -> {
+                this.savingThrows.dexterity = true
+            }
+
+            translations[CONSTITUTION_TRANSLATION] -> {
+                this.savingThrows.constitution = true
+            }
+
+            translations[INTELLIGENCE_TRANSLATION] -> {
+                this.savingThrows.intelligence = true
+            }
+
+            translations[WISDOM_TRANSLATION] -> {
+                this.savingThrows.wisdom = true
+            }
+
+            translations[CHARISMA_TRANSLATION] -> {
+                this.savingThrows.charisma = true
+            }
+        }
+    }
+}
+
 fun Character.addSkills(skills: List<String>, translations: Map<String, String>) {
     skills.forEach {
         when (it) {
@@ -320,7 +353,7 @@ fun Character.addSkills(skills: List<String>, translations: Map<String, String>)
     }
 }
 
-fun Character.getCombinedLevel(): Int = 1
+fun Character.getCombinedLevel(): Int = this.classes.sumOf { it.first }
 
 fun Character.computeArmorClass(): Int {
     return 10 + computeModifier(
@@ -336,6 +369,12 @@ fun Character.getInitiative(): Int {
         computeProficiencyBonus(this.getCombinedLevel()),
         this.savingThrows.dexterity
     ) + bonuses.initiative
+}
+
+fun Character.setDefaultHitPoints() {
+    if (this.hitPoints == 0) {
+        this.hitPoints = this.classes[0].second.hitDice.maxValue + computeModifier(this.abilities.constitution)
+    }
 }
 
 fun Character.addSuperiorityDices(dice: Dice, quantity: Int) {

@@ -27,9 +27,10 @@ data class Character(
     var armorClass: Int = 0,
     var race: Race,
     var subrace: Race,
-    var features: List<Feature>,
-    var proficiencies: List<String> = emptyList(),
-    var languages: List<String> = emptyList(),
+    var classes: List<Pair<Int, Class>> = emptyList(),
+    var features: List<Feature> = emptyList(),
+    var proficiencies: Set<String> = emptySet(),
+    var languages: Set<String> = emptySet(),
     var maneuvers: List<Maneuver> = emptyList(),
     var spells: List<Spell> = emptyList(),
     var bonuses: CharBonuses = CharBonuses(),
@@ -100,6 +101,15 @@ data class Race(
     val description: String,
     val features: List<Feature>,
     val subraces: List<Race> = emptyList(),
+    val source: String = ""
+)
+
+@Serializable
+data class Class(
+    val _id: String,
+    val description: String,
+    val hitDice: Dice,
+    val features: Map<Int, List<Feature>> = emptyMap(),
     val source: String = ""
 )
 
@@ -181,8 +191,8 @@ data class Spell(
 )
 
 @Serializable
-enum class Dice {
-    D4, D6, D8, D10, D12, D20, D100
+enum class Dice(val maxValue: Int) {
+    D4(4), D6(6), D8(8), D10(10), D12(12), D20(20), D100(100)
 }
 
 fun emptyCharacter() =
@@ -199,6 +209,8 @@ fun emptyCharacter() =
     )
 
 fun emptyRace() = Race("", "", emptyList())
+
+fun emptyClass() = Class("", "", Dice.D4)
 
 fun emptyFeat() = Feat("", "")
 

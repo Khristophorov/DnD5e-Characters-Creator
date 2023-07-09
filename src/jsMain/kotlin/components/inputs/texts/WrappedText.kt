@@ -11,7 +11,7 @@ import web.cssom.px
 
 external interface WrappedTextProps : Props {
     var label: String
-    var values: List<String>
+    var values: Collection<String>
 }
 
 val WrappedText = FC<WrappedTextProps> { props ->

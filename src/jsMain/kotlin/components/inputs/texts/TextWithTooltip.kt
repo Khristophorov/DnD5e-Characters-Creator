@@ -15,6 +15,7 @@ val TextWithTooltip = FC<TooltipProps> { props ->
             css {
                 maxWidth = 300.px
                 whiteSpace = preWrap
+                padding = 5.px
             }
             +props.children
         }
