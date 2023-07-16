@@ -1,7 +1,7 @@
 package me.khrys.dnd.charcreator.client.components.buttons
 
 import emotion.react.css
-import me.khrys.dnd.charcreator.client.components.dialogs.CharDialogProps
+import me.khrys.dnd.charcreator.client.components.dialogs.FeatsProps
 import me.khrys.dnd.charcreator.common.CLASS_CENTER
 import mui.material.Avatar
 import mui.material.Size.large
@@ -13,7 +13,7 @@ import web.cssom.ClassName
 import web.cssom.Display.Companion.block
 import web.cssom.px
 
-val AvatarButton = FC<CharDialogProps> { props ->
+val AvatarButton = FC<FeatsProps> { props ->
     console.info("Loading avatar for ${props.character.name}")
     div {
         css {

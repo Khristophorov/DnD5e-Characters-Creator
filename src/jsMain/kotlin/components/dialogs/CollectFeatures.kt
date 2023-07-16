@@ -42,7 +42,7 @@ val WINDOW_FUNCTIONS = listOf(
     "Choose Spells"
 )
 
-val CollectRaceFeatures = memoDialog(FC<CharDialogProps> { props ->
+val CollectRaceFeatures = memoDialog(FC<FeatsProps> { props ->
     if (props.open) {
         val features = props.character.race.features
         console.info("Loading features for race: ${props.character.race._id}")
@@ -58,7 +58,7 @@ val CollectRaceFeatures = memoDialog(FC<CharDialogProps> { props ->
     }
 })
 
-val CollectSubraceFeatures = memoDialog(FC<CharDialogProps> { props ->
+val CollectSubraceFeatures = memoDialog(FC<FeatsProps> { props ->
     if (props.open) {
         val features = props.character.subrace.features
         console.info("Loading features for subrace: ${props.character.subrace._id}")
@@ -72,10 +72,11 @@ val CollectSubraceFeatures = memoDialog(FC<CharDialogProps> { props ->
     }
 })
 
-val CollectClassFeatures = memoDialog(FC<CharDialogProps> { props ->
+val CollectClassFeatures = memoDialog(FC<ClassBaseProps> { props ->
     if (props.open) {
-        val features = props.character.classes.filter { it.second._id == props.className }[0]
-            .second.features[props.classLevel] ?: emptyList()
+        val features = (props.character.classes.filter { it.second._id == props.className }[0]
+            .second.features[props.classLevel] ?: emptyList())
+            .filter { filterMulticlass(it, props.multiclass) }
         console.info("Loading features for class: ${props.className}")
         CollectFeatures {
             this.open = props.open
@@ -114,7 +115,7 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
                     props.setOpen(false)
                 }
             }
-            props.features.filter { filterFeature(it, props.useFeats) }.forEach { feature ->
+            props.features.filter { filterFeats(it, props.useFeats) }.forEach { feature ->
                 if (feature.functions.isEmpty()) {
                     props.character.features += feature
                 } else {
@@ -569,8 +570,15 @@ private fun spellsChooser(
     }
 }
 
-private fun filterFeature(feature: Feature, useFeats: Boolean) =
+private fun filterFeats(feature: Feature, useFeats: Boolean) =
     (useFeats && (feature.withFeats || !feature.withoutFeats)) || !(useFeats || feature.withFeats)
+
+fun filterMulticlass(feature: Feature, multiclass: Boolean): Boolean =
+    if (multiclass) {
+        !feature.singleClass
+    } else {
+        !feature.multiClass
+    }
 
 private fun hasWindowFunctions(feature: Feature) =
     feature.functions.map { it.name }.any { WINDOW_FUNCTIONS.contains(it) }

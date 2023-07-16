@@ -121,6 +121,8 @@ data class Feature(
     var filters: List<Filter> = emptyList(),
     var withFeats: Boolean = false,
     var withoutFeats: Boolean = false,
+    var singleClass: Boolean = false,
+    var multiClass: Boolean = false,
     var source: String = ""
 )
 

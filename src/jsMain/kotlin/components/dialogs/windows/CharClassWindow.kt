@@ -89,6 +89,7 @@ var CharClassWindow = memoDialog(FC<CharBasedProps> { props ->
     CollectClassFeatures {
         this.className = charClass._id
         this.classLevel = 1
+        this.multiclass = false
         this.character = props.character
         this.open = openFeatures
         this.setOpen = { setOpenFeatures(it) }

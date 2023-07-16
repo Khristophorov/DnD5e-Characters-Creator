@@ -7,7 +7,7 @@ import me.khrys.dnd.charcreator.client.applyFeatures
 import me.khrys.dnd.charcreator.client.components.buttons.CloseButton
 import me.khrys.dnd.charcreator.client.components.buttons.Submit
 import me.khrys.dnd.charcreator.client.components.dialogs.CharBasedProps
-import me.khrys.dnd.charcreator.client.components.dialogs.CharDialogProps
+import me.khrys.dnd.charcreator.client.components.dialogs.FeatsProps
 import me.khrys.dnd.charcreator.client.components.dialogs.grids.AbilitiesGrid
 import me.khrys.dnd.charcreator.client.components.dialogs.grids.AbilitiesProps
 import me.khrys.dnd.charcreator.client.components.dialogs.grids.SavingThrowsGrid
@@ -136,7 +136,7 @@ private external interface SpellsProps : Props {
     var spells: List<Spell>
 }
 
-val CharacterWindow = FC<CharDialogProps> { props ->
+val CharacterWindow = FC<FeatsProps> { props ->
     console.info("Loading character window for ${props.character.name}")
     val translations = useContext(TranslationsContext)
     val spells = useContext(SpellsContext)

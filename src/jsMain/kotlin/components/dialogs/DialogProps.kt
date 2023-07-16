@@ -16,9 +16,10 @@ external interface DialogProps : PropsWithChildren {
     var action: () -> (Unit)
 }
 
-external interface CharDialogProps : FeatsProps {
+external interface ClassBaseProps : FeatsProps {
     var classLevel: Int
     var className: String
+    var multiclass: Boolean
 }
 
 external interface FeatureProps<T> : DialogProps {
