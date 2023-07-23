@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
-    kotlin("multiplatform") version "1.8.22"
-    kotlin("plugin.serialization") version "1.8.22"
+    kotlin("multiplatform") version "1.9.0"
+    kotlin("plugin.serialization") version "1.9.0"
     application
 }
 
@@ -10,15 +10,15 @@ group = "me.khris"
 version = "1.0-SNAPSHOT"
 
 // Kotlin dependencies
-val kotlinCoroutinesVersion = "1.7.1"
-val kotlinHtmlVersion = "0.8.1"
-val kotlinReactVersion = "18.2.0-pre.568"
-val kotlinMuiVersion = "5.12.1-pre.568"
-val kotlinMuiIconsVersion = "5.11.16-pre.568"
-val kotlinEmotionVersion = "11.11.1-pre.568"
+val kotlinCoroutinesVersion = "1.7.2"
+val kotlinHtmlVersion = "0.9.1"
+val kotlinReactVersion = "18.2.0-pre.598"
+val kotlinMuiVersion = "5.13.6-pre.598"
+val kotlinMuiIconsVersion = "5.11.16-pre.598"
+val kotlinEmotionVersion = "11.11.1-pre.598"
 val kotlinSerializationVersion = "1.5.1"
 val kmongoVersion = "4.9.0"
-val ktorVersion = "2.3.1"
+val ktorVersion = "2.3.2"
 val logbackVersion = "1.4.8"
 val mockkVersion = "1.13.5"
 
@@ -45,24 +45,21 @@ kotlin {
     js(IR) {
         browser {
             binaries.executable()
-            webpackTask {
+            val enableCss = Action<KotlinWebpack> {
                 cssSupport {
                     enabled.set(true)
                 }
             }
-            runTask {
-                cssSupport {
-                    enabled.set(true)
-                }
-            }
-            testTask {
+            webpackTask(enableCss)
+            runTask(enableCss)
+            testTask(Action {
                 useKarma {
                     useChromeHeadless()
                     webpackConfig.cssSupport {
                         enabled.set(true)
                     }
                 }
-            }
+            })
         }
     }
     sourceSets {
@@ -130,11 +127,11 @@ application {
 }
 
 tasks.getByName<KotlinWebpack>("jsBrowserProductionWebpack") {
-    outputFileName = "output.js"
+    mainOutputFileName.set("output.js")
 }
 
 tasks.getByName<KotlinWebpack>("jsBrowserDevelopmentWebpack") {
-    outputFileName = "output.js"
+    mainOutputFileName.set("output.js")
 }
 
 tasks.getByName<Jar>("jvmJar") {
@@ -148,7 +145,7 @@ tasks.getByName<Jar>("jvmJar") {
     }
     val webpackTask = tasks.getByName<KotlinWebpack>(taskName)
     dependsOn(webpackTask)
-    from(File(webpackTask.destinationDirectory, webpackTask.outputFileName)) {
+    from(File(webpackTask.outputDirectory.asFile.get(), webpackTask.mainOutputFileName.get())) {
         into("assets")
     }
 }
