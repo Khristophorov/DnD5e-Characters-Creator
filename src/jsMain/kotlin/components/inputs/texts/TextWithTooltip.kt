@@ -9,15 +9,33 @@ import web.cssom.WhiteSpace.Companion.preWrap
 import web.cssom.px
 
 val TextWithTooltip = FC<TooltipProps> { props ->
-    Tooltip {
-        this.title = props.title
-        span {
-            css {
-                maxWidth = 300.px
-                whiteSpace = preWrap
-                padding = 5.px
-            }
-            +props.children
+    if (props.title.toString().isBlank()) {
+        TextSpan {
+            this.children = props.children
         }
+    }
+    else {
+        Tooltip {
+            this.title = props.title
+            span {
+                css {
+                    maxWidth = 300.px
+                    whiteSpace = preWrap
+                    padding = 5.px
+                }
+                +props.children
+            }
+        }
+    }
+}
+
+private val TextSpan = FC<TooltipProps> { props ->
+    span {
+        css {
+            maxWidth = 300.px
+            whiteSpace = preWrap
+            padding = 5.px
+        }
+        +props.children
     }
 }

@@ -1,10 +1,13 @@
 package me.khrys.dnd.charcreator.client.components.dialogs
 
+import kotlinx.serialization.json.Json
 import me.khrys.dnd.charcreator.client.ManeuversContext
 import me.khrys.dnd.charcreator.client.SpellsContext
 import me.khrys.dnd.charcreator.client.components.dialogs.windows.InformWindow
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.AbilityChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.ElementChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.EquipmentPackChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.EquipmentsChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.FeatChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.LanguageChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.LanguagesChooser
@@ -15,9 +18,12 @@ import me.khrys.dnd.charcreator.client.components.inputs.choosers.SkillChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.SkillsAndProficienciesChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.SkillsChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.SpellsChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.WeaponsChooser
 import me.khrys.dnd.charcreator.client.format
+import me.khrys.dnd.charcreator.common.models.Armor
 import me.khrys.dnd.charcreator.common.models.DnDFunction
 import me.khrys.dnd.charcreator.common.models.Feature
+import me.khrys.dnd.charcreator.common.models.Weapon
 import react.FC
 import react.ReactNode
 import react.createElement
@@ -39,7 +45,12 @@ val WINDOW_FUNCTIONS = listOf(
     "Choose Skill",
     "Choose Skills",
     "Choose Skills and Proficiencies",
-    "Choose Spells"
+    "Choose Spells",
+    "Choose Weapon",
+    "Choose Equipment Pack",
+    "Choose Equipment",
+    "Add Weapon",
+    "Add Armor"
 )
 
 val CollectRaceFeatures = memoDialog(FC<FeatsProps> { props ->
@@ -185,6 +196,31 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
                                 "Choose Skills and Proficiencies" -> {
                                     functionFeatures
                                         .add(skillsAndProficienciesChooser(feature, function, props, nextAction))
+                                }
+
+                                "Choose Weapon" -> {
+                                    functionFeatures
+                                        .add(weaponsChooser(feature, function, props, nextAction))
+                                }
+
+                                "Choose Equipment Pack" -> {
+                                    functionFeatures
+                                        .add(equipmentPackChooser(feature, function, props, nextAction))
+                                }
+
+                                "Choose Equipment" -> {
+                                    functionFeatures
+                                        .add(equipmentChooser(feature, function, props, nextAction))
+                                }
+
+                                "Add Weapon" -> {
+                                    val weapon = Json.decodeFromString<Weapon>(function.values[1])
+                                    props.character.equipment.weapons += weapon
+                                }
+
+                                "Add Armor" -> {
+                                    val armor = Json.decodeFromString<Armor>(function.values[1])
+                                    props.character.equipment.armor += armor
                                 }
                             }
                             if (function.addFeature) {
@@ -565,6 +601,93 @@ private fun spellsChooser(
             spellsNames.forEach { spellName ->
                 spellsMap[spellName]?.let { props.character.spells += it }
             }
+            nextAction()
+        }
+    }
+}
+
+private fun weaponsChooser(
+    feature: Feature,
+    function: DnDFunction,
+    props: MultipleFeaturesFeatsProps,
+    nextAction: () -> Unit
+) = FC<DialogProps> {
+    val (open, setOpen) = useState(true)
+    WeaponsChooser {
+        this.open = open
+        this.setOpen = { setOpen(it) }
+        this.feature = feature
+        this.function = function
+        this.character = props.character
+        this.setValue = { weapons ->
+            val weaponsNames = weapons.map { it._id }
+            console.info("Chosen weapons: $weaponsNames")
+            props.character.features +=
+                Feature(
+                    name = feature.name,
+                    description = function.values[2].format(*weaponsNames.toTypedArray()),
+                    functions = listOf(DnDFunction(feature.name)),
+                    source = feature.source
+                )
+            props.character.equipment.weapons += weapons
+            nextAction()
+        }
+    }
+}
+
+private fun equipmentChooser(
+    feature: Feature,
+    function: DnDFunction,
+    props: MultipleFeaturesFeatsProps,
+    nextAction: () -> Unit
+) = FC<DialogProps> {
+    val (open, setOpen) = useState(true)
+    EquipmentsChooser {
+        this.open = open
+        this.setOpen = { setOpen(it) }
+        this.feature = feature
+        this.function = function
+        this.character = props.character
+        this.setValue = { equipments ->
+            val equipmentsNames = equipments.map { it._id }
+            console.info("Chosen equipments: $equipmentsNames")
+            props.character.features +=
+                Feature(
+                    name = feature.name,
+                    description = function.values[2].format(*equipmentsNames.toTypedArray()),
+                    functions = listOf(DnDFunction(feature.name)),
+                    source = feature.source
+                )
+            props.character.equipment.otherEquipment += equipments
+            nextAction()
+        }
+    }
+}
+
+private fun equipmentPackChooser(
+    feature: Feature,
+    function: DnDFunction,
+    props: MultipleFeaturesFeatsProps,
+    nextAction: () -> Unit
+) = FC<DialogProps> {
+    val (open, setOpen) = useState(true)
+    EquipmentPackChooser {
+        this.open = open
+        this.setOpen = { setOpen(it) }
+        this.feature = feature
+        this.function = function
+        this.character = props.character
+        this.setValue = { equipments ->
+            val equipmentsPack = equipments.first
+            console.info("Chosen equipment: $equipmentsPack")
+            props.character.features +=
+                Feature(
+                    name = feature.name,
+                    description = function.values[0].format(equipmentsPack),
+                    functions = listOf(DnDFunction(feature.name)),
+                    source = feature.source
+                )
+            props.character.equipment.otherEquipment += equipments.second
             nextAction()
         }
     }

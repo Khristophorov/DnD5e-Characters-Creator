@@ -55,7 +55,6 @@ var CharClassWindow = memoDialog(FC<CharBasedProps> { props ->
                         console.info("Chosen class: ${charClass._id}")
                         props.character.classes += 1 to charClass
                         setOpenFeatures(true)
-                        props.setOpen(false)
                     }
                     ValidatedList {
                         this.label = translations[ENTER_CLASS_TRANSLATION] ?: ""

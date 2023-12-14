@@ -34,6 +34,7 @@ data class Character(
     var maneuvers: List<Maneuver> = emptyList(),
     var spells: List<Spell> = emptyList(),
     var bonuses: CharBonuses = CharBonuses(),
+    var equipment: Equipment,
     var superiorityDices: List<SuperiorityDice> = emptyList()
 ) {
     fun hasFeature(featureName: String) =
@@ -193,6 +194,58 @@ data class Spell(
 )
 
 @Serializable
+data class Equipment(
+    var coinage: Coinage,
+    var armor: List<Armor> = emptyList(),
+    var weapons: List<Weapon> = emptyList(),
+    var otherEquipment: List<SimpleEquipment> = emptyList()
+)
+
+@Serializable
+data class SimpleEquipment(
+    var _id: String,
+    var description: String = "",
+    var type: String? = null,
+    var price: String,
+    var weight: String,
+    var functions: List<DnDFunction> = emptyList()
+)
+
+@Serializable
+data class Weapon(
+    var _id: String,
+    var description: String = "",
+    var type: String,
+    var price: String,
+    var damage: String,
+    var weight: String,
+    var properties: String,
+    var functions: List<DnDFunction> = emptyList()
+)
+
+@Serializable
+data class Armor(
+    val _id: String,
+    var description: String = "",
+    val type: String,
+    val price: String,
+    val armorClass: String,
+    val strength: Int? = null,
+    val stealth: String,
+    val weight: String,
+    val functions: List<DnDFunction> = emptyList()
+)
+
+@Serializable
+data class Coinage(
+    var cp: Int = 0,
+    var sp: Int = 0,
+    var ep: Int = 0,
+    var gp: Int = 0,
+    var pp: Int = 0
+)
+
+@Serializable
 enum class Dice(val maxValue: Int) {
     D4(4), D6(6), D8(8), D10(10), D12(12), D20(20), D100(100)
 }
@@ -207,8 +260,11 @@ fun emptyCharacter() =
         skills = initialSkills(),
         race = emptyRace(),
         subrace = emptyRace(),
-        features = emptyList()
+        features = emptyList(),
+        equipment = emptyEquipment()
     )
+
+fun emptyEquipment(): Equipment = Equipment(coinage = Coinage())
 
 fun emptyRace() = Race("", "", emptyList())
 
@@ -217,6 +273,10 @@ fun emptyClass() = Class("", "", Dice.D4)
 fun emptyFeat() = Feat("", "")
 
 fun emptyManeuver() = Maneuver("", "", "")
+
+fun emptyWeapon() = Weapon("", type = "", price = "", damage = "", weight = "", properties = "")
+
+fun emptySimpleEquipment() = SimpleEquipment("", type = "", price = "", weight = "")
 
 fun initialAbilities() = Abilities(10, 10, 10, 10, 10, 10)
 

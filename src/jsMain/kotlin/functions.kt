@@ -9,6 +9,7 @@ import me.khrys.dnd.charcreator.common.CHARISMA_TRANSLATION
 import me.khrys.dnd.charcreator.common.CONSTITUTION_TRANSLATION
 import me.khrys.dnd.charcreator.common.DECEPTION_TRANSLATION
 import me.khrys.dnd.charcreator.common.DEXTERITY_TRANSLATION
+import me.khrys.dnd.charcreator.common.FINESSE_TRANSLATION
 import me.khrys.dnd.charcreator.common.HISTORY_TRANSLATION
 import me.khrys.dnd.charcreator.common.INSIGHT_TRANSLATION
 import me.khrys.dnd.charcreator.common.INTELLIGENCE_TRANSLATION
@@ -19,6 +20,7 @@ import me.khrys.dnd.charcreator.common.NATURE_TRANSLATION
 import me.khrys.dnd.charcreator.common.PERCEPTION_TRANSLATION
 import me.khrys.dnd.charcreator.common.PERFORMANCE_TRANSLATION
 import me.khrys.dnd.charcreator.common.PERSUASION_TRANSLATION
+import me.khrys.dnd.charcreator.common.RANGE_TRANSLATION
 import me.khrys.dnd.charcreator.common.RELIGION_TRANSLATION
 import me.khrys.dnd.charcreator.common.SLEIGHT_OF_HANDS_TRANSLATION
 import me.khrys.dnd.charcreator.common.STEALTH_TRANSLATION
@@ -45,11 +47,14 @@ import me.khrys.dnd.charcreator.common.models.Filter.Param.STRENGTH
 import me.khrys.dnd.charcreator.common.models.Filter.Param.WISDOM
 import me.khrys.dnd.charcreator.common.models.Filter.Param.WORE_TYPE
 import me.khrys.dnd.charcreator.common.models.SavingThrows
+import me.khrys.dnd.charcreator.common.models.SimpleEquipment
 import me.khrys.dnd.charcreator.common.models.Skills
 import me.khrys.dnd.charcreator.common.models.Spell
 import me.khrys.dnd.charcreator.common.models.SuperiorityDice
+import me.khrys.dnd.charcreator.common.models.Weapon
 import react.dom.DangerouslySetInnerHTML
 import kotlin.math.floor
+import kotlin.math.max
 
 fun computeModifier(ability: Int, proficiencyBonus: Int = 0, proficient: Boolean = false): Int {
     val defaultModifier = floor((ability - 10).toDouble() / 2).toInt()
@@ -64,13 +69,36 @@ fun computeProficiencyBonus(level: Int): Int {
     else 6
 }
 
-fun computePassiveSkill(ability: Int, proficiencyBonus: Int = 0, proficient: Boolean = false, bonus: Int = 0): Int {
-    return computeModifier(ability, proficiencyBonus, proficient) + 10 + bonus
+fun computePassiveSkill(ability: Int, proficiencyBonus: Int = 0, proficient: Boolean = false, bonus: Int = 0) =
+    computeModifier(ability, proficiencyBonus, proficient) + 10 + bonus
+
+fun computeSpellLevel(level: Int, cantripTranslation: String, suffix: String?) =
+    if (level == 0) cantripTranslation else "$level$suffix"
+
+fun computeAttackBonus(
+    character: Character,
+    proficiencyBonus: Int,
+    weapon: Weapon,
+    translations: Map<String, String>
+): Int {
+    val attackModifier = computeAttackModifier(character.abilities, weapon.properties, translations)
+    val hasBonus = character.proficiencies.any {
+        it.contains(weapon._id, ignoreCase = true) || weapon._id.contains(it, ignoreCase = true)
+                || weapon.type.contains(it, ignoreCase = true)
+    }
+    return (if (hasBonus) proficiencyBonus else 0) + attackModifier
 }
 
-fun computeSpellLevel(level: Int, cantripTranslation: String, suffix: String?): String {
-    return if (level == 0) cantripTranslation else "$level$suffix"
-}
+fun computeAttackModifier(abilities: Abilities, properties: String, translations: Map<String, String>) =
+    if (isRanged(properties, translations)) computeModifier(abilities.dexterity)
+    else if (isFinesse(properties, translations)) computeModifier(max(abilities.strength, abilities.dexterity))
+    else computeModifier(abilities.strength)
+
+fun isRanged(properties: String, translations: Map<String, String>) =
+    properties.contains(translations[RANGE_TRANSLATION] ?: "", ignoreCase = true)
+
+fun isFinesse(properties: String, translations: Map<String, String>) =
+    properties.contains(translations[FINESSE_TRANSLATION] ?: "", ignoreCase = true)
 
 fun Int.toSignedString() = if (this > 0) "+$this" else this.toString()
 
@@ -106,6 +134,7 @@ fun Character.clone() = Character(
     languages = this.languages,
     maneuvers = this.maneuvers,
     spells = this.spells.toList(),
+    equipment = this.equipment,
     superiorityDices = this.superiorityDices.toList()
 )
 
@@ -427,6 +456,13 @@ fun Filter.apply(character: Character): Boolean {
         EQUALS_OR_HIGHER -> dataNum >= value.toInt()
     }
 }
+
+fun validateWeapon(weapon: Weapon) =
+    weapon._id.isNotBlank() && weapon.type.isNotBlank() && weapon.price.isNotBlank()
+            && weapon.damage.isNotBlank() && weapon.weight.isNotBlank() && weapon.properties.isNotBlank()
+
+fun validateSimpleEquipment(equipment: SimpleEquipment) =
+    equipment._id.isNotBlank() && equipment.price.isNotBlank() && equipment.weight.isNotBlank()
 
 fun String.format(vararg values: String): String {
     var newString = this

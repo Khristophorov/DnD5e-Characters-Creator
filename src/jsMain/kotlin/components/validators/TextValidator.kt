@@ -22,5 +22,5 @@ external interface TextValidatorProps : PropsWithClassName {
     var inputProps: InputProps
     var validators: Array<String>
     var errorMessages: Array<String>
-    var onChange: ((InputEvent) -> Unit)?
+    var onChange: ((InputEvent) -> Unit)
 }

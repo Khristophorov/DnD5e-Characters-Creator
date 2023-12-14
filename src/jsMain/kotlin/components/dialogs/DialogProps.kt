@@ -30,9 +30,11 @@ external interface FeatureProps<T> : DialogProps {
     var setValue: (T) -> Unit
 }
 
-external interface MultipleFeatureProps : FeatureProps<List<String>> {
+external interface MultipleFeatureProps<T : Collection<*>> : FeatureProps<T> {
     var size: Int
 }
+
+typealias MultipleStringFeatureProps = MultipleFeatureProps<List<String>>
 
 external interface FeatsProps : DialogProps {
     var feature: Feature

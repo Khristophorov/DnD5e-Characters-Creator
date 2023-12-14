@@ -15,10 +15,8 @@ import kotlinx.html.title
 import kotlinx.html.unsafe
 import me.khrys.dnd.charcreator.common.BUTTON_SOUND_ID
 import me.khrys.dnd.charcreator.common.CLASS_ABILITY_BOX
-import me.khrys.dnd.charcreator.common.CLASS_ROUND_BORDERED
 import me.khrys.dnd.charcreator.common.CLASS_BACKGROUND
 import me.khrys.dnd.charcreator.common.CLASS_BOLD
-import me.khrys.dnd.charcreator.common.CLASS_WIDE_ABILITY_BOX
 import me.khrys.dnd.charcreator.common.CLASS_BORDERED
 import me.khrys.dnd.charcreator.common.CLASS_CENTER
 import me.khrys.dnd.charcreator.common.CLASS_COLLAPSED_CELL
@@ -28,8 +26,11 @@ import me.khrys.dnd.charcreator.common.CLASS_FEATURES_WIDTH
 import me.khrys.dnd.charcreator.common.CLASS_FLOAT_LEFT
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
 import me.khrys.dnd.charcreator.common.CLASS_JUSTIFY_BETWEEN
+import me.khrys.dnd.charcreator.common.CLASS_NO_PADDINGS
 import me.khrys.dnd.charcreator.common.CLASS_PADDINGS
+import me.khrys.dnd.charcreator.common.CLASS_ROUND_BORDERED
 import me.khrys.dnd.charcreator.common.CLASS_TEXT_CENTER
+import me.khrys.dnd.charcreator.common.CLASS_WIDE_ABILITY_BOX
 import me.khrys.dnd.charcreator.common.CLICK_SOUND_URL
 import me.khrys.dnd.charcreator.common.FAVICON_URL
 import me.khrys.dnd.charcreator.common.OUTPUT_URL
@@ -74,7 +75,7 @@ suspend fun ApplicationCall.index() {
                     margin: 5px;
                 }
                 .${CLASS_WIDE_ABILITY_BOX} {
-                    width: 300px;
+                    width: 301px;
                     font-weight: bold;
                     margin: 5px;
                 }
@@ -109,6 +110,9 @@ suspend fun ApplicationCall.index() {
                 }
                 .${CLASS_PADDINGS} {
                     padding: 20px 5px;
+                }
+                .${CLASS_NO_PADDINGS} {
+                    padding: 0 !important;
                 }
                 .${CLASS_DISABLE_POINTER} {
                     pointer-events: none;

@@ -9,7 +9,6 @@ import me.khrys.dnd.charcreator.client.components.buttons.Submit
 import me.khrys.dnd.charcreator.client.components.dialogs.CharBasedProps
 import me.khrys.dnd.charcreator.client.components.dialogs.FeatsProps
 import me.khrys.dnd.charcreator.client.components.dialogs.grids.AbilitiesGrid
-import me.khrys.dnd.charcreator.client.components.dialogs.grids.AbilitiesProps
 import me.khrys.dnd.charcreator.client.components.dialogs.grids.SavingThrowsGrid
 import me.khrys.dnd.charcreator.client.components.dialogs.grids.SkillsGrid
 import me.khrys.dnd.charcreator.client.components.inputs.CenteredBold
@@ -21,12 +20,17 @@ import me.khrys.dnd.charcreator.client.components.inputs.texts.TitledInput
 import me.khrys.dnd.charcreator.client.components.inputs.texts.WrappedText
 import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
 import me.khrys.dnd.charcreator.client.computeArmorClass
+import me.khrys.dnd.charcreator.client.computeAttackBonus
+import me.khrys.dnd.charcreator.client.computeAttackModifier
 import me.khrys.dnd.charcreator.client.computePassiveSkill
 import me.khrys.dnd.charcreator.client.computeProficiencyBonus
 import me.khrys.dnd.charcreator.client.computeSpellLevel
 import me.khrys.dnd.charcreator.client.getInitiative
 import me.khrys.dnd.charcreator.client.toDangerousHtml
+import me.khrys.dnd.charcreator.client.toSignedString
 import me.khrys.dnd.charcreator.common.ARMOR_CLASS_TRANSLATION
+import me.khrys.dnd.charcreator.common.ARMOR_TRANSLATION
+import me.khrys.dnd.charcreator.common.ATTACK_BONUS_TRANSLATION
 import me.khrys.dnd.charcreator.common.CANTRIP_TRANSLATION
 import me.khrys.dnd.charcreator.common.CLASS_ABILITY_BOX
 import me.khrys.dnd.charcreator.common.CLASS_BORDERED
@@ -34,16 +38,20 @@ import me.khrys.dnd.charcreator.common.CLASS_CENTER
 import me.khrys.dnd.charcreator.common.CLASS_FEATURES_WIDTH
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
 import me.khrys.dnd.charcreator.common.CLASS_JUSTIFY_BETWEEN
+import me.khrys.dnd.charcreator.common.CLASS_NO_PADDINGS
 import me.khrys.dnd.charcreator.common.CLASS_PADDINGS
 import me.khrys.dnd.charcreator.common.CLASS_WIDE_ABILITY_BOX
+import me.khrys.dnd.charcreator.common.DAMAGE_TYPE_TRANSLATION
 import me.khrys.dnd.charcreator.common.DICE_TRANSLATION
 import me.khrys.dnd.charcreator.common.ENTER_RACE_TRANSLATION
+import me.khrys.dnd.charcreator.common.EQUIPMENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.FEATURES_TRANSLATION
 import me.khrys.dnd.charcreator.common.HIT_DICE_TRANSLATION
 import me.khrys.dnd.charcreator.common.HIT_POINTS_TRANSLATION
 import me.khrys.dnd.charcreator.common.INITIATIVE_TRANSLATION
 import me.khrys.dnd.charcreator.common.LANGUAGES_TRANSLATION
 import me.khrys.dnd.charcreator.common.MANEUVERS_TRANSLATION
+import me.khrys.dnd.charcreator.common.NAME_TRANSLATION
 import me.khrys.dnd.charcreator.common.PASSIVE_INVESTIGATION_TRANSLATION
 import me.khrys.dnd.charcreator.common.PASSIVE_PERCEPTION_TRANSLATION
 import me.khrys.dnd.charcreator.common.PROFICIENCIES_TRANSLATION
@@ -55,6 +63,8 @@ import me.khrys.dnd.charcreator.common.SPEED_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPELLS_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPELL_LEVEL_SUFFIX_TRANSLATION
 import me.khrys.dnd.charcreator.common.SUPERIORITY_DICES_TRANSLATION
+import me.khrys.dnd.charcreator.common.TYPE_TRANSLATION
+import me.khrys.dnd.charcreator.common.WEAPONS_TRANSLATION
 import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.Maneuver
 import me.khrys.dnd.charcreator.common.models.Spell
@@ -84,6 +94,7 @@ import react.ReactNode
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.img
 import react.dom.html.ReactHTML.p
+import react.dom.html.ReactHTML.strong
 import react.useContext
 import react.useState
 import web.cssom.ClassName
@@ -172,6 +183,7 @@ val CharacterWindow = FC<FeatsProps> { props ->
                     AdditionalAbilities {
                         this.character = character
                         this.translations = translations
+                        this.proficiencyBonus = proficiencyBonus
                     }
                     Features {
                         this.character = character
@@ -192,7 +204,7 @@ val CharacterWindow = FC<FeatsProps> { props ->
     }
 }
 
-private val SpecificParameters = FC<AbilitiesProps> { props ->
+private val SpecificParameters = FC<ParametersProps> { props ->
     val showTabs = shouldShowTabs(props.character)
     Grid {
         this.item = true
@@ -338,7 +350,7 @@ private val Image = FC<PropsWithChildren> { props ->
     }
 }
 
-private val Features = FC<AbilitiesProps> { props ->
+private val Features = FC<ParametersProps> { props ->
     Grid {
         this.item = true
         Grid {
@@ -362,7 +374,7 @@ private val Features = FC<AbilitiesProps> { props ->
     }
 }
 
-private val AdditionalAbilities = FC<AbilitiesProps> { props ->
+private val AdditionalAbilities = FC<ParametersProps> { props ->
     Grid {
         this.item = true
         Grid {
@@ -397,6 +409,36 @@ private val AdditionalAbilities = FC<AbilitiesProps> { props ->
                     HitDice {
                         this.character = props.character
                         this.translations = props.translations
+                    }
+                }
+                Accordion {
+                    AccordionSummary {
+                        +props.translations[EQUIPMENT_TRANSLATION]
+                    }
+                    AccordionDetails {
+                        this.className = ClassName(CLASS_NO_PADDINGS)
+                        div {
+                            this.className = ClassName(CLASS_INLINE)
+                            Weapons {
+                                this.character = props.character
+                                this.translations = props.translations
+                                this.proficiencyBonus = props.proficiencyBonus
+                            }
+                        }
+                        div {
+                            this.className = ClassName(CLASS_INLINE)
+                            Armor {
+                                this.character = props.character
+                                this.translations = props.translations
+                            }
+                        }
+                        div {
+                            this.className = ClassName(CLASS_INLINE)
+                            Equipment {
+                                this.character = props.character
+                                this.translations = props.translations
+                            }
+                        }
                     }
                 }
             }
@@ -453,6 +495,162 @@ private val HitDice = FC<CharBasedProps> { props ->
         }
         CenteredLabel {
             this.label = props.translations[HIT_DICE_TRANSLATION] ?: ""
+        }
+    }
+}
+
+private val Weapons = FC<ParametersProps> { props ->
+    div {
+        this.className = ClassName("$CLASS_WIDE_ABILITY_BOX $CLASS_BORDERED $CLASS_CENTER")
+        val character = props.character
+        TableContainer {
+            Table {
+                TableHead {
+                    TableRow {
+                        TableCell {
+                            strong {
+                                +(props.translations[NAME_TRANSLATION] ?: "")
+                            }
+                        }
+                        TableCell {
+                            strong {
+                                +(props.translations[ATTACK_BONUS_TRANSLATION] ?: "")
+                            }
+                        }
+                        TableCell {
+                            strong {
+                                +(props.translations[DAMAGE_TYPE_TRANSLATION] ?: "")
+                            }
+                        }
+                    }
+                }
+                TableBody {
+                    character.equipment.weapons.forEach {
+                        TableRow {
+                            TableCell {
+                                TextWithTooltip {
+                                    this.title = ReactNode(it.description)
+                                    +it._id
+                                }
+                            }
+                            TableCell {
+                                +computeAttackBonus(
+                                    character,
+                                    props.proficiencyBonus,
+                                    it,
+                                    props.translations
+                                ).toSignedString()
+                            }
+                            TableCell {
+                                +"${it.damage}${
+                                    computeAttackModifier(
+                                        character.abilities,
+                                        it.properties,
+                                        props.translations
+                                    ).toSignedString()
+                                }"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        CenteredLabel {
+            this.label = props.translations[WEAPONS_TRANSLATION] ?: ""
+        }
+    }
+}
+
+private val Armor = FC<ParametersProps> { props ->
+    div {
+        this.className = ClassName("$CLASS_WIDE_ABILITY_BOX $CLASS_BORDERED $CLASS_CENTER")
+        val character = props.character
+        TableContainer {
+            Table {
+                TableHead {
+                    TableRow {
+                        TableCell {
+                            strong {
+                                +(props.translations[NAME_TRANSLATION] ?: "")
+                            }
+                        }
+                        TableCell {
+                            strong {
+                                +(props.translations[ARMOR_CLASS_TRANSLATION] ?: "")
+                            }
+                        }
+                        TableCell {
+                            strong {
+                                +(props.translations[TYPE_TRANSLATION] ?: "")
+                            }
+                        }
+                    }
+                }
+                TableBody {
+                    character.equipment.armor.forEach {
+                        TableRow {
+                            TableCell {
+                                TextWithTooltip {
+                                    this.title = ReactNode(it.description)
+                                    +it._id
+                                }
+                            }
+                            TableCell {
+                                +it.armorClass
+                            }
+                            TableCell {
+                                +it.type
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        CenteredLabel {
+            this.label = props.translations[ARMOR_TRANSLATION] ?: ""
+        }
+    }
+}
+
+private val Equipment = FC<ParametersProps> { props ->
+    div {
+        this.className = ClassName("$CLASS_WIDE_ABILITY_BOX $CLASS_BORDERED $CLASS_CENTER")
+        val character = props.character
+        TableContainer {
+            Table {
+                TableHead {
+                    TableRow {
+                        TableCell {
+                            strong {
+                                +(props.translations[NAME_TRANSLATION] ?: "")
+                            }
+                        }
+                        TableCell {
+                            strong {
+                                +(props.translations[TYPE_TRANSLATION] ?: "")
+                            }
+                        }
+                    }
+                }
+                TableBody {
+                    character.equipment.otherEquipment.forEach {
+                        TableRow {
+                            TableCell {
+                                TextWithTooltip {
+                                    this.title = ReactNode(it.description)
+                                    +it._id
+                                }
+                            }
+                            TableCell {
+                                +it.type
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        CenteredLabel {
+            this.label = props.translations[EQUIPMENT_TRANSLATION] ?: ""
         }
     }
 }
@@ -585,6 +783,7 @@ private val Abilities = FC<ParametersProps> { props ->
         AbilitiesGrid {
             this.abilities = props.character.abilities
             this.translations = props.translations
+            this.proficiencyBonus = props.proficiencyBonus
         }
     }
 }

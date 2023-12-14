@@ -14,14 +14,13 @@ import me.khrys.dnd.charcreator.common.STRENGTH_TRANSLATION
 import me.khrys.dnd.charcreator.common.WISDOM_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.WISDOM_TRANSLATION
 import me.khrys.dnd.charcreator.common.models.Abilities
-import me.khrys.dnd.charcreator.common.models.Character
 import react.FC
 import react.Props
 
 external interface AbilitiesProps : Props {
     var abilities: Abilities
     var translations: Map<String, String>
-    var character: Character
+    var proficiencyBonus: Int
 }
 
 val AbilitiesGrid = FC<AbilitiesProps> { props ->

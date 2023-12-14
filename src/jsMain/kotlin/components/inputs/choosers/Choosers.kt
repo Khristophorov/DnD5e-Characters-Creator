@@ -1,5 +1,6 @@
 package me.khrys.dnd.charcreator.client.components.inputs.choosers
 
+import kotlinx.serialization.json.Json
 import me.khrys.dnd.charcreator.client.ManeuversContext
 import me.khrys.dnd.charcreator.client.SpellsContext
 import me.khrys.dnd.charcreator.client.TranslationsContext
@@ -11,30 +12,47 @@ import me.khrys.dnd.charcreator.client.components.dialogs.CollectFeatFeatures
 import me.khrys.dnd.charcreator.client.components.dialogs.FeatsProps
 import me.khrys.dnd.charcreator.client.components.dialogs.FeatureProps
 import me.khrys.dnd.charcreator.client.components.dialogs.MultipleFeatureProps
+import me.khrys.dnd.charcreator.client.components.dialogs.MultipleStringFeatureProps
 import me.khrys.dnd.charcreator.client.components.dialogs.memoDialog
 import me.khrys.dnd.charcreator.client.components.dialogs.windows.SpellWindow
 import me.khrys.dnd.charcreator.client.components.inputs.ValidatedList
+import me.khrys.dnd.charcreator.client.components.validators.TextValidator
+import me.khrys.dnd.charcreator.client.components.validators.TextValidatorProps
 import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
 import me.khrys.dnd.charcreator.client.computeSpellLevel
 import me.khrys.dnd.charcreator.client.toDangerousHtml
 import me.khrys.dnd.charcreator.client.toFeature
 import me.khrys.dnd.charcreator.client.utils.playSound
 import me.khrys.dnd.charcreator.client.utils.value
+import me.khrys.dnd.charcreator.client.validateSimpleEquipment
+import me.khrys.dnd.charcreator.client.validateWeapon
 import me.khrys.dnd.charcreator.common.ALERT_TRANSLATION
 import me.khrys.dnd.charcreator.common.BUTTON_SOUND_ID
 import me.khrys.dnd.charcreator.common.CANTRIP_TRANSLATION
+import me.khrys.dnd.charcreator.common.CELLS_SHOULD_BE_FILLED_TRANSLATION
 import me.khrys.dnd.charcreator.common.CLASS_COLLAPSED_CELL
+import me.khrys.dnd.charcreator.common.DAMAGE_TRANSLATION
+import me.khrys.dnd.charcreator.common.DESCRIPTION_TRANSLATION
+import me.khrys.dnd.charcreator.common.NAME_TRANSLATION
 import me.khrys.dnd.charcreator.common.NEXT_TRANSLATION
+import me.khrys.dnd.charcreator.common.PRICE_TRANSLATION
+import me.khrys.dnd.charcreator.common.PROPERTIES_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPELL_LEVEL_SUFFIX_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPELL_LEVEL_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPELL_NAME_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPELL_SCHOOL_TRANSLATION
 import me.khrys.dnd.charcreator.common.TOO_FEW_CHECKS_TRANSLATION
 import me.khrys.dnd.charcreator.common.TOO_MANY_CHECKS_TRANSLATION
+import me.khrys.dnd.charcreator.common.TYPE_TRANSLATION
 import me.khrys.dnd.charcreator.common.VALIDATION_REQUIRED
 import me.khrys.dnd.charcreator.common.VALUE_SHOULD_BE_CHOSEN_TRANSLATION
+import me.khrys.dnd.charcreator.common.WEIGHT_TRANSLATION
+import me.khrys.dnd.charcreator.common.models.SimpleEquipment
+import me.khrys.dnd.charcreator.common.models.Weapon
 import me.khrys.dnd.charcreator.common.models.emptyFeat
 import me.khrys.dnd.charcreator.common.models.emptyManeuver
+import me.khrys.dnd.charcreator.common.models.emptySimpleEquipment
+import me.khrys.dnd.charcreator.common.models.emptyWeapon
 import mui.material.Checkbox
 import mui.material.Collapse
 import mui.material.Dialog
@@ -79,7 +97,7 @@ val ProficiencyChooser = memoDialog(FC<FeatureProps<String>> { props ->
     }
 })
 
-val ProficienciesChooser = FC<MultipleFeatureProps> { props ->
+val ProficienciesChooser = FC<MultipleStringFeatureProps> { props ->
     if (props.open) {
         val values = props.function.values.toList().filter { !props.character.proficiencies.contains(it) }
         ChooseSeveral {
@@ -94,7 +112,7 @@ val ProficienciesChooser = FC<MultipleFeatureProps> { props ->
     }
 }
 
-val SkillsAndProficienciesChooser = FC<MultipleFeatureProps> { props ->
+val SkillsAndProficienciesChooser = FC<MultipleStringFeatureProps> { props ->
     if (props.open) {
         val values = props.function.values
         val skillValues = values[2].split(", ")
@@ -127,7 +145,7 @@ val LanguageChooser = memoDialog(FC<FeatureProps<String>> { props ->
     }
 })
 
-val LanguagesChooser = FC<MultipleFeatureProps> { props ->
+val LanguagesChooser = FC<MultipleStringFeatureProps> { props ->
     if (props.open) {
         val translations = useContext(TranslationsContext)
         val filledCharacter = applyFeatures(props.character.clone(), translations)
@@ -158,7 +176,7 @@ val SkillChooser = memoDialog(FC<FeatureProps<String>> { props ->
     }
 })
 
-val SkillsChooser = FC<MultipleFeatureProps> { props ->
+val SkillsChooser = FC<MultipleStringFeatureProps> { props ->
     if (props.open) {
         ChooseSeveral {
             this.open = props.open
@@ -297,7 +315,7 @@ val ManeuverChooser = FC<FeatureProps<String>> { props ->
     }
 }
 
-val SpellsChooser = FC<MultipleFeatureProps> { props ->
+val SpellsChooser = FC<MultipleStringFeatureProps> { props ->
     val translations = useContext(TranslationsContext)
     val (chosenSpells, setChosenSpells) = useState(emptyList<String>())
     val (openAlert, setOpenAlert) = useState(false)
@@ -348,7 +366,7 @@ val SpellsChooser = FC<MultipleFeatureProps> { props ->
     }
 }
 
-val SpellsTable = FC<MultipleFeatureProps> { props ->
+val SpellsTable = FC<MultipleStringFeatureProps> { props ->
     val translations = useContext(TranslationsContext)
     val spells = useContext(SpellsContext).filter { (name, _) -> !props.character.spells.map { it._id }.contains(name) }
     val (openAlert, setOpenAlert) = useState(false)
@@ -427,6 +445,482 @@ val SpellsTable = FC<MultipleFeatureProps> { props ->
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+val WeaponsChooser = FC<MultipleFeatureProps<List<Weapon>>> { props ->
+    val translations = useContext(TranslationsContext)
+    val (chosenWeapons, setChosenWeapons) = useState(emptyList<Weapon>())
+    val (openAlert, setOpenAlert) = useState(false)
+    AlertDialog {
+        this.open = openAlert
+        this.action = { setOpenAlert(false) }
+        this.header = translations[ALERT_TRANSLATION] ?: ""
+        +translations[TOO_FEW_CHECKS_TRANSLATION]
+    }
+    if (props.open) {
+        val values = props.function.values
+        val maxNumber = values[1].toInt()
+        Dialog {
+            this.open = props.open
+            this.maxWidth = "lg"
+            DialogTitle {
+                +props.feature.name
+            }
+            DialogContent {
+                this.dividers = true
+                DialogContentText {
+                    span {
+                        this.dangerouslySetInnerHTML = toDangerousHtml(props.feature.description)
+                    }
+                }
+                ValidatorForm {
+                    this.onSubmit = {
+                        if (chosenWeapons.size < maxNumber) {
+                            setOpenAlert(true)
+                        } else {
+                            props.setValue(chosenWeapons)
+                            props.setOpen(false)
+                        }
+                    }
+                    TableContainer {
+                        WeaponsTable {
+                            this.function = props.function
+                            this.setValue = { setChosenWeapons(it) }
+                            this.value = chosenWeapons
+                        }
+                    }
+                    DialogActions {
+                        Submit { +(translations[NEXT_TRANSLATION] ?: "") }
+                    }
+                }
+            }
+        }
+    }
+}
+
+val EquipmentsChooser = FC<MultipleFeatureProps<List<SimpleEquipment>>> { props ->
+    val translations = useContext(TranslationsContext)
+    val (chosenEquipment, setChosenEquipment) = useState(emptyList<SimpleEquipment>())
+    val (openAlert, setOpenAlert) = useState(false)
+    AlertDialog {
+        this.open = openAlert
+        this.action = { setOpenAlert(false) }
+        this.header = translations[ALERT_TRANSLATION] ?: ""
+        +translations[TOO_FEW_CHECKS_TRANSLATION]
+    }
+    if (props.open) {
+        val values = props.function.values
+        val maxNumber = values[1].toInt()
+        Dialog {
+            this.open = props.open
+            this.maxWidth = "lg"
+            DialogTitle {
+                +props.feature.name
+            }
+            DialogContent {
+                this.dividers = true
+                DialogContentText {
+                    span {
+                        this.dangerouslySetInnerHTML = toDangerousHtml(props.feature.description)
+                    }
+                }
+                ValidatorForm {
+                    this.onSubmit = {
+                        if (chosenEquipment.size < maxNumber) {
+                            setOpenAlert(true)
+                        } else {
+                            props.setValue(chosenEquipment)
+                            props.setOpen(false)
+                        }
+                    }
+                    TableContainer {
+                        EquipmentsTable {
+                            this.function = props.function
+                            this.setValue = { setChosenEquipment(it) }
+                            this.value = chosenEquipment
+                        }
+                    }
+                    DialogActions {
+                        Submit { +(translations[NEXT_TRANSLATION] ?: "") }
+                    }
+                }
+            }
+        }
+    }
+}
+
+val EquipmentPackChooser = FC<FeatureProps<Pair<String, List<SimpleEquipment>>>> { props ->
+    val translations = useContext(TranslationsContext)
+    val (chosenEquipment, setChosenEquipment) = useState("")
+    val (description, setDescription) = useState("")
+    val (openAlert, setOpenAlert) = useState(false)
+    AlertDialog {
+        this.open = openAlert
+        this.action = { setOpenAlert(false) }
+        this.header = translations[ALERT_TRANSLATION] ?: ""
+        +translations[TOO_FEW_CHECKS_TRANSLATION]
+    }
+    if (props.open) {
+        val values = props.function.values.subList(1, props.function.values.size)
+        Dialog {
+            this.open = props.open
+            DialogTitle {
+                +props.feature.name
+            }
+            DialogContent {
+                this.dividers = true
+                DialogContentText {
+                    span {
+                        this.dangerouslySetInnerHTML = toDangerousHtml(props.feature.description)
+                    }
+                }
+                ValidatorForm {
+                    this.onSubmit = {
+                        val equipmentsIndex = values.indexOf(chosenEquipment) + 2
+                        val equipments = Json.decodeFromString<List<SimpleEquipment>>(values[equipmentsIndex])
+                        props.setOpen(false)
+                        props.setValue(Pair(chosenEquipment, equipments))
+                    }
+                    ValidatedList {
+                        val equipmentPacks = values.filterIndexed { index, _ -> (index + 1) % 3 != 0 }
+                            .chunked(2) { it[0] to it[1] }.toMap()
+                        this.label = props.feature.name
+                        this.value = chosenEquipment
+                        this.validators = arrayOf(VALIDATION_REQUIRED)
+                        this.errorMessages = arrayOf(translations[VALUE_SHOULD_BE_CHOSEN_TRANSLATION] ?: "")
+                        this.onChange = { setChosenEquipment(it.value()) }
+                        this.useDescription = true
+                        this.menuItems = equipmentPacks
+                        this.setDescription = { setDescription(it) }
+                        this.description = description
+                    }
+                    DialogActions {
+                        Submit { +(translations[NEXT_TRANSLATION] ?: "") }
+                    }
+                }
+            }
+        }
+    }
+}
+
+val WeaponsTable = FC<MultipleFeatureProps<List<Weapon>>> { props ->
+    val translations = useContext(TranslationsContext)
+    val (openAlert, setOpenAlert) = useState(false)
+    val (openTextAlert, setOpenTextAlert) = useState(false)
+    val values = props.function.values
+    val allowManual = values[0].toBoolean()
+    val maxNumber = values[1].toInt()
+    val weapons = Json.decodeFromString<List<Weapon>>(values[3])
+    AlertDialog {
+        this.open = openAlert
+        this.action = { setOpenAlert(false) }
+        this.header = translations[ALERT_TRANSLATION] ?: ""
+        +translations[TOO_MANY_CHECKS_TRANSLATION]
+    }
+    AlertDialog {
+        this.open = openTextAlert
+        this.action = { setOpenTextAlert(false) }
+        this.header = translations[ALERT_TRANSLATION] ?: ""
+        +translations[CELLS_SHOULD_BE_FILLED_TRANSLATION]
+    }
+    Table {
+        this.stickyHeader = true
+        TableHead {
+            TableRow {
+                TableCell()
+                TableCell { +translations[NAME_TRANSLATION] }
+                TableCell { +translations[DESCRIPTION_TRANSLATION] }
+                TableCell { +translations[TYPE_TRANSLATION] }
+                TableCell { +translations[PRICE_TRANSLATION] }
+                TableCell { +translations[DAMAGE_TRANSLATION] }
+                TableCell { +translations[WEIGHT_TRANSLATION] }
+                TableCell { +translations[PROPERTIES_TRANSLATION] }
+            }
+        }
+        TableBody {
+            weapons.forEach { weapon ->
+                TableRow {
+                    TableCell {
+                        val (checked, setChecked) = useState(false)
+                        Checkbox {
+                            this.checked = checked
+                            this.onChange = { _, checked ->
+                                playSound(BUTTON_SOUND_ID)
+                                if (checked && props.value.size >= maxNumber) {
+                                    setOpenAlert(true)
+                                    setChecked(false)
+                                } else {
+                                    setChecked(checked)
+                                    props.setValue(
+                                        if (checked) props.value + weapon
+                                        else props.value - weapon
+                                    )
+                                    console.info("${weapon._id} is $checked")
+                                }
+                            }
+                        }
+                    }
+                    TableCell { +weapon._id }
+                    TableCell { this.dangerouslySetInnerHTML = toDangerousHtml(weapon.description) }
+                    TableCell { +weapon.type }
+                    TableCell { +weapon.price }
+                    TableCell { +weapon.damage }
+                    TableCell { +weapon.weight }
+                    TableCell { +weapon.properties }
+                }
+            }
+            if (allowManual) {
+                for (i in 0 until maxNumber) {
+                    TableRow {
+                        val (checked, setChecked) = useState(false)
+                        val (weapon, setWeapon) = useState(emptyWeapon())
+                        TableCell {
+                            Checkbox {
+                                this.checked = checked
+                                this.onChange = { _, checked ->
+                                    playSound(BUTTON_SOUND_ID)
+                                    if (checked && props.value.size >= maxNumber) {
+                                        setOpenAlert(true)
+                                        setChecked(false)
+                                    } else if (checked && !validateWeapon(weapon)) {
+                                        setOpenTextAlert(true)
+                                        setChecked(false)
+                                    } else {
+                                        setChecked(checked)
+                                        props.setValue(
+                                            if (checked) props.value + weapon
+                                            else props.value - weapon
+                                        )
+                                        console.info("${weapon._id} is $checked")
+                                    }
+                                }
+                            }
+                        }
+                        EditableCell {
+                            this.value = weapon._id
+                            this.onChange = { event ->
+                                weapon._id = event.value()
+                                setWeapon(weapon)
+                                setChecked(false)
+                                props.setValue(props.value - weapon)
+                            }
+                        }
+                        EditableCell {
+                            this.value = weapon.description
+                            this.onChange = { event ->
+                                weapon.description = event.value()
+                                setWeapon(weapon)
+                                setChecked(false)
+                                props.setValue(props.value - weapon)
+                            }
+                        }
+                        EditableCell {
+                            this.value = weapon.type
+                            this.onChange = { event ->
+                                weapon.type = event.value()
+                                setWeapon(weapon)
+                                setChecked(false)
+                                props.setValue(props.value - weapon)
+                            }
+                        }
+                        EditableCell {
+                            this.value = weapon.price
+                            this.onChange = { event ->
+                                weapon.price = event.value()
+                                setWeapon(weapon)
+                                setChecked(false)
+                                props.setValue(props.value - weapon)
+                            }
+                        }
+                        EditableCell {
+                            this.value = weapon.damage
+                            this.onChange = { event ->
+                                weapon.damage = event.value()
+                                setWeapon(weapon)
+                                setChecked(false)
+                                props.setValue(props.value - weapon)
+                            }
+                        }
+                        EditableCell {
+                            this.value = weapon.weight
+                            this.onChange = { event ->
+                                weapon.weight = event.value()
+                                setWeapon(weapon)
+                                setChecked(false)
+                                props.setValue(props.value - weapon)
+                            }
+                        }
+                        EditableCell {
+                            this.value = weapon.properties
+                            this.onChange = { event ->
+                                weapon.properties = event.value()
+                                setWeapon(weapon)
+                                setChecked(false)
+                                props.setValue(props.value - weapon)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+val EquipmentsTable = FC<MultipleFeatureProps<List<SimpleEquipment>>> { props ->
+    val translations = useContext(TranslationsContext)
+    val (openAlert, setOpenAlert) = useState(false)
+    val (openTextAlert, setOpenTextAlert) = useState(false)
+    val values = props.function.values
+    val allowManual = values[0].toBoolean()
+    val maxNumber = values[1].toInt()
+    val equipments = Json.decodeFromString<List<SimpleEquipment>>(values[3])
+    AlertDialog {
+        this.open = openAlert
+        this.action = { setOpenAlert(false) }
+        this.header = translations[ALERT_TRANSLATION] ?: ""
+        +translations[TOO_MANY_CHECKS_TRANSLATION]
+    }
+    AlertDialog {
+        this.open = openTextAlert
+        this.action = { setOpenTextAlert(false) }
+        this.header = translations[ALERT_TRANSLATION] ?: ""
+        +translations[CELLS_SHOULD_BE_FILLED_TRANSLATION]
+    }
+    Table {
+        this.stickyHeader = true
+        TableHead {
+            TableRow {
+                TableCell()
+                TableCell { +translations[NAME_TRANSLATION] }
+                TableCell { +translations[DESCRIPTION_TRANSLATION] }
+                TableCell { +translations[TYPE_TRANSLATION] }
+                TableCell { +translations[PRICE_TRANSLATION] }
+                TableCell { +translations[WEIGHT_TRANSLATION] }
+            }
+        }
+        TableBody {
+            equipments.forEach { equipment ->
+                TableRow {
+                    TableCell {
+                        val (checked, setChecked) = useState(false)
+                        Checkbox {
+                            this.checked = checked
+                            this.onChange = { _, checked ->
+                                playSound(BUTTON_SOUND_ID)
+                                if (checked && props.value.size >= maxNumber) {
+                                    setOpenAlert(true)
+                                    setChecked(false)
+                                } else {
+                                    setChecked(checked)
+                                    props.setValue(
+                                        if (checked) props.value + equipment
+                                        else props.value - equipment
+                                    )
+                                    console.info("${equipment._id} is $checked")
+                                }
+                            }
+                        }
+                    }
+                    TableCell { +equipment._id }
+                    TableCell { this.dangerouslySetInnerHTML = toDangerousHtml(equipment.description) }
+                    TableCell { +equipment.type }
+                    TableCell { +equipment.price }
+                    TableCell { +equipment.weight }
+                }
+            }
+            if (allowManual) {
+                for (i in 0 until maxNumber) {
+                    TableRow {
+                        val (checked, setChecked) = useState(false)
+                        val (equipment, setEquipment) = useState(emptySimpleEquipment())
+                        TableCell {
+                            Checkbox {
+                                this.checked = checked
+                                this.onChange = { _, checked ->
+                                    playSound(BUTTON_SOUND_ID)
+                                    if (checked && props.value.size >= maxNumber) {
+                                        setOpenAlert(true)
+                                        setChecked(false)
+                                    } else if (checked && !validateSimpleEquipment(equipment)) {
+                                        setOpenTextAlert(true)
+                                        setChecked(false)
+                                    } else {
+                                        setChecked(checked)
+                                        props.setValue(
+                                            if (checked) props.value + equipment
+                                            else props.value - equipment
+                                        )
+                                        console.info("${equipment._id} is $checked")
+                                    }
+                                }
+                            }
+                        }
+                        EditableCell {
+                            this.value = equipment._id
+                            this.onChange = { event ->
+                                equipment._id = event.value()
+                                setEquipment(equipment)
+                                setChecked(false)
+                                props.setValue(props.value - equipment)
+                            }
+                        }
+                        EditableCell {
+                            this.value = equipment.description
+                            this.onChange = { event ->
+                                equipment.description = event.value()
+                                setEquipment(equipment)
+                                setChecked(false)
+                                props.setValue(props.value - equipment)
+                            }
+                        }
+                        EditableCell {
+                            this.value = equipment.type ?: ""
+                            this.onChange = { event ->
+                                if (event.value().isNotBlank()) equipment.type = event.value()
+                                else equipment.type = null
+                                setEquipment(equipment)
+                                setChecked(false)
+                                props.setValue(props.value - equipment)
+                            }
+                        }
+                        EditableCell {
+                            this.value = equipment.price
+                            this.onChange = { event ->
+                                equipment.price = event.value()
+                                setEquipment(equipment)
+                                setChecked(false)
+                                props.setValue(props.value - equipment)
+                            }
+                        }
+                        EditableCell {
+                            this.value = equipment.weight
+                            this.onChange = { event ->
+                                equipment.weight = event.value()
+                                setEquipment(equipment)
+                                setChecked(false)
+                                props.setValue(props.value - equipment)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+val EditableCell = FC<TextValidatorProps> { props ->
+    val (value, setValue) = useState(props.value)
+    TableCell {
+        TextValidator {
+            this.value = value
+            this.validators = emptyArray()
+            this.errorMessages = emptyArray()
+            this.onChange = { event ->
+                setValue(event.value())
+                props.onChange(event)
             }
         }
     }
