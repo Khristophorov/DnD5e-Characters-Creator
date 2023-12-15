@@ -8,7 +8,7 @@ import react.FC
 
 val IconButton = FC<IconButtonProps> { props ->
     IconButton {
-        onClick = { event ->
+        this.onClick = { event ->
             playSound(BUTTON_SOUND_ID)
             props.onClick?.let { it(event) }
         }
