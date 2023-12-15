@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
-    kotlin("multiplatform") version "1.9.0"
-    kotlin("plugin.serialization") version "1.9.0"
+    kotlin("multiplatform") version "1.9.21"
+    kotlin("plugin.serialization") version "1.9.21"
     application
 }
 
@@ -10,17 +10,17 @@ group = "me.khris"
 version = "1.0-SNAPSHOT"
 
 // Kotlin dependencies
-val kotlinCoroutinesVersion = "1.7.2"
-val kotlinHtmlVersion = "0.9.1"
+val kotlinCoroutinesVersion = "1.7.3"
+val kotlinHtmlVersion = "0.10.1"
 val kotlinReactVersion = "18.2.0-pre.598"
 val kotlinMuiVersion = "5.13.6-pre.598"
 val kotlinMuiIconsVersion = "5.11.16-pre.598"
 val kotlinEmotionVersion = "11.11.1-pre.598"
-val kotlinSerializationVersion = "1.5.1"
-val kmongoVersion = "4.9.0"
-val ktorVersion = "2.3.2"
-val logbackVersion = "1.4.8"
-val mockkVersion = "1.13.5"
+val kotlinSerializationVersion = "1.6.2"
+val kmongoVersion = "4.11.0"
+val ktorVersion = "2.3.7"
+val logbackVersion = "1.4.14"
+val mockkVersion = "1.13.8"
 
 // JavaScript dependencies
 val reactMaterialUiFormValidatorVersion = "3.0.1"
@@ -52,14 +52,14 @@ kotlin {
             }
             webpackTask(enableCss)
             runTask(enableCss)
-            testTask(Action {
+            testTask {
                 useKarma {
                     useChromeHeadless()
                     webpackConfig.cssSupport {
                         enabled.set(true)
                     }
                 }
-            })
+            }
         }
     }
     sourceSets {
