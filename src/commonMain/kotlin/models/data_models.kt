@@ -32,7 +32,12 @@ data class Character(
     var proficiencies: Set<String> = emptySet(),
     var languages: Set<String> = emptySet(),
     var maneuvers: List<Maneuver> = emptyList(),
+    var additionalSpells: List<Spell> = emptyList(),
     var spells: List<Spell> = emptyList(),
+    var spellSlots: Map<Int, Int> = emptyMap(),
+    var spellcastingAbility: String = "",
+    var spellSaveDC: Int = 0,
+    var spellAttackBonus: Int = 0,
     var bonuses: CharBonuses = CharBonuses(),
     var equipment: Equipment,
     var superiorityDices: List<SuperiorityDice> = emptyList()
@@ -131,7 +136,8 @@ data class Feature(
 data class DnDFunction(
     val name: String,
     val values: List<String> = emptyList(),
-    val addFeature: Boolean = false
+    val addFeature: Boolean = false,
+    val replaceCurrent: Boolean = false
 )
 
 @Serializable

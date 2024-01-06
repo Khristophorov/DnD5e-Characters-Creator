@@ -13,6 +13,7 @@ import me.khrys.dnd.charcreator.client.components.dialogs.FeatsProps
 import me.khrys.dnd.charcreator.client.components.dialogs.FeatureProps
 import me.khrys.dnd.charcreator.client.components.dialogs.MultipleFeatureProps
 import me.khrys.dnd.charcreator.client.components.dialogs.MultipleStringFeatureProps
+import me.khrys.dnd.charcreator.client.components.dialogs.SpellsFeatureProps
 import me.khrys.dnd.charcreator.client.components.dialogs.memoDialog
 import me.khrys.dnd.charcreator.client.components.dialogs.windows.SpellWindow
 import me.khrys.dnd.charcreator.client.components.inputs.ValidatedList
@@ -315,7 +316,7 @@ val ManeuverChooser = FC<FeatureProps<String>> { props ->
     }
 }
 
-val SpellsChooser = FC<MultipleStringFeatureProps> { props ->
+val SpellsChooser = FC<SpellsFeatureProps> { props ->
     val translations = useContext(TranslationsContext)
     val (chosenSpells, setChosenSpells) = useState(emptyList<String>())
     val (openAlert, setOpenAlert) = useState(false)
@@ -353,6 +354,7 @@ val SpellsChooser = FC<MultipleStringFeatureProps> { props ->
                         SpellsTable {
                             this.character = props.character
                             this.function = props.function
+                            this.isAdditionalSpells = props.isAdditionalSpells
                             this.setValue = { setChosenSpells(it) }
                             this.value = chosenSpells
                         }
@@ -366,9 +368,10 @@ val SpellsChooser = FC<MultipleStringFeatureProps> { props ->
     }
 }
 
-val SpellsTable = FC<MultipleStringFeatureProps> { props ->
+val SpellsTable = FC<SpellsFeatureProps> { props ->
     val translations = useContext(TranslationsContext)
-    val spells = useContext(SpellsContext).filter { (name, _) -> !props.character.spells.map { it._id }.contains(name) }
+    val spells = useContext(SpellsContext)
+        .filter { (name, _) -> !props.character.additionalSpells.map { it._id }.contains(name) }
     val (openAlert, setOpenAlert) = useState(false)
     val values = props.function.values
     val maxSpellsNumber = values[0].toInt()
@@ -393,7 +396,7 @@ val SpellsTable = FC<MultipleStringFeatureProps> { props ->
         }
         TableBody {
             val filteredSpells = spells.values.filter {
-                if (isMaxLevel) it.level == level else it.level <= level
+                if (isMaxLevel) it.level == level else it.level in 1..level
             }.filter { spell -> classes.any { spell.classes.contains(it) } }
             filteredSpells.forEach { spell ->
                 val (open, setOpen) = useState(false)

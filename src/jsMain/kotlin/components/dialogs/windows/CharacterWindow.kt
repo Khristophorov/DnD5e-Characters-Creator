@@ -3,6 +3,7 @@ package me.khrys.dnd.charcreator.client.components.dialogs.windows
 import emotion.react.css
 import me.khrys.dnd.charcreator.client.SpellsContext
 import me.khrys.dnd.charcreator.client.TranslationsContext
+import me.khrys.dnd.charcreator.client.allSpells
 import me.khrys.dnd.charcreator.client.applyFeatures
 import me.khrys.dnd.charcreator.client.components.buttons.CloseButton
 import me.khrys.dnd.charcreator.client.components.buttons.Submit
@@ -60,8 +61,11 @@ import me.khrys.dnd.charcreator.common.PROFICIENCY_BONUS_TRANSLATION
 import me.khrys.dnd.charcreator.common.QUANTITY_TRANSLATION
 import me.khrys.dnd.charcreator.common.SAVE_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPEED_TRANSLATION
+import me.khrys.dnd.charcreator.common.SPELLCASTING_ABILITY_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPELLS_TRANSLATION
+import me.khrys.dnd.charcreator.common.SPELL_ATTACK_BONUS_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPELL_LEVEL_SUFFIX_TRANSLATION
+import me.khrys.dnd.charcreator.common.SPELL_SAVE_DC_TRANSLATION
 import me.khrys.dnd.charcreator.common.SUPERIORITY_DICES_TRANSLATION
 import me.khrys.dnd.charcreator.common.TYPE_TRANSLATION
 import me.khrys.dnd.charcreator.common.WEAPONS_TRANSLATION
@@ -215,16 +219,21 @@ private val SpecificParameters = FC<ParametersProps> { props ->
         if (showTabs) {
             val (tabValue, setTabValue) = useState(computeTabValue(props.character))
 
-            AdditionalTabs {
-                this.value = tabValue
-                this.setValue = { setTabValue(it) }
-                this.translations = props.translations
-                this.character = props.character
-            }
-            TabBoxes {
-                this.value = tabValue
-                this.character = props.character
-                this.translations = props.translations
+            div {
+                css {
+                    maxWidth = 300.px
+                }
+                AdditionalTabs {
+                    this.value = tabValue
+                    this.setValue = { setTabValue(it) }
+                    this.translations = props.translations
+                    this.character = props.character
+                }
+                TabBoxes {
+                    this.value = tabValue
+                    this.character = props.character
+                    this.translations = props.translations
+                }
             }
         }
     }
@@ -240,7 +249,7 @@ private val AdditionalTabs = FC<CharPropsWithValue> { props ->
                 this.value = MANEUVERS_INDEX
             }
         }
-        if (props.character.spells.isNotEmpty()) {
+        if (props.character.allSpells().isNotEmpty()) {
             Tab {
                 this.label = ReactNode(props.translations[SPELLS_TRANSLATION] ?: "")
                 this.value = SPELLS_INDEX
@@ -250,6 +259,7 @@ private val AdditionalTabs = FC<CharPropsWithValue> { props ->
 }
 
 private val TabBoxes = FC<CharPropsWithValue> { props ->
+    val character = props.character
     Box {
         if (props.value == MANEUVERS_INDEX) {
             SuperiorityDices {
@@ -257,14 +267,20 @@ private val TabBoxes = FC<CharPropsWithValue> { props ->
                 this.superiorityDices = props.character.superiorityDices
             }
             ManeuversBox {
-                this.maneuvers = props.character.maneuvers
+                this.maneuvers = character.maneuvers
             }
         }
     }
     Box {
         if (props.value == SPELLS_INDEX) {
+            if (character.spellcastingAbility.isNotBlank()) {
+                SpellcastingProperties {
+                    this.character = character
+                    this.translations = props.translations
+                }
+            }
             SpellsBox {
-                this.spells = props.character.spells
+                this.spells = character.allSpells()
             }
         }
     }
@@ -328,6 +344,28 @@ private val SpellsBox = FC<SpellsProps> { props ->
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+private val SpellcastingProperties = FC<CharBasedProps> { props ->
+    Grid {
+        this.container = true
+        Grid {
+            this.item = true
+            this.className = ClassName(CLASS_BORDERED)
+            SpellcastingAbility {
+                this.value = props.character.spellcastingAbility
+                this.translations = props.translations
+            }
+            SpellSaveDC {
+                this.value = props.character.spellSaveDC.toString()
+                this.translations = props.translations
+            }
+            SpellAttackBonus {
+                this.value = props.character.spellAttackBonus.toString()
+                this.translations = props.translations
             }
         }
     }
@@ -496,6 +534,33 @@ private val HitDice = FC<CharBasedProps> { props ->
         CenteredLabel {
             this.label = props.translations[HIT_DICE_TRANSLATION] ?: ""
         }
+    }
+}
+
+private val SpellcastingAbility = FC<CharAbilitiesProps> { props ->
+    TextBox {
+        this.value = props.value
+        this.label = props.translations[SPELLCASTING_ABILITY_TRANSLATION] ?: ""
+        this.type = text
+        this.classes = CLASS_WIDE_ABILITY_BOX
+    }
+}
+
+private val SpellSaveDC = FC<CharAbilitiesProps> { props ->
+    TextBox {
+        this.value = props.value
+        this.label = props.translations[SPELL_SAVE_DC_TRANSLATION] ?: ""
+        this.type = text
+        this.classes = CLASS_WIDE_ABILITY_BOX
+    }
+}
+
+private val SpellAttackBonus = FC<CharAbilitiesProps> { props ->
+    TextBox {
+        this.value = props.value
+        this.label = props.translations[SPELL_ATTACK_BONUS_TRANSLATION] ?: ""
+        this.type = text
+        this.classes = CLASS_WIDE_ABILITY_BOX
     }
 }
 
@@ -845,7 +910,7 @@ private val SuperiorDices = FC<SuperiorDicesProps> { props ->
     }
 }
 
-fun shouldShowTabs(character: Character) = character.maneuvers.isNotEmpty() || character.spells.isNotEmpty()
+fun shouldShowTabs(character: Character) = character.maneuvers.isNotEmpty() || character.allSpells().isNotEmpty()
 
 fun computeTabValue(character: Character): Int {
     if (character.maneuvers.isNotEmpty()) {

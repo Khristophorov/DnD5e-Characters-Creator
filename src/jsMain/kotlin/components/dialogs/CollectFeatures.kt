@@ -46,6 +46,7 @@ val WINDOW_FUNCTIONS = listOf(
     "Choose Skills",
     "Choose Skills and Proficiencies",
     "Choose Spells",
+    "Choose Additional Spells",
     "Choose Weapon",
     "Choose Equipment Pack",
     "Choose Equipment",
@@ -190,7 +191,12 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
 
                                 "Choose Spells" -> {
                                     functionFeatures
-                                        .add(spellsChooser(feature, function, props, nextAction))
+                                        .add(spellsChooser(feature, function, props, false, nextAction))
+                                }
+
+                                "Choose Additional Spells" -> {
+                                    functionFeatures
+                                        .add(spellsChooser(feature, function, props, true, nextAction))
                                 }
 
                                 "Choose Skills and Proficiencies" -> {
@@ -586,6 +592,7 @@ private fun spellsChooser(
     feature: Feature,
     function: DnDFunction,
     props: MultipleFeaturesFeatsProps,
+    isAdditional: Boolean,
     nextAction: () -> Unit
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
@@ -596,10 +603,16 @@ private fun spellsChooser(
         this.feature = feature
         this.function = function
         this.character = props.character
+        this.isAdditionalSpells = isAdditional
         this.setValue = { spellsNames ->
             console.log("Spells selected: $spellsNames")
-            spellsNames.forEach { spellName ->
-                spellsMap[spellName]?.let { props.character.spells += it }
+            if (isAdditional) {
+                spellsNames.forEach { spellName ->
+                    spellsMap[spellName]?.let { props.character.additionalSpells += it }
+                }
+            } else {
+                spellsNames.mapNotNull { spellsMap[it] }
+                    .let { props.character.spells = it }
             }
             nextAction()
         }

@@ -91,13 +91,6 @@ val defaultTheme = createDefaultTheme(
                         maxHeight: '440px'
                     }
                 }
-            },
-            MuiAccordion: {
-                styleOverrides: {
-                    root: {
-                        maxWidth: '300px'
-                    }
-                }
             }
         }
     }

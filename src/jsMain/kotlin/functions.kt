@@ -134,6 +134,7 @@ fun Character.clone() = Character(
     languages = this.languages,
     maneuvers = this.maneuvers,
     spells = this.spells.toList(),
+    additionalSpells = this.additionalSpells.toList(),
     equipment = this.equipment,
     superiorityDices = this.superiorityDices.toList()
 )
@@ -200,12 +201,19 @@ fun Character.applyFeature(feature: Feature, translations: Map<String, String>, 
             "Increase Speed" -> increaseSpeed(function.values[0].toInt())
             "Increase Armor Class" -> increaseArmorClass(function.values[0].toInt())
             "Set Speed" -> setSpeed(function.values[0].toInt())
+            "Set Spell Slots" -> setSpellSlots(function.values
+                .map { it.split(": ").map { value -> value.toInt() } }
+                .associateBy({ it[0] }, { it[1] })
+            )
+
+            "Set Spellcasting Ability" -> setSpellcastingAbility(function.values[0], translations)
             "Add Proficiencies" -> setProficiencies(function.values)
             "Add Languages" -> addLanguages(function.values)
             "Add Saving Throws" -> addSavingThrows(function.values, translations)
             "Add Skills" -> addSkills(function.values, translations)
             "Add Superiority Dices" -> addSuperiorityDices(Dice.valueOf(function.values[0]), function.values[1].toInt())
             "Add Spells" -> addSpells(function.values, spells)
+            "Add Additional Spells" -> addAdditionalSpells(function.values, spells)
         }
     }
 }
@@ -247,7 +255,7 @@ fun Character.increaseCharisma(value: Int) {
 }
 
 fun Character.increaseHPByLevel(value: Int) {
-    this.hitPoints = this.hitPoints + (value * getCombinedLevel())
+    this.hitPoints += (value * getCombinedLevel())
 }
 
 fun Character.increaseAbility(abilityName: String, value: Int, translations: Map<String, String>) {
@@ -317,6 +325,32 @@ fun Character.increaseArmorClass(value: Int) {
 
 fun Character.setSpeed(speed: Int) {
     this.speed = speed
+}
+
+fun Character.setSpellSlots(slots: Map<Int, Int>) {
+    this.spellSlots = slots
+}
+
+fun Character.setSpellcastingAbility(ability: String, translations: Map<String, String>) {
+    this.spellcastingAbility = ability
+    this.spellSaveDC = 8 + computeProficiencyBonus(this.getCombinedLevel()) +
+            computeModifier(this.getAbility(ability, translations))
+    this.spellAttackBonus =
+        computeProficiencyBonus(this.getCombinedLevel()) + computeModifier(this.getAbility(ability, translations))
+}
+
+fun Character.getAbility(ability: String, translations: Map<String, String>): Int {
+    return when (ability) {
+        translations[STRENGTH_TRANSLATION] -> this.abilities.strength
+        translations[DEXTERITY_TRANSLATION] -> this.abilities.dexterity
+        translations[CONSTITUTION_TRANSLATION] -> this.abilities.constitution
+        translations[INTELLIGENCE_TRANSLATION] -> this.abilities.intelligence
+        translations[WISDOM_TRANSLATION] -> this.abilities.wisdom
+        translations[CHARISMA_TRANSLATION] -> this.abilities.charisma
+        else -> {
+            throw IllegalArgumentException("Unknown ability: $ability")
+        }
+    }
 }
 
 fun Character.setProficiencies(proficiencies: List<String>) {
@@ -419,11 +453,19 @@ fun Character.addSuperiorityDices(dice: Dice, quantity: Int) {
     }
 }
 
+fun Character.addAdditionalSpells(spellsNames: List<String>, spells: Map<String, Spell>) {
+    spellsNames.filter { !this.additionalSpells.map { spell -> spell._id }.contains(it) }
+        .mapNotNull { spells[it] }
+        .forEach { this.additionalSpells += it }
+}
+
 fun Character.addSpells(spellsNames: List<String>, spells: Map<String, Spell>) {
     spellsNames.filter { !this.spells.map { spell -> spell._id }.contains(it) }
         .mapNotNull { spells[it] }
-        .forEach { this.spells = this.spells + it }
+        .forEach { this.spells += it }
 }
+
+fun Character.allSpells() = (this.spells + this.additionalSpells).distinct()
 
 fun Feat.toFeature(): Feature = Feature(
     name = this._id,
