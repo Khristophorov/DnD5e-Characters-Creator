@@ -13,7 +13,7 @@ external interface DialogProps : PropsWithChildren {
     var open: Boolean
     var setOpen: (Boolean) -> Unit
     var header: String
-    var action: () -> (Unit)
+    var action: () -> Unit
 }
 
 external interface ClassBaseProps : FeatsProps {

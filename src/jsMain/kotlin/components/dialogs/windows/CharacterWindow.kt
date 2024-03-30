@@ -5,10 +5,13 @@ import me.khrys.dnd.charcreator.client.SpellsContext
 import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.allSpells
 import me.khrys.dnd.charcreator.client.applyFeatures
+import me.khrys.dnd.charcreator.client.components.buttons.Button
+import me.khrys.dnd.charcreator.client.components.buttons.ButtonAction
 import me.khrys.dnd.charcreator.client.components.buttons.CloseButton
 import me.khrys.dnd.charcreator.client.components.buttons.Submit
 import me.khrys.dnd.charcreator.client.components.dialogs.CharBasedProps
 import me.khrys.dnd.charcreator.client.components.dialogs.FeatsProps
+import me.khrys.dnd.charcreator.client.components.dialogs.LevelUp
 import me.khrys.dnd.charcreator.client.components.dialogs.grids.AbilitiesGrid
 import me.khrys.dnd.charcreator.client.components.dialogs.grids.SavingThrowsGrid
 import me.khrys.dnd.charcreator.client.components.dialogs.grids.SkillsGrid
@@ -17,7 +20,6 @@ import me.khrys.dnd.charcreator.client.components.inputs.OneValueInput
 import me.khrys.dnd.charcreator.client.components.inputs.texts.CenteredLabel
 import me.khrys.dnd.charcreator.client.components.inputs.texts.TextBox
 import me.khrys.dnd.charcreator.client.components.inputs.texts.TextWithTooltip
-import me.khrys.dnd.charcreator.client.components.inputs.texts.TitledInput
 import me.khrys.dnd.charcreator.client.components.inputs.texts.WrappedText
 import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
 import me.khrys.dnd.charcreator.client.computeArmorClass
@@ -27,12 +29,14 @@ import me.khrys.dnd.charcreator.client.computePassiveSkill
 import me.khrys.dnd.charcreator.client.computeProficiencyBonus
 import me.khrys.dnd.charcreator.client.computeSpellLevel
 import me.khrys.dnd.charcreator.client.getInitiative
+import me.khrys.dnd.charcreator.client.isNotMaximumLevel
 import me.khrys.dnd.charcreator.client.toDangerousHtml
 import me.khrys.dnd.charcreator.client.toSignedString
 import me.khrys.dnd.charcreator.common.ARMOR_CLASS_TRANSLATION
 import me.khrys.dnd.charcreator.common.ARMOR_TRANSLATION
 import me.khrys.dnd.charcreator.common.ATTACK_BONUS_TRANSLATION
 import me.khrys.dnd.charcreator.common.CANTRIP_TRANSLATION
+import me.khrys.dnd.charcreator.common.CLASSES_TRANSLATION
 import me.khrys.dnd.charcreator.common.CLASS_ABILITY_BOX
 import me.khrys.dnd.charcreator.common.CLASS_BORDERED
 import me.khrys.dnd.charcreator.common.CLASS_CENTER
@@ -41,6 +45,7 @@ import me.khrys.dnd.charcreator.common.CLASS_INLINE
 import me.khrys.dnd.charcreator.common.CLASS_JUSTIFY_BETWEEN
 import me.khrys.dnd.charcreator.common.CLASS_NO_PADDINGS
 import me.khrys.dnd.charcreator.common.CLASS_PADDINGS
+import me.khrys.dnd.charcreator.common.CLASS_ITEMS_CENTER
 import me.khrys.dnd.charcreator.common.CLASS_WIDE_ABILITY_BOX
 import me.khrys.dnd.charcreator.common.DAMAGE_TYPE_TRANSLATION
 import me.khrys.dnd.charcreator.common.DICE_TRANSLATION
@@ -51,6 +56,7 @@ import me.khrys.dnd.charcreator.common.HIT_DICE_TRANSLATION
 import me.khrys.dnd.charcreator.common.HIT_POINTS_TRANSLATION
 import me.khrys.dnd.charcreator.common.INITIATIVE_TRANSLATION
 import me.khrys.dnd.charcreator.common.LANGUAGES_TRANSLATION
+import me.khrys.dnd.charcreator.common.LEVEL_UP_TRANSLATION
 import me.khrys.dnd.charcreator.common.MANEUVERS_TRANSLATION
 import me.khrys.dnd.charcreator.common.NAME_TRANSLATION
 import me.khrys.dnd.charcreator.common.PASSIVE_INVESTIGATION_TRANSLATION
@@ -141,6 +147,7 @@ private external interface TitleProps : Props {
     var translations: Map<String, String>
     var open: Boolean
     var setOpen: (Boolean) -> Unit
+    var action: ButtonAction
 }
 
 private external interface ManeuversProps : Props {
@@ -155,6 +162,7 @@ val CharacterWindow = FC<FeatsProps> { props ->
     console.info("Loading character window for ${props.character.name}")
     val translations = useContext(TranslationsContext)
     val spells = useContext(SpellsContext)
+    val (openLevelUp, setOpenLevelUp) = useState(false)
     Dialog {
         this.open = props.open
         this.fullScreen = true
@@ -165,6 +173,15 @@ val CharacterWindow = FC<FeatsProps> { props ->
             this.setOpen = props.setOpen
             this.character = character
             this.translations = translations
+            this.action = { setOpenLevelUp(true) }
+        }
+
+        if (openLevelUp) {
+            LevelUp {
+                this.open = openLevelUp
+                this.character = props.character
+                this.setOpen = { setOpenLevelUp(it) }
+            }
         }
 
         DialogContent {
@@ -858,9 +875,22 @@ private val Title = FC<TitleProps> { props ->
         div {
             this.className = ClassName("$CLASS_INLINE $CLASS_JUSTIFY_BETWEEN")
             +props.character.name
-            TitledInput {
+            WrappedText {
                 this.label = props.translations[ENTER_RACE_TRANSLATION] ?: ""
-                this.value = props.character.subrace._id
+                this.values = listOf(props.character.subrace._id)
+            }
+            WrappedText {
+                this.label = props.translations[CLASSES_TRANSLATION] ?: ""
+                this.values = props.character.classes.map { it.second }.map { it._id }
+            }
+            if (props.character.isNotMaximumLevel()) {
+                div {
+                    this.className = ClassName("$CLASS_INLINE $CLASS_ITEMS_CENTER")
+                    Button {
+                        this.onClick = props.action
+                        +props.translations[LEVEL_UP_TRANSLATION]
+                    }
+                }
             }
             CloseButton {
                 this.onClick = {

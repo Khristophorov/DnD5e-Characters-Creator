@@ -5,9 +5,11 @@ import me.khrys.dnd.charcreator.client.components.buttons.BackButton
 import me.khrys.dnd.charcreator.client.components.buttons.Submit
 import me.khrys.dnd.charcreator.client.components.dialogs.CharBasedProps
 import me.khrys.dnd.charcreator.client.components.dialogs.CollectClassFeatures
+import me.khrys.dnd.charcreator.client.components.dialogs.HitPointsDialog
 import me.khrys.dnd.charcreator.client.components.dialogs.memoDialog
 import me.khrys.dnd.charcreator.client.components.inputs.ValidatedList
 import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
+import me.khrys.dnd.charcreator.client.getCombinedLevel
 import me.khrys.dnd.charcreator.client.utils.loadClasses
 import me.khrys.dnd.charcreator.client.utils.value
 import me.khrys.dnd.charcreator.common.CLASS_JUSTIFY_BETWEEN
@@ -32,8 +34,10 @@ import web.cssom.ClassName
 var CharClassWindow = memoDialog(FC<CharBasedProps> { props ->
     val (classes, setClasses) = useState(emptyMap<String, Class>())
     val (charClass, setCharClass) = useState(emptyClass())
+    val (classLevel, setClassLevel) = useState(0)
     val (description, setDescription) = useState("")
     val (openFeatures, setOpenFeatures) = useState(false)
+    val (openHp, setOpenHp) = useState(false)
     val translations = useContext(TranslationsContext)
     if (props.open && classes.isEmpty()) {
         CircularProgress()
@@ -53,8 +57,19 @@ var CharClassWindow = memoDialog(FC<CharBasedProps> { props ->
                 ValidatorForm {
                     this.onSubmit = {
                         console.info("Chosen class: ${charClass._id}")
-                        props.character.classes += 1 to charClass
-                        setOpenFeatures(true)
+                        val currentClassLevel = props.character.classes
+                            .filter { (_, clazz) -> clazz._id == charClass._id }
+                            .map { it.first }
+                            .ifEmpty { listOf(0) }[0]
+                        if (classLevel != currentClassLevel) {
+                            setClassLevel(currentClassLevel)
+                        }
+                        props.character.classes += (currentClassLevel + 1) to charClass
+                        if (props.character.getCombinedLevel() == 1) {
+                            setOpenFeatures(true)
+                        } else {
+                            setOpenHp(true)
+                        }
                     }
                     ValidatedList {
                         this.label = translations[ENTER_CLASS_TRANSLATION] ?: ""
@@ -87,7 +102,7 @@ var CharClassWindow = memoDialog(FC<CharBasedProps> { props ->
     }
     CollectClassFeatures {
         this.className = charClass._id
-        this.classLevel = 1
+        this.classLevel = classLevel
         this.multiclass = false
         this.character = props.character
         this.open = openFeatures
@@ -95,5 +110,18 @@ var CharClassWindow = memoDialog(FC<CharBasedProps> { props ->
         this.action = props.action
         this.feats = feats
         this.useFeats = useFeats
+    }
+    HitPointsDialog {
+        this.open = openHp
+        this.character = props.character
+        this.translations = translations
+        this.action = {
+            setOpenHp(false)
+            setOpenFeatures(true)
+        }
+        this.backAction = { event ->
+            setOpenHp(false)
+            this.backAction(event)
+        }
     }
 })

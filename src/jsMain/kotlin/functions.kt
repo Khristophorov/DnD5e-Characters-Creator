@@ -56,6 +56,8 @@ import react.dom.DangerouslySetInnerHTML
 import kotlin.math.floor
 import kotlin.math.max
 
+private const val MAXIMUM_LEVEL = 20
+
 fun computeModifier(ability: Int, proficiencyBonus: Int = 0, proficient: Boolean = false): Int {
     val defaultModifier = floor((ability - 10).toDouble() / 2).toInt()
     return if (proficient) defaultModifier + proficiencyBonus else defaultModifier
@@ -194,7 +196,6 @@ fun Character.applyFeature(feature: Feature, translations: Map<String, String>, 
                 translations
             )
 
-            "Increase HP by Level" -> increaseHPByLevel(function.values[0].toInt())
             "Increase Initiative" -> increaseInitiative(function.values[0].toInt())
             "Increase Perception" -> increasePerception(function.values[0].toInt())
             "Increase Investigation" -> increaseInvestigation(function.values[0].toInt())
@@ -252,10 +253,6 @@ fun Character.increaseCharisma(value: Int) {
     if (this.abilities.charisma + value <= 20) {
         this.abilities.charisma += value
     }
-}
-
-fun Character.increaseHPByLevel(value: Int) {
-    this.hitPoints += (value * getCombinedLevel())
 }
 
 fun Character.increaseAbility(abilityName: String, value: Int, translations: Map<String, String>) {
@@ -466,6 +463,8 @@ fun Character.addSpells(spellsNames: List<String>, spells: Map<String, Spell>) {
 }
 
 fun Character.allSpells() = (this.spells + this.additionalSpells).distinct()
+
+fun Character.isNotMaximumLevel() = this.getCombinedLevel() < MAXIMUM_LEVEL
 
 fun Feat.toFeature(): Feature = Feature(
     name = this._id,
