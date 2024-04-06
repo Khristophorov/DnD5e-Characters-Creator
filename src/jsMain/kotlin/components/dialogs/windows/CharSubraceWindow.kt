@@ -1,5 +1,6 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
+import me.khrys.dnd.charcreator.client.RacesContext
 import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.components.buttons.BackButton
 import me.khrys.dnd.charcreator.client.components.buttons.Submit
@@ -26,13 +27,13 @@ import react.useState
 import web.cssom.ClassName
 
 val CharSubraceWindow = FC<CharBasedProps> { props ->
-    val subraces = props.character.race.subraces.associateBy { it._id }
     val (subrace, setSubrace) = useState(emptyRace())
     val (description, setDescription) = useState("")
     val (openFeatures, setOpenFeatures) = useState(false)
     val translations = useContext(TranslationsContext)
-
+    val races = useContext(RacesContext)
     if (props.open) {
+        val subraces = races.filter { props.character.race == it._id }[0].subraces
         console.info("Rendering character subrace window.")
         Dialog {
             this.open = props.open
@@ -46,7 +47,7 @@ val CharSubraceWindow = FC<CharBasedProps> { props ->
                 }
                 ValidatorForm {
                     this.onSubmit = {
-                        props.character.subrace = subrace
+                        props.character.subrace = subrace._id
                         if (subrace.features.isEmpty()) {
                             props.action()
                         } else {
@@ -59,9 +60,9 @@ val CharSubraceWindow = FC<CharBasedProps> { props ->
                         this.validators = arrayOf(VALIDATION_REQUIRED)
                         this.errorMessages = arrayOf(translations[SUBRACE_SHOULD_BE_FILLED_TRANSLATION] ?: "")
                         this.onChange = { event ->
-                            setSubrace(subraces[event.value()] ?: emptyRace())
+                            setSubrace(subraces.filter { event.value() == it._id }[0])
                         }
-                        this.menuItems = subraces.mapValues { it.value.description }
+                        this.menuItems = subraces.associate { it._id to it.description }
                         this.useDescription = true
                         this.setDescription = { setDescription(it) }
                         this.description = description
@@ -83,6 +84,7 @@ val CharSubraceWindow = FC<CharBasedProps> { props ->
     }
     CollectSubraceFeatures {
         this.character = props.character
+        this.features = subrace.features
         this.open = openFeatures
         this.setOpen = { setOpenFeatures(it) }
         this.action = props.action

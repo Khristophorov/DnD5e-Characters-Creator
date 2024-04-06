@@ -43,10 +43,10 @@ import me.khrys.dnd.charcreator.common.CLASS_BORDERED
 import me.khrys.dnd.charcreator.common.CLASS_CENTER
 import me.khrys.dnd.charcreator.common.CLASS_FEATURES_WIDTH
 import me.khrys.dnd.charcreator.common.CLASS_INLINE
+import me.khrys.dnd.charcreator.common.CLASS_ITEMS_CENTER
 import me.khrys.dnd.charcreator.common.CLASS_JUSTIFY_BETWEEN
 import me.khrys.dnd.charcreator.common.CLASS_NO_PADDINGS
 import me.khrys.dnd.charcreator.common.CLASS_PADDINGS
-import me.khrys.dnd.charcreator.common.CLASS_ITEMS_CENTER
 import me.khrys.dnd.charcreator.common.CLASS_WIDE_ABILITY_BOX
 import me.khrys.dnd.charcreator.common.DAMAGE_TYPE_TRANSLATION
 import me.khrys.dnd.charcreator.common.DICE_TRANSLATION
@@ -889,7 +889,7 @@ private val Title = FC<TitleProps> { props ->
             +props.character.name
             WrappedText {
                 this.label = props.translations[ENTER_RACE_TRANSLATION] ?: ""
-                this.values = listOf(props.character.subrace._id)
+                this.values = listOf(props.character.subrace ?: props.character.race)
             }
             WrappedText {
                 this.label = props.translations[CLASSES_TRANSLATION] ?: ""

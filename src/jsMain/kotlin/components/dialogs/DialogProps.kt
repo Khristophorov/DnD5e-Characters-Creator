@@ -17,10 +17,13 @@ external interface DialogProps : PropsWithChildren {
     var action: () -> Unit
 }
 
-external interface ClassBaseProps : FeatsProps {
+external interface RaceBaseProps : FeatsProps {
+    var features: List<Feature>
+}
+
+external interface ClassBaseProps : RaceBaseProps {
     var className: String
     var multiclass: Boolean
-    var features: List<Feature>
 }
 
 external interface FeatureProps<T> : DialogProps {

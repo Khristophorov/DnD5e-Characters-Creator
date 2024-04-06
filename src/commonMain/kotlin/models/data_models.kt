@@ -25,8 +25,8 @@ data class Character(
     var skills: Skills,
     var speed: Int = 0,
     var armorClass: Int = 0,
-    var race: Race,
-    var subrace: Race,
+    var race: String,
+    var subrace: String? = null,
     var classes: Map<String, Int> = emptyMap(),
     var features: List<Feature> = emptyList(),
     var proficiencies: Set<String> = emptySet(),
@@ -264,8 +264,7 @@ fun emptyCharacter() =
         abilities = initialAbilities(),
         savingThrows = initialSavingThrows(),
         skills = initialSkills(),
-        race = emptyRace(),
-        subrace = emptyRace(),
+        race = "",
         features = emptyList(),
         equipment = emptyEquipment()
     )

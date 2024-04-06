@@ -2,13 +2,16 @@ package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
 import me.khrys.dnd.charcreator.client.FeatsContext
 import me.khrys.dnd.charcreator.client.ManeuversContext
+import me.khrys.dnd.charcreator.client.RacesContext
 import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.components.dialogs.DialogProps
 import me.khrys.dnd.charcreator.client.utils.loadFeats
 import me.khrys.dnd.charcreator.client.utils.loadManeuvers
+import me.khrys.dnd.charcreator.client.utils.loadRaces
 import me.khrys.dnd.charcreator.client.utils.storeCharacter
 import me.khrys.dnd.charcreator.common.models.Feat
 import me.khrys.dnd.charcreator.common.models.Maneuver
+import me.khrys.dnd.charcreator.common.models.Race
 import me.khrys.dnd.charcreator.common.models.emptyCharacter
 import mui.material.CircularProgress
 import react.FC
@@ -19,6 +22,7 @@ val NewCharWindow = FC<DialogProps> { props ->
     console.info("Rendering new character window.")
     val translations = useContext(TranslationsContext)
     val (raceDialogOpen, setRaceDialogOpen) = useState(true)
+    val (races, setRaces) = useState(emptyList<Race>())
     val (subraceDialogOpen, setSubraceDialogOpen) = useState(false)
     val (classDialogOpen, setClassDialogOpen) = useState(false)
     val (nameDialogOpen, setNameDialogOpen) = useState(false)
@@ -34,84 +38,88 @@ val NewCharWindow = FC<DialogProps> { props ->
     } else if (props.open && maneuvers.isEmpty()) {
         CircularProgress()
         loadManeuvers { setManeuvers(it) }
+    } else if (props.open && races.isEmpty()) {
+        CircularProgress()
+        loadRaces { setRaces(it) }
     } else if (props.open) {
         FeatsContext.Provider(feats) {
             ManeuversContext.Provider(maneuvers) {
-                CharRaceWindow {
-                    this.character = newCharacter
-                    this.open = raceDialogOpen
-                    this.setOpen = { setRaceDialogOpen(it) }
-                    this.action = {
-                        if (newCharacter.race.subraces.isEmpty()) {
-                            newCharacter.subrace = newCharacter.race
-                            setClassDialogOpen(true)
-                        } else {
-                            setSubraceDialogOpen(true)
+                RacesContext.Provider(races) {
+                    CharRaceWindow {
+                        this.character = newCharacter
+                        this.open = raceDialogOpen
+                        this.setOpen = { setRaceDialogOpen(it) }
+                        this.action = {
+                            if (races.filter { it._id == newCharacter.race }[0].subraces.isEmpty()) {
+                                setClassDialogOpen(true)
+                            } else {
+                                setSubraceDialogOpen(true)
+                            }
                         }
                     }
-                }
-                CharSubraceWindow {
-                    this.character = newCharacter
-                    this.open = subraceDialogOpen
-                    this.backAction = {
-                        setSubraceDialogOpen(false)
-                        setRaceDialogOpen(true)
+                    CharSubraceWindow {
+                        this.character = newCharacter
+                        this.open = subraceDialogOpen
+                        this.backAction = {
+                            setSubraceDialogOpen(false)
+                            setRaceDialogOpen(true)
+                        }
+                        this.action = {
+                            setSubraceDialogOpen(false)
+                            setClassDialogOpen(true)
+                        }
                     }
-                    this.action = {
-                        setSubraceDialogOpen(false)
-                        setClassDialogOpen(true)
+                    CharClassWindow {
+                        this.character = newCharacter
+                        this.open = classDialogOpen
+                        this.backAction = {
+                            setRaceDialogOpen(true)
+                            setClassDialogOpen(false)
+                        }
+                        this.action = {
+                            setNameDialogOpen(true)
+                            setClassDialogOpen(false)
+                        }
                     }
-                }
-                CharClassWindow {
-                    this.character = newCharacter
-                    this.open = classDialogOpen
-                    this.backAction = {
-                        setRaceDialogOpen(true)
-                        setClassDialogOpen(false)
+                    CharNameWindow {
+                        this.translations = translations
+                        this.character = newCharacter
+                        this.open = nameDialogOpen
+                        this.backAction = {
+                            setNameDialogOpen(false)
+                            setClassDialogOpen(true)
+                        }
+                        this.action = {
+                            setNameDialogOpen(false)
+                            setImageDialogOpen(true)
+                        }
                     }
-                    this.action = {
-                        setNameDialogOpen(true)
-                        setClassDialogOpen(false)
+                    CharImageWindow {
+                        this.translations = translations
+                        this.character = newCharacter
+                        this.open = imageDialogOpen
+                        this.backAction = {
+                            setImageDialogOpen(false)
+                            setNameDialogOpen(true)
+                        }
+                        this.action = {
+                            setImageDialogOpen(false)
+                            setAbilitiesDialogOpen(true)
+                        }
                     }
-                }
-                CharNameWindow {
-                    this.translations = translations
-                    this.character = newCharacter
-                    this.open = nameDialogOpen
-                    this.backAction = {
-                        setNameDialogOpen(false)
-                        setClassDialogOpen(true)
-                    }
-                    this.action = {
-                        setNameDialogOpen(false)
-                        setImageDialogOpen(true)
-                    }
-                }
-                CharImageWindow {
-                    this.translations = translations
-                    this.character = newCharacter
-                    this.open = imageDialogOpen
-                    this.backAction = {
-                        setImageDialogOpen(false)
-                        setNameDialogOpen(true)
-                    }
-                    this.action = {
-                        setImageDialogOpen(false)
-                        setAbilitiesDialogOpen(true)
-                    }
-                }
-                CharAbilitiesWindow {
-                    this.translations = translations
-                    this.character = newCharacter
-                    this.open = abilitiesDialogOpen
-                    this.backAction = {
-                        setAbilitiesDialogOpen(false)
-                        setImageDialogOpen(true)
-                    }
-                    this.action = {
-                        setAbilitiesDialogOpen(false)
-                        storeCharacter(newCharacter)
-                        setNewCharacter(emptyCharacter())
+                    CharAbilitiesWindow {
+                        this.translations = translations
+                        this.character = newCharacter
+                        this.open = abilitiesDialogOpen
+                        this.backAction = {
+                            setAbilitiesDialogOpen(false)
+                            setImageDialogOpen(true)
+                        }
+                        this.action = {
+                            setAbilitiesDialogOpen(false)
+                            storeCharacter(newCharacter)
+                            setNewCharacter(emptyCharacter())
+                        }
                     }
                 }
             }

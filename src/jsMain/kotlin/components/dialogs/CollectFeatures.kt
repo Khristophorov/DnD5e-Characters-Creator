@@ -54,15 +54,14 @@ val WINDOW_FUNCTIONS = listOf(
     "Add Armor"
 )
 
-val CollectRaceFeatures = memoDialog(FC<FeatsProps> { props ->
+val CollectRaceFeatures = memoDialog(FC<RaceBaseProps> { props ->
     if (props.open) {
-        val features = props.character.race.features
-        console.info("Loading features for race: ${props.character.race._id}")
+        console.info("Loading features for race: ${props.character.race}")
         CollectFeatures {
             this.open = props.open
             this.setOpen = props.setOpen
             this.character = props.character
-            this.features = features
+            this.features = props.features
             this.feats = props.feats
             this.useFeats = props.useFeats
             this.action = props.action
@@ -70,15 +69,14 @@ val CollectRaceFeatures = memoDialog(FC<FeatsProps> { props ->
     }
 })
 
-val CollectSubraceFeatures = memoDialog(FC<FeatsProps> { props ->
+val CollectSubraceFeatures = memoDialog(FC<RaceBaseProps> { props ->
     if (props.open) {
-        val features = props.character.subrace.features
-        console.info("Loading features for subrace: ${props.character.subrace._id}")
+        console.info("Loading features for subrace: ${props.character.subrace}")
         CollectFeatures {
             this.open = props.open
             this.setOpen = props.setOpen
             this.character = props.character
-            this.features = features
+            this.features = props.features
             this.action = props.action
         }
     }

@@ -47,10 +47,10 @@ fun loadCharacters(setCharacters: (List<Character>) -> Unit) {
     }
 }
 
-fun loadRaces(setRaces: (Map<String, Race>) -> Unit) {
+fun loadRaces(setRaces: (List<Race>) -> Unit) {
     console.info("Loading races.")
     MainScope().launch {
-        setRaces(fetchRaces().associateBy { it._id })
+        setRaces(fetchRaces())
     }
 }
 
