@@ -27,7 +27,7 @@ data class Character(
     var armorClass: Int = 0,
     var race: Race,
     var subrace: Race,
-    var classes: List<Pair<Int, Class>> = emptyList(),
+    var classes: Map<String, Int> = emptyMap(),
     var features: List<Feature> = emptyList(),
     var proficiencies: Set<String> = emptySet(),
     var languages: Set<String> = emptySet(),

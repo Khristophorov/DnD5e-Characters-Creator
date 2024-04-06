@@ -130,7 +130,7 @@ fun Character.clone() = Character(
     speed = this.speed,
     race = this.race,
     subrace = this.subrace,
-    classes = this.classes.toList(),
+    classes = this.classes.toMap(),
     features = this.features,
     proficiencies = this.proficiencies,
     languages = this.languages,
@@ -413,7 +413,7 @@ fun Character.addSkills(skills: List<String>, translations: Map<String, String>)
     }
 }
 
-fun Character.getCombinedLevel(): Int = this.classes.sumOf { it.first }
+fun Character.getCombinedLevel(): Int = this.classes.values.sum()
 
 fun Character.computeArmorClass(): Int {
     return 10 + computeModifier(
@@ -431,9 +431,9 @@ fun Character.getInitiative(): Int {
     ) + bonuses.initiative
 }
 
-fun Character.setDefaultHitPoints() {
+fun Character.setDefaultHitPoints(dice: Dice) {
     if (this.hitPoints == 0) {
-        this.hitPoints = this.classes[0].second.hitDice.maxValue + computeModifier(this.abilities.constitution)
+        this.hitPoints = dice.maxValue + computeModifier(this.abilities.constitution)
     }
 }
 

@@ -4,7 +4,6 @@ import me.khrys.dnd.charcreator.client.FeatsContext
 import me.khrys.dnd.charcreator.client.ManeuversContext
 import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.components.dialogs.DialogProps
-import me.khrys.dnd.charcreator.client.setDefaultHitPoints
 import me.khrys.dnd.charcreator.client.utils.loadFeats
 import me.khrys.dnd.charcreator.client.utils.loadManeuvers
 import me.khrys.dnd.charcreator.client.utils.storeCharacter
@@ -111,7 +110,6 @@ val NewCharWindow = FC<DialogProps> { props ->
                     }
                     this.action = {
                         setAbilitiesDialogOpen(false)
-                        newCharacter.setDefaultHitPoints()
                         storeCharacter(newCharacter)
                         setNewCharacter(emptyCharacter())
                     }

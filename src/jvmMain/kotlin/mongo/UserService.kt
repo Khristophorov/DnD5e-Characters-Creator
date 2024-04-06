@@ -22,18 +22,23 @@ class UserService(private val users: MongoCollection<User>) {
 
     fun storeCharacter(userName: String, character: Character) {
         val image = character.image
-        val charWithImageName = character.copy(image = "$IMAGE_URL/${character.name}")
         val currentCharacters = users.findOne { User::_id eq userName }?.characters ?: emptyList()
-        val currentImages = users.findOne { User::_id eq userName }?.images ?: emptyMap()
-        storeCharacter(currentCharacters, charWithImageName, userName)
-        storeImage(character.name, currentImages, image, userName)
+        if (image.startsWith(IMAGE_URL)) {
+            storeCharacter(currentCharacters, character, userName)
+        }
+        else {
+            val charWithImageName = character.copy(image = "$IMAGE_URL/${character.name}")
+            val currentImages = users.findOne { User::_id eq userName }?.images ?: emptyMap()
+            storeCharacter(currentCharacters, charWithImageName, userName)
+            storeImage(character.name, currentImages, image, userName)
+        }
     }
 
     fun readCharacters(userName: String) =
         users.findOne { User::_id eq userName }?.characters ?: emptyList()
 
     fun readImage(userName: String, name: String) =
-        (users.findOne { User::_id eq userName }?.images ?: emptyMap()).get(name)
+        (users.findOne { User::_id eq userName }?.images ?: emptyMap())[name]
 
     fun requireUserName(session: CurrentSession) =
         retrieveUserName(session) ?: throw IllegalStateException("Invalid session")

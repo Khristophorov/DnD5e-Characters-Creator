@@ -2,6 +2,7 @@ package me.khrys.dnd.charcreator.client.components.dialogs
 
 import me.khrys.dnd.charcreator.client.components.buttons.ButtonAction
 import me.khrys.dnd.charcreator.common.models.Character
+import me.khrys.dnd.charcreator.common.models.Class
 import me.khrys.dnd.charcreator.common.models.DnDFunction
 import me.khrys.dnd.charcreator.common.models.Feat
 import me.khrys.dnd.charcreator.common.models.Feature
@@ -17,9 +18,9 @@ external interface DialogProps : PropsWithChildren {
 }
 
 external interface ClassBaseProps : FeatsProps {
-    var classLevel: Int
     var className: String
     var multiclass: Boolean
+    var features: List<Feature>
 }
 
 external interface FeatureProps<T> : DialogProps {
@@ -56,6 +57,7 @@ external interface MultipleFeaturesFeatsProps : DialogProps {
 
 external interface CharBasedProps : DialogProps {
     var character: Character
+    var classes: Map<String, Class>
     var backAction: ButtonAction
     var translations: Map<String, String>
 }

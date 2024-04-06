@@ -10,6 +10,7 @@ import me.khrys.dnd.charcreator.client.components.dialogs.memoDialog
 import me.khrys.dnd.charcreator.client.components.inputs.ValidatedList
 import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
 import me.khrys.dnd.charcreator.client.getCombinedLevel
+import me.khrys.dnd.charcreator.client.setDefaultHitPoints
 import me.khrys.dnd.charcreator.client.utils.loadClasses
 import me.khrys.dnd.charcreator.client.utils.value
 import me.khrys.dnd.charcreator.common.CLASS_JUSTIFY_BETWEEN
@@ -57,15 +58,13 @@ var CharClassWindow = memoDialog(FC<CharBasedProps> { props ->
                 ValidatorForm {
                     this.onSubmit = {
                         console.info("Chosen class: ${charClass._id}")
-                        val currentClassLevel = props.character.classes
-                            .filter { (_, clazz) -> clazz._id == charClass._id }
-                            .map { it.first }
-                            .ifEmpty { listOf(0) }[0]
+                        val currentClassLevel = props.character.classes[charClass._id] ?: 0
                         if (classLevel != currentClassLevel) {
                             setClassLevel(currentClassLevel)
                         }
-                        props.character.classes += (currentClassLevel + 1) to charClass
+                        props.character.classes += charClass._id to (currentClassLevel + 1)
                         if (props.character.getCombinedLevel() == 1) {
+                            props.character.setDefaultHitPoints(charClass.hitDice)
                             setOpenFeatures(true)
                         } else {
                             setOpenHp(true)
@@ -88,7 +87,7 @@ var CharClassWindow = memoDialog(FC<CharBasedProps> { props ->
                         this.className = ClassName(CLASS_JUSTIFY_BETWEEN)
                         BackButton {
                             this.onClick = {
-                                props.character.classes = emptyList()
+                                props.character.classes = emptyMap()
                                 setCharClass(emptyClass())
                                 setDescription("")
                                 props.backAction(it)
@@ -102,7 +101,7 @@ var CharClassWindow = memoDialog(FC<CharBasedProps> { props ->
     }
     CollectClassFeatures {
         this.className = charClass._id
-        this.classLevel = classLevel
+        this.features = charClass.features[classLevel + 1] ?: emptyList()
         this.multiclass = false
         this.character = props.character
         this.open = openFeatures

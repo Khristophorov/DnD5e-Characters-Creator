@@ -86,8 +86,7 @@ val CollectSubraceFeatures = memoDialog(FC<FeatsProps> { props ->
 
 val CollectClassFeatures = memoDialog(FC<ClassBaseProps> { props ->
     if (props.open) {
-        val features = (props.character.classes.filter { it.second._id == props.className }[0]
-            .second.features[props.classLevel] ?: emptyList())
+        val features = props.features
             .filter { filterMulticlass(it, props.multiclass) }
         console.info("Loading features for class: ${props.className}")
         CollectFeatures {

@@ -32,6 +32,7 @@ import me.khrys.dnd.charcreator.client.getInitiative
 import me.khrys.dnd.charcreator.client.isNotMaximumLevel
 import me.khrys.dnd.charcreator.client.toDangerousHtml
 import me.khrys.dnd.charcreator.client.toSignedString
+import me.khrys.dnd.charcreator.client.utils.loadClasses
 import me.khrys.dnd.charcreator.common.ARMOR_CLASS_TRANSLATION
 import me.khrys.dnd.charcreator.common.ARMOR_TRANSLATION
 import me.khrys.dnd.charcreator.common.ATTACK_BONUS_TRANSLATION
@@ -76,6 +77,7 @@ import me.khrys.dnd.charcreator.common.SUPERIORITY_DICES_TRANSLATION
 import me.khrys.dnd.charcreator.common.TYPE_TRANSLATION
 import me.khrys.dnd.charcreator.common.WEAPONS_TRANSLATION
 import me.khrys.dnd.charcreator.common.models.Character
+import me.khrys.dnd.charcreator.common.models.Class
 import me.khrys.dnd.charcreator.common.models.Maneuver
 import me.khrys.dnd.charcreator.common.models.Spell
 import me.khrys.dnd.charcreator.common.models.SuperiorityDice
@@ -83,6 +85,7 @@ import mui.material.Accordion
 import mui.material.AccordionDetails
 import mui.material.AccordionSummary
 import mui.material.Box
+import mui.material.CircularProgress
 import mui.material.Dialog
 import mui.material.DialogActions
 import mui.material.DialogContent
@@ -130,6 +133,7 @@ private external interface ParametersProps : Props {
     var character: Character
     var translations: Map<String, String>
     var proficiencyBonus: Int
+    var classes: Map<String, Class>
 }
 
 private external interface MultiValueProps : Props {
@@ -163,61 +167,68 @@ val CharacterWindow = FC<FeatsProps> { props ->
     val translations = useContext(TranslationsContext)
     val spells = useContext(SpellsContext)
     val (openLevelUp, setOpenLevelUp) = useState(false)
-    Dialog {
-        this.open = props.open
-        this.fullScreen = true
-        this.maxWidth = xl
-        val character = applyFeatures(props.character, translations, spells)
-        Title {
+    val (classes, setClasses) = useState(emptyMap<String, Class>())
+    if (props.open && classes.isEmpty()) {
+        CircularProgress()
+        loadClasses { setClasses(it) }
+    } else if (props.open) {
+        Dialog {
             this.open = props.open
-            this.setOpen = props.setOpen
-            this.character = character
-            this.translations = translations
-            this.action = { setOpenLevelUp(true) }
-        }
-
-        if (openLevelUp) {
-            LevelUp {
-                this.open = openLevelUp
-                this.character = props.character
-                this.setOpen = { setOpenLevelUp(it) }
+            this.fullScreen = true
+            this.maxWidth = xl
+            val character = applyFeatures(props.character, translations, spells)
+            Title {
+                this.open = props.open
+                this.setOpen = props.setOpen
+                this.character = character
+                this.translations = translations
+                this.action = { setOpenLevelUp(true) }
             }
-        }
 
-        DialogContent {
-            this.dividers = true
-            val proficiencyBonus = computeProficiencyBonus(1)
-            ValidatorForm {
-                this.onSubmit = {
-                    console.info("Submitting character ${props.character.name}")
-                    if (props.open) {
-                        props.setOpen(false)
-                    }
+            if (openLevelUp) {
+                LevelUp {
+                    this.open = openLevelUp
+                    this.character = props.character
+                    this.setOpen = { setOpenLevelUp(it) }
                 }
-                Grid {
-                    this.container = true
-                    MainParameters {
-                        this.character = character
-                        this.translations = translations
-                        this.proficiencyBonus = proficiencyBonus
+            }
+
+            DialogContent {
+                this.dividers = true
+                val proficiencyBonus = computeProficiencyBonus(1)
+                ValidatorForm {
+                    this.onSubmit = {
+                        console.info("Submitting character ${props.character.name}")
+                        if (props.open) {
+                            props.setOpen(false)
+                        }
                     }
-                    AdditionalAbilities {
-                        this.character = character
-                        this.translations = translations
-                        this.proficiencyBonus = proficiencyBonus
+                    Grid {
+                        this.container = true
+                        MainParameters {
+                            this.character = character
+                            this.translations = translations
+                            this.proficiencyBonus = proficiencyBonus
+                        }
+                        AdditionalAbilities {
+                            this.character = character
+                            this.translations = translations
+                            this.proficiencyBonus = proficiencyBonus
+                            this.classes = classes
+                        }
+                        Features {
+                            this.character = character
+                            this.translations = translations
+                        }
+                        SpecificParameters {
+                            this.character = character
+                            this.translations = translations
+                        }
                     }
-                    Features {
-                        this.character = character
-                        this.translations = translations
-                    }
-                    SpecificParameters {
-                        this.character = character
-                        this.translations = translations
-                    }
-                }
-                DialogActions {
-                    Submit {
-                        +(translations[SAVE_TRANSLATION] ?: "")
+                    DialogActions {
+                        Submit {
+                            +(translations[SAVE_TRANSLATION] ?: "")
+                        }
                     }
                 }
             }
@@ -464,6 +475,7 @@ private val AdditionalAbilities = FC<ParametersProps> { props ->
                     HitDice {
                         this.character = props.character
                         this.translations = props.translations
+                        this.classes = props.classes
                     }
                 }
                 Accordion {
@@ -540,10 +552,10 @@ private val HitPoints = FC<CharAbilitiesProps> { props ->
 private val HitDice = FC<CharBasedProps> { props ->
     div {
         className = ClassName("$CLASS_WIDE_ABILITY_BOX $CLASS_BORDERED $CLASS_CENTER")
-        props.character.classes.map { it.second }.forEach {
+        props.character.classes.map { it.key }.forEach { className ->
             TextBox {
-                this.value = it.hitDice.name
-                this.label = it._id
+                this.value = props.classes[className]?.hitDice?.name ?: ""
+                this.label = className
                 this.type = text
                 this.classes = CLASS_ABILITY_BOX
             }
@@ -881,7 +893,7 @@ private val Title = FC<TitleProps> { props ->
             }
             WrappedText {
                 this.label = props.translations[CLASSES_TRANSLATION] ?: ""
-                this.values = props.character.classes.map { it.second }.map { it._id }
+                this.values = props.character.classes.keys
             }
             if (props.character.isNotMaximumLevel()) {
                 div {

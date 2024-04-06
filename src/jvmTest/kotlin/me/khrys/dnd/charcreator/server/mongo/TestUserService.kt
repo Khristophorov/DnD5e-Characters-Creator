@@ -10,6 +10,7 @@ import io.mockk.mockkStatic
 import io.mockk.verify
 import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.User
+import me.khrys.dnd.charcreator.common.models.emptyEquipment
 import me.khrys.dnd.charcreator.common.models.emptyRace
 import me.khrys.dnd.charcreator.common.models.initialAbilities
 import me.khrys.dnd.charcreator.common.models.initialSavingThrows
@@ -32,7 +33,8 @@ val character = Character(
     skills = initialSkills(),
     speed = 10,
     race = emptyRace(),
-    subrace = emptyRace()
+    subrace = emptyRace(),
+    equipment = emptyEquipment()
 )
 val user = User(EMAIL, listOf(character))
 
@@ -52,8 +54,8 @@ class TestUserService {
     }
 
     @Test
-    fun testStoreUserWhenUserIsNotExists() {
-        every { users.findOne(any<Bson>()) } returns (null)
+    fun testStoreUserWhenUserDoesNotExist() {
+        every { users.findOne(any<Bson>()) } returns null
         justRun { users.save(any()) }
 
         service.storeUser(user)
@@ -63,7 +65,7 @@ class TestUserService {
     }
 
     @Test
-    fun testStoreUserWhenUserIsExists() {
+    fun testStoreUserWhenUserExists() {
         every { users.findOne(any<Bson>()) } returns user
 
         service.storeUser(user)
@@ -73,7 +75,7 @@ class TestUserService {
 
     @Test
     fun testReadCharactersWhenUserIsNotExists() {
-        every { users.findOne(any<Bson>()) } returns (null)
+        every { users.findOne(any<Bson>()) } returns null
 
         val characters = service.readCharacters(EMAIL)
 
@@ -81,11 +83,22 @@ class TestUserService {
     }
 
     @Test
-    fun testReadCharactersWhenUserIsExists() {
-        every { users.findOne(any<Bson>()) } returns (user)
+    fun testReadCharactersWhenUserExists() {
+        every { users.findOne(any<Bson>()) } returns user
 
         val characters = service.readCharacters(EMAIL)
 
         assertEquals(listOf(character), characters, "Incorrect characters received")
+    }
+
+    @Test
+    fun testStoreCharacter() {
+        every { users.findOne(any<Bson>()) } returns user
+        justRun { users.findOneAndUpdate(any<Bson>(), any<Bson>()) }
+
+        service.storeCharacter(user._id, character)
+
+        verify { users.findOneAndUpdate(any<Bson>(), any<Bson>()) }
+        confirmVerified(users)
     }
 }
