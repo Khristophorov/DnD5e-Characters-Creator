@@ -227,6 +227,10 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
                                 }
                             }
                             if (function.addFeature) {
+                                if (function.replaceCurrent) {
+                                    props.character.features -=
+                                        props.character.features.filter { it.name == feature.name }
+                                }
                                 props.character.features += feature
                             }
                         }

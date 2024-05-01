@@ -318,7 +318,7 @@ val ManeuverChooser = FC<FeatureProps<String>> { props ->
 
 val SpellsChooser = FC<SpellsFeatureProps> { props ->
     val translations = useContext(TranslationsContext)
-    val (chosenSpells, setChosenSpells) = useState(emptyList<String>())
+    val (chosenSpells, setChosenSpells) = useState(props.character.spells.map { it._id })
     val (openAlert, setOpenAlert) = useState(false)
     AlertDialog {
         this.open = openAlert
@@ -402,7 +402,7 @@ val SpellsTable = FC<SpellsFeatureProps> { props ->
                 val (open, setOpen) = useState(false)
                 TableRow {
                     TableCell {
-                        val (checked, setChecked) = useState(false)
+                        val (checked, setChecked) = useState(props.value.contains(spell._id))
                         Checkbox {
                             this.checked = checked
                             this.onChange = { _, checked ->

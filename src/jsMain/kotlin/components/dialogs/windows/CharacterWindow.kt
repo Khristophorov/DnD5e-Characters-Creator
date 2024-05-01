@@ -893,7 +893,7 @@ private val Title = FC<TitleProps> { props ->
             }
             WrappedText {
                 this.label = props.translations[CLASSES_TRANSLATION] ?: ""
-                this.values = props.character.classes.keys
+                this.values = props.character.classes.map { "${it.key} (${it.value})" }
             }
             if (props.character.isNotMaximumLevel()) {
                 div {
