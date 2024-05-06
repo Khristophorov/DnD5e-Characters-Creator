@@ -9,6 +9,7 @@ import me.khrys.dnd.charcreator.client.components.inputs.choosers.ElementChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.EquipmentPackChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.EquipmentsChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.FeatChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.FeatureChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.LanguageChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.LanguagesChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.ManeuverChooser
@@ -50,6 +51,7 @@ val WINDOW_FUNCTIONS = listOf(
     "Choose Weapon",
     "Choose Equipment Pack",
     "Choose Equipment",
+    "Choose Feature",
     "Add Weapon",
     "Add Armor"
 )
@@ -214,6 +216,11 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
                                 "Choose Equipment" -> {
                                     functionFeatures
                                         .add(equipmentChooser(feature, function, props, nextAction))
+                                }
+
+                                "Choose Feature" -> {
+                                    functionFeatures
+                                        .add(featureChooser(feature, function, props, nextAction))
                                 }
 
                                 "Add Weapon" -> {
@@ -512,6 +519,32 @@ private fun featChooser(
     }
 }
 
+private fun featureChooser(
+    feature: Feature,
+    function: DnDFunction,
+    props: MultipleFeaturesFeatsProps,
+    nextAction: () -> Unit
+) = FC<DialogProps> {
+    val (open, setOpen) = useState(true)
+    FeatureChooser {
+        this.open = open
+        this.setOpen = { setOpen(it) }
+        this.feature = feature
+        this.function = function
+        this.setValue = { value ->
+            console.info("Chosen feature: $value")
+            val featureIndex = function.values.indexOf(value)
+            props.character.features +=
+                Feature(
+                    name = function.values[featureIndex],
+                    description = function.values[featureIndex + 1],
+                    source = function.values[featureIndex + 2]
+                )
+            nextAction()
+        }
+    }
+}
+
 private fun elementChooser(
     feature: Feature,
     function: DnDFunction,
@@ -613,7 +646,7 @@ private fun spellsChooser(
                 }
             } else {
                 spellsNames.mapNotNull { spellsMap[it] }
-                    .let { props.character.spells = it }
+                    .let { props.character.spells = (it + props.character.spells).distinct() }
             }
             nextAction()
         }

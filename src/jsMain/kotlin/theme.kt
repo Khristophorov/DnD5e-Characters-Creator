@@ -81,7 +81,8 @@ val defaultTheme = createDefaultTheme(
                     root: {
                         fontSize: 'medium',
                         border: '1px solid black !important',
-                        textAlign: 'center'
+                        textAlign: 'center',
+                        padding: '10px'
                     }
                 }
             },

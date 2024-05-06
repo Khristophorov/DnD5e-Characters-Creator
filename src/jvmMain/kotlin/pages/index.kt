@@ -76,7 +76,7 @@ suspend fun ApplicationCall.index() {
                     margin: 5px;
                 }
                 .${CLASS_WIDE_ABILITY_BOX} {
-                    width: 301px;
+                    max-width: 300px;
                     font-weight: bold;
                     margin: 5px;
                 }

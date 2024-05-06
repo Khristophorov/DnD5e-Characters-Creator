@@ -56,19 +56,21 @@ import me.khrys.dnd.charcreator.common.FEATURES_TRANSLATION
 import me.khrys.dnd.charcreator.common.HIT_DICE_TRANSLATION
 import me.khrys.dnd.charcreator.common.HIT_POINTS_TRANSLATION
 import me.khrys.dnd.charcreator.common.INITIATIVE_TRANSLATION
+import me.khrys.dnd.charcreator.common.INVESTIGATION_TRANSLATION
 import me.khrys.dnd.charcreator.common.LANGUAGES_TRANSLATION
 import me.khrys.dnd.charcreator.common.LEVEL_UP_TRANSLATION
 import me.khrys.dnd.charcreator.common.MANEUVERS_TRANSLATION
 import me.khrys.dnd.charcreator.common.NAME_TRANSLATION
 import me.khrys.dnd.charcreator.common.PASSIVE_INVESTIGATION_TRANSLATION
 import me.khrys.dnd.charcreator.common.PASSIVE_PERCEPTION_TRANSLATION
+import me.khrys.dnd.charcreator.common.PERCEPTION_TRANSLATION
 import me.khrys.dnd.charcreator.common.PROFICIENCIES_TRANSLATION
 import me.khrys.dnd.charcreator.common.PROFICIENCY_BONUS_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.PROFICIENCY_BONUS_TRANSLATION
 import me.khrys.dnd.charcreator.common.QUANTITY_TRANSLATION
 import me.khrys.dnd.charcreator.common.SAVE_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPEED_TRANSLATION
-import me.khrys.dnd.charcreator.common.SPELLCASTING_ABILITY_TRANSLATION
+import me.khrys.dnd.charcreator.common.SPELLCASTING_ABILITIES_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPELLS_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPELL_ATTACK_BONUS_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPELL_LEVEL_SUFFIX_TRANSLATION
@@ -301,7 +303,7 @@ private val TabBoxes = FC<CharPropsWithValue> { props ->
     }
     Box {
         if (props.value == SPELLS_INDEX) {
-            if (character.spellcastingAbility.isNotBlank()) {
+            if (character.spellcastingAbilities.isNotEmpty()) {
                 SpellcastingProperties {
                     this.character = character
                     this.translations = props.translations
@@ -383,8 +385,8 @@ private val SpellcastingProperties = FC<CharBasedProps> { props ->
         Grid {
             this.item = true
             this.className = ClassName(CLASS_BORDERED)
-            SpellcastingAbility {
-                this.value = props.character.spellcastingAbility
+            SpellcastingAbilities {
+                this.value = props.character.spellcastingAbilities.joinToString(", ")
                 this.translations = props.translations
             }
             SpellSaveDC {
@@ -566,10 +568,10 @@ private val HitDice = FC<CharBasedProps> { props ->
     }
 }
 
-private val SpellcastingAbility = FC<CharAbilitiesProps> { props ->
+private val SpellcastingAbilities = FC<CharAbilitiesProps> { props ->
     TextBox {
         this.value = props.value
-        this.label = props.translations[SPELLCASTING_ABILITY_TRANSLATION] ?: ""
+        this.label = props.translations[SPELLCASTING_ABILITIES_TRANSLATION] ?: ""
         this.type = text
         this.classes = CLASS_WIDE_ABILITY_BOX
     }
@@ -811,7 +813,8 @@ private val PassivePerception = FC<ParametersProps> { props ->
             this.value = computePassiveSkill(
                 ability = props.character.abilities.wisdom,
                 proficiencyBonus = props.proficiencyBonus,
-                proficient = props.character.skills.perception,
+                proficient = props.character.skills
+                    .first { it.name == props.translations[PERCEPTION_TRANSLATION] }.proficient,
                 bonus = props.character.bonuses.perception
             ).toString()
         }
@@ -826,7 +829,8 @@ private val PassiveInvestigation = FC<ParametersProps> { props ->
             this.value = computePassiveSkill(
                 ability = props.character.abilities.intelligence,
                 proficiencyBonus = props.proficiencyBonus,
-                proficient = props.character.skills.investigation,
+                proficient = props.character.skills
+                    .first { it.name == props.translations[INVESTIGATION_TRANSLATION] }.proficient,
                 bonus = props.character.bonuses.investigation
             ).toString()
         }

@@ -33,7 +33,7 @@ val SavingThrowsGridItem = FC<SavingThrowsGridItemProps> { props ->
         this.title = ReactNode(item.title)
         div {
             this.className = ClassName(CLASS_INLINE)
-            val modifier = computeModifier(item.value, item.proficiencyBonus, item.proficient)
+            val modifier = computeModifier(item.value, item.proficiencyBonus, item.proficient, item.additionalBonus)
             Checkbox {
                 this.checked = item.proficient
                 this.icon = createElement(RadioButtonUnchecked)

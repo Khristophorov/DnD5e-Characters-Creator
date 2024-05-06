@@ -48,7 +48,7 @@ import me.khrys.dnd.charcreator.common.models.Filter.Param.WISDOM
 import me.khrys.dnd.charcreator.common.models.Filter.Param.WORE_TYPE
 import me.khrys.dnd.charcreator.common.models.SavingThrows
 import me.khrys.dnd.charcreator.common.models.SimpleEquipment
-import me.khrys.dnd.charcreator.common.models.Skills
+import me.khrys.dnd.charcreator.common.models.Skill
 import me.khrys.dnd.charcreator.common.models.Spell
 import me.khrys.dnd.charcreator.common.models.SuperiorityDice
 import me.khrys.dnd.charcreator.common.models.Weapon
@@ -58,9 +58,14 @@ import kotlin.math.max
 
 private const val MAXIMUM_LEVEL = 20
 
-fun computeModifier(ability: Int, proficiencyBonus: Int = 0, proficient: Boolean = false): Int {
+fun computeModifier(
+    ability: Int,
+    proficiencyBonus: Int = 0,
+    proficient: Boolean = false,
+    additionalBonus: Int = 0
+): Int {
     val defaultModifier = floor((ability - 10).toDouble() / 2).toInt()
-    return if (proficient) defaultModifier + proficiencyBonus else defaultModifier
+    return (if (proficient) defaultModifier + proficiencyBonus else defaultModifier) + additionalBonus
 }
 
 fun computeProficiencyBonus(level: Int): Int {
@@ -126,7 +131,7 @@ fun Character.clone() = Character(
     hitPoints = this.hitPoints,
     abilities = this.abilities.clone(),
     savingThrows = this.savingThrows.clone(),
-    skills = this.skills.clone(),
+    skills = this.skills.map(Skill::clone),
     speed = this.speed,
     race = this.race,
     subrace = this.subrace,
@@ -159,25 +164,11 @@ fun SavingThrows.clone() = SavingThrows(
     charisma = this.charisma
 )
 
-fun Skills.clone() = Skills(
-    acrobatics = this.acrobatics,
-    animalHandling = this.animalHandling,
-    arcana = this.arcana,
-    athletics = this.athletics,
-    deception = this.deception,
-    history = this.history,
-    insight = this.insight,
-    intimidation = this.intimidation,
-    investigation = this.investigation,
-    medicine = this.medicine,
-    nature = this.nature,
-    perception = this.perception,
-    performance = this.performance,
-    persuasion = this.persuasion,
-    religion = this.religion,
-    sleightOfHands = this.sleightOfHands,
-    stealth = this.stealth,
-    survival = this.survival
+fun Skill.clone() = Skill(
+    name = this.name,
+    ability = this.ability,
+    proficient = this.proficient,
+    additionalBonus = this.additionalBonus
 )
 
 fun Character.applyFeature(feature: Feature, translations: Map<String, String>, spells: Map<String, Spell>) {
@@ -195,18 +186,15 @@ fun Character.applyFeature(feature: Feature, translations: Map<String, String>, 
                 function.values[1].toInt(),
                 translations
             )
-
+            "Increase Non Proficient Skills With Proficiency Bonus" ->
+                increaseSkillsWithProficiencyBonus(false, function.values[0].toDouble())
+            "Double Skill Bonus" -> increaseSkillsWithProficiencyBonus(function.values, 1.0)
             "Increase Initiative" -> increaseInitiative(function.values[0].toInt())
             "Increase Perception" -> increasePerception(function.values[0].toInt())
             "Increase Investigation" -> increaseInvestigation(function.values[0].toInt())
             "Increase Speed" -> increaseSpeed(function.values[0].toInt())
             "Increase Armor Class" -> increaseArmorClass(function.values[0].toInt())
             "Set Speed" -> setSpeed(function.values[0].toInt())
-            "Set Spell Slots" -> setSpellSlots(function.values
-                .map { it.split(": ").map { value -> value.toInt() } }
-                .associateBy({ it[0] }, { it[1] })
-            )
-
             "Set Spellcasting Ability" -> setSpellcastingAbility(function.values[0], translations)
             "Add Proficiencies" -> setProficiencies(function.values)
             "Add Languages" -> addLanguages(function.values)
@@ -220,37 +208,37 @@ fun Character.applyFeature(feature: Feature, translations: Map<String, String>, 
 }
 
 fun Character.increaseStrength(value: Int) {
-    if (this.abilities.strength + value <= 20) {
+    if (this.abilities.strength + value <= MAXIMUM_LEVEL) {
         this.abilities.strength += value
     }
 }
 
 fun Character.increaseDexterity(value: Int) {
-    if (this.abilities.dexterity + value <= 20) {
+    if (this.abilities.dexterity + value <= MAXIMUM_LEVEL) {
         this.abilities.dexterity += value
     }
 }
 
 fun Character.increaseConstitution(value: Int) {
-    if (this.abilities.constitution + value <= 20) {
+    if (this.abilities.constitution + value <= MAXIMUM_LEVEL) {
         this.abilities.constitution += value
     }
 }
 
 fun Character.increaseIntelligence(value: Int) {
-    if (this.abilities.intelligence + value <= 20) {
+    if (this.abilities.intelligence + value <= MAXIMUM_LEVEL) {
         this.abilities.intelligence += value
     }
 }
 
 fun Character.increaseWisdom(value: Int) {
-    if (this.abilities.wisdom + value <= 20) {
+    if (this.abilities.wisdom + value <= MAXIMUM_LEVEL) {
         this.abilities.wisdom += value
     }
 }
 
 fun Character.increaseCharisma(value: Int) {
-    if (this.abilities.charisma + value <= 20) {
+    if (this.abilities.charisma + value <= MAXIMUM_LEVEL) {
         this.abilities.charisma += value
     }
 }
@@ -300,6 +288,22 @@ fun Character.increaseAbilityAndSavingThrows(abilityName: String, value: Int, tr
     }
 }
 
+fun Character.increaseSkillsWithProficiencyBonus(proficient: Boolean, multiplier: Double) {
+    val bonus = (computeProficiencyBonus(this.getCombinedLevel()) * multiplier).toInt()
+    this.skills.forEach { skill ->
+        if (skill.proficient == proficient) {
+            skill.additionalBonus += bonus
+        }
+    }
+}
+
+fun Character.increaseSkillsWithProficiencyBonus(skills: List<String>, multiplier: Double) {
+    val bonus = (computeProficiencyBonus(this.getCombinedLevel()) * multiplier).toInt()
+    skills.forEach { skill ->
+        this.skills.find { it.name == skill }?.additionalBonus = bonus
+    }
+}
+
 fun Character.increaseInitiative(value: Int) {
     this.bonuses.initiative += value
 }
@@ -324,12 +328,8 @@ fun Character.setSpeed(speed: Int) {
     this.speed = speed
 }
 
-fun Character.setSpellSlots(slots: Map<Int, Int>) {
-    this.spellSlots = slots
-}
-
 fun Character.setSpellcastingAbility(ability: String, translations: Map<String, String>) {
-    this.spellcastingAbility = ability
+    this.spellcastingAbilities = (this.spellcastingAbilities + ability).distinct()
     this.spellSaveDC = 8 + computeProficiencyBonus(this.getCombinedLevel()) +
             computeModifier(this.getAbility(ability, translations))
     this.spellAttackBonus =
@@ -389,28 +389,83 @@ fun Character.addSavingThrows(savingThrows: List<String>, translations: Map<Stri
 }
 
 fun Character.addSkills(skills: List<String>, translations: Map<String, String>) {
-    skills.forEach {
-        when (it) {
-            translations[ACROBATICS_TRANSLATION] -> this.skills.acrobatics = true
-            translations[ANIMAL_HANDLING_TRANSLATION] -> this.skills.animalHandling = true
-            translations[ARCANA_TRANSLATION] -> this.skills.arcana = true
-            translations[ATHLETICS_TRANSLATION] -> this.skills.athletics = true
-            translations[DECEPTION_TRANSLATION] -> this.skills.deception = true
-            translations[HISTORY_TRANSLATION] -> this.skills.history = true
-            translations[INSIGHT_TRANSLATION] -> this.skills.insight = true
-            translations[INTIMIDATION_TRANSLATION] -> this.skills.intimidation = true
-            translations[INVESTIGATION_TRANSLATION] -> this.skills.investigation = true
-            translations[MEDICINE_TRANSLATION] -> this.skills.medicine = true
-            translations[NATURE_TRANSLATION] -> this.skills.nature = true
-            translations[PERCEPTION_TRANSLATION] -> this.skills.perception = true
-            translations[PERFORMANCE_TRANSLATION] -> this.skills.performance = true
-            translations[PERSUASION_TRANSLATION] -> this.skills.persuasion = true
-            translations[RELIGION_TRANSLATION] -> this.skills.religion = true
-            translations[SLEIGHT_OF_HANDS_TRANSLATION] -> this.skills.sleightOfHands = true
-            translations[STEALTH_TRANSLATION] -> this.skills.stealth = true
-            translations[SURVIVAL_TRANSLATION] -> this.skills.survival = true
-        }
-    }
+    this.skills += listOf(
+        Skill(
+            name = translations[ACROBATICS_TRANSLATION] ?: "",
+            ability = translations[DEXTERITY_TRANSLATION] ?: "",
+            proficient = skills.contains(translations[ACROBATICS_TRANSLATION])
+        ),
+        Skill(
+            name = translations[ANIMAL_HANDLING_TRANSLATION] ?: "",
+            ability = translations[WISDOM_TRANSLATION] ?: "",
+            proficient = skills.contains(translations[ANIMAL_HANDLING_TRANSLATION])
+        ),
+        Skill(
+            name = translations[ARCANA_TRANSLATION] ?: "",
+            ability = translations[INTELLIGENCE_TRANSLATION] ?: "",
+            proficient = skills.contains(translations[ARCANA_TRANSLATION])),
+        Skill(
+            name = translations[ATHLETICS_TRANSLATION] ?: "",
+            ability = translations[STRENGTH_TRANSLATION] ?: "",
+            proficient = skills.contains(translations[ATHLETICS_TRANSLATION])),
+        Skill(
+            name = translations[DECEPTION_TRANSLATION] ?: "",
+            ability = translations[CHARISMA_TRANSLATION] ?: "",
+            proficient = skills.contains(translations[DECEPTION_TRANSLATION])),
+        Skill(
+            name = translations[HISTORY_TRANSLATION] ?: "",
+            ability = translations[INTELLIGENCE_TRANSLATION] ?: "",
+            proficient = skills.contains(translations[HISTORY_TRANSLATION])),
+        Skill(
+            name = translations[INSIGHT_TRANSLATION] ?: "",
+            ability = translations[WISDOM_TRANSLATION] ?: "",
+            proficient = skills.contains(translations[INSIGHT_TRANSLATION])),
+        Skill(
+            name = translations[INTIMIDATION_TRANSLATION] ?: "",
+            ability = translations[CHARISMA_TRANSLATION] ?: "",
+            proficient = skills.contains(translations[INTIMIDATION_TRANSLATION])),
+        Skill(
+            name = translations[INVESTIGATION_TRANSLATION] ?: "",
+            ability = translations[INTELLIGENCE_TRANSLATION] ?: "",
+            proficient = skills.contains(translations[INVESTIGATION_TRANSLATION])),
+        Skill(
+            name = translations[MEDICINE_TRANSLATION] ?: "",
+            ability = translations[WISDOM_TRANSLATION] ?: "",
+            proficient = skills.contains(translations[MEDICINE_TRANSLATION])),
+        Skill(
+            name = translations[NATURE_TRANSLATION] ?: "",
+            ability = translations[INTELLIGENCE_TRANSLATION] ?: "",
+            proficient = skills.contains(translations[NATURE_TRANSLATION])),
+        Skill(
+            name = translations[PERCEPTION_TRANSLATION] ?: "",
+            ability = translations[WISDOM_TRANSLATION] ?: "",
+            proficient = skills.contains(translations[PERCEPTION_TRANSLATION])),
+        Skill(
+            name = translations[PERFORMANCE_TRANSLATION] ?: "",
+            ability = translations[CHARISMA_TRANSLATION] ?: "",
+            proficient = skills.contains(translations[PERFORMANCE_TRANSLATION])),
+        Skill(
+            name = translations[PERSUASION_TRANSLATION] ?: "",
+            ability = translations[CHARISMA_TRANSLATION] ?: "",
+            proficient = skills.contains(translations[PERSUASION_TRANSLATION])),
+        Skill(
+            name = translations[RELIGION_TRANSLATION] ?: "",
+            ability = translations[INTELLIGENCE_TRANSLATION] ?: "",
+            proficient = skills.contains(translations[RELIGION_TRANSLATION])),
+        Skill(
+            name = translations[SLEIGHT_OF_HANDS_TRANSLATION] ?: "",
+            ability = translations[DEXTERITY_TRANSLATION] ?: "",
+            proficient = skills.contains(translations[SLEIGHT_OF_HANDS_TRANSLATION])
+        ),
+        Skill(
+            name = translations[STEALTH_TRANSLATION] ?: "",
+            ability = translations[DEXTERITY_TRANSLATION] ?: "",
+            proficient = skills.contains(translations[STEALTH_TRANSLATION])),
+        Skill(
+            name = translations[SURVIVAL_TRANSLATION] ?: "",
+            ability = translations[WISDOM_TRANSLATION] ?: "",
+            proficient = skills.contains(translations[SURVIVAL_TRANSLATION])),
+    )
 }
 
 fun Character.getCombinedLevel(): Int = this.classes.values.sum()

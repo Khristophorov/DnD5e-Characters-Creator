@@ -11,10 +11,8 @@ import io.mockk.verify
 import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.User
 import me.khrys.dnd.charcreator.common.models.emptyEquipment
-import me.khrys.dnd.charcreator.common.models.emptyRace
 import me.khrys.dnd.charcreator.common.models.initialAbilities
 import me.khrys.dnd.charcreator.common.models.initialSavingThrows
-import me.khrys.dnd.charcreator.common.models.initialSkills
 import me.khrys.dnd.charcreator.server.authentication.EMAIL
 import org.bson.conversions.Bson
 import org.litote.kmongo.findOne
@@ -30,10 +28,9 @@ val character = Character(
     hitPoints = 10,
     abilities = initialAbilities(),
     savingThrows = initialSavingThrows(),
-    skills = initialSkills(),
     speed = 10,
-    race = emptyRace(),
-    subrace = emptyRace(),
+    race = "",
+    subrace = "",
     equipment = emptyEquipment()
 )
 val user = User(EMAIL, listOf(character))

@@ -5,5 +5,6 @@ data class SavingThrowsItem(
     val label: String,
     val value: Int,
     val proficient: Boolean,
-    val proficiencyBonus: Int
+    val proficiencyBonus: Int,
+    val additionalBonus: Int = 0
 )

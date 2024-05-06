@@ -22,7 +22,7 @@ data class Character(
     var hitPoints: Int,
     var abilities: Abilities,
     var savingThrows: SavingThrows,
-    var skills: Skills,
+    var skills: List<Skill> = emptyList(),
     var speed: Int = 0,
     var armorClass: Int = 0,
     var race: String,
@@ -34,8 +34,7 @@ data class Character(
     var maneuvers: List<Maneuver> = emptyList(),
     var additionalSpells: List<Spell> = emptyList(),
     var spells: List<Spell> = emptyList(),
-    var spellSlots: Map<Int, Int> = emptyMap(),
-    var spellcastingAbility: String = "",
+    var spellcastingAbilities: List<String> = emptyList(),
     var spellSaveDC: Int = 0,
     var spellAttackBonus: Int = 0,
     var bonuses: CharBonuses = CharBonuses(),
@@ -80,25 +79,11 @@ data class SavingThrows(
 )
 
 @Serializable
-data class Skills(
-    var acrobatics: Boolean,
-    var animalHandling: Boolean,
-    var arcana: Boolean,
-    var athletics: Boolean,
-    var deception: Boolean,
-    var history: Boolean,
-    var insight: Boolean,
-    var intimidation: Boolean,
-    var investigation: Boolean,
-    var medicine: Boolean,
-    var nature: Boolean,
-    var perception: Boolean,
-    var performance: Boolean,
-    var persuasion: Boolean,
-    var religion: Boolean,
-    var sleightOfHands: Boolean,
-    var stealth: Boolean,
-    var survival: Boolean
+data class Skill(
+    var name: String,
+    var ability: String,
+    var proficient: Boolean = false,
+    var additionalBonus: Int = 0,
 )
 
 @Serializable
@@ -263,7 +248,6 @@ fun emptyCharacter() =
         hitPoints = 0,
         abilities = initialAbilities(),
         savingThrows = initialSavingThrows(),
-        skills = initialSkills(),
         race = "",
         features = emptyList(),
         equipment = emptyEquipment()
@@ -292,25 +276,4 @@ fun initialSavingThrows() = SavingThrows(
     intelligence = false,
     wisdom = false,
     charisma = false
-)
-
-fun initialSkills() = Skills(
-    acrobatics = false,
-    animalHandling = false,
-    arcana = false,
-    athletics = false,
-    deception = false,
-    history = false,
-    insight = false,
-    intimidation = false,
-    investigation = false,
-    medicine = false,
-    nature = false,
-    perception = false,
-    performance = false,
-    persuasion = false,
-    religion = false,
-    sleightOfHands = false,
-    stealth = false,
-    survival = false
 )

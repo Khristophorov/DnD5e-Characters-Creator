@@ -37,6 +37,7 @@ import me.khrys.dnd.charcreator.common.DESCRIPTION_TRANSLATION
 import me.khrys.dnd.charcreator.common.NAME_TRANSLATION
 import me.khrys.dnd.charcreator.common.NEXT_TRANSLATION
 import me.khrys.dnd.charcreator.common.PRICE_TRANSLATION
+import me.khrys.dnd.charcreator.common.PROFICIENT
 import me.khrys.dnd.charcreator.common.PROPERTIES_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPELL_LEVEL_SUFFIX_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPELL_LEVEL_TRANSLATION
@@ -48,7 +49,9 @@ import me.khrys.dnd.charcreator.common.TYPE_TRANSLATION
 import me.khrys.dnd.charcreator.common.VALIDATION_REQUIRED
 import me.khrys.dnd.charcreator.common.VALUE_SHOULD_BE_CHOSEN_TRANSLATION
 import me.khrys.dnd.charcreator.common.WEIGHT_TRANSLATION
+import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.SimpleEquipment
+import me.khrys.dnd.charcreator.common.models.Spell
 import me.khrys.dnd.charcreator.common.models.Weapon
 import me.khrys.dnd.charcreator.common.models.emptyFeat
 import me.khrys.dnd.charcreator.common.models.emptyManeuver
@@ -180,12 +183,16 @@ val SkillChooser = memoDialog(FC<FeatureProps<String>> { props ->
 val SkillsChooser = FC<MultipleStringFeatureProps> { props ->
     if (props.open) {
         ChooseSeveral {
+            val translations = useContext(TranslationsContext)
+            val character = applyFeatures(props.character, translations)
+            val values = if (props.open)
+                computeSkillsValues(character, props.function.values) else emptyList()
             this.open = props.open
             this.setOpen = props.setOpen
             this.header = props.feature.name
             this.description = props.feature.description
             this.size = props.size
-            this.values = if (props.open) props.function.values.subList(3, props.function.values.size) else emptyList()
+            this.values = values
             this.setValue = props.setValue
         }
     }
@@ -215,6 +222,49 @@ val ElementChooser = FC<FeatureProps<String>> { props ->
             this.description = props.feature.description
             this.values = if (props.open) values.subList(1, values.size) else emptyList()
             this.setValue = props.setValue
+        }
+    }
+}
+
+val FeatureChooser = FC<FeatureProps<String>> { props ->
+    if (props.open) {
+        val (chosenFeature, setChosenFeature) = useState("")
+        val (description, setDescription) = useState("")
+        val values = props.function.values
+        val features = values.filterIndexed { index, _ -> (index + 1) % 3 != 0 }
+            .chunked(2) { it[0] to it[1] }.toMap()
+        val translations = useContext(TranslationsContext)
+        Dialog {
+            this.open = props.open
+            DialogTitle {
+                +props.feature.name
+            }
+            DialogContent {
+                this.dividers = true
+                DialogContentText {
+                    +props.feature.description
+                }
+                ValidatorForm {
+                    this.onSubmit = {
+                        props.setOpen(false)
+                        props.setValue(chosenFeature)
+                    }
+                    ValidatedList {
+                        this.label = props.feature.name
+                        this.value = chosenFeature
+                        this.validators = arrayOf(VALIDATION_REQUIRED)
+                        this.errorMessages = arrayOf(translations[VALUE_SHOULD_BE_CHOSEN_TRANSLATION] ?: "")
+                        this.onChange = { setChosenFeature(it.value()) }
+                        this.useDescription = true
+                        this.menuItems = features
+                        this.setDescription = { setDescription(it) }
+                        this.description = description
+                    }
+                    DialogActions {
+                        Submit { +(translations[NEXT_TRANSLATION] ?: "") }
+                    }
+                }
+            }
         }
     }
 }
@@ -398,6 +448,7 @@ val SpellsTable = FC<SpellsFeatureProps> { props ->
             val filteredSpells = spells.values.filter {
                 if (isMaxLevel) it.level == level else it.level in 1..level
             }.filter { spell -> classes.any { spell.classes.contains(it) } }
+                .sortedWith(compareBy(Spell::level, Spell::_id))
             filteredSpells.forEach { spell ->
                 val (open, setOpen) = useState(false)
                 TableRow {
@@ -927,4 +978,14 @@ val EditableCell = FC<TextValidatorProps> { props ->
             }
         }
     }
+}
+
+private fun computeSkillsValues(
+    character: Character,
+    values: List<String>
+): List<String> {
+    if (values[3] == PROFICIENT) {
+        return character.skills.filter { it.proficient }.map { it.name }
+    }
+    return values.subList(3, values.size)
 }
