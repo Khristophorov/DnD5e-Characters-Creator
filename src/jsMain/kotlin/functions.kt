@@ -38,6 +38,7 @@ import me.khrys.dnd.charcreator.common.models.Filter.Comparator.EQUALS_OR_HIGHER
 import me.khrys.dnd.charcreator.common.models.Filter.Param.CHARISMA
 import me.khrys.dnd.charcreator.common.models.Filter.Param.CONSTITUTION
 import me.khrys.dnd.charcreator.common.models.Filter.Param.DEXTERITY
+import me.khrys.dnd.charcreator.common.models.Filter.Param.FEATURES
 import me.khrys.dnd.charcreator.common.models.Filter.Param.INTELLIGENCE
 import me.khrys.dnd.charcreator.common.models.Filter.Param.LEFT_HAND_TYPE
 import me.khrys.dnd.charcreator.common.models.Filter.Param.LEVEL
@@ -115,7 +116,7 @@ fun applyFeatures(
     spells: Map<String, Spell> = emptyMap()
 ): Character {
     val featuredCharacter = character.clone()
-    character.features.forEach { feature ->
+    character.features.sortedBy { it.order }.forEach { feature ->
         val accept =
             feature.filters.isEmpty() || feature.filters.map { it.apply(character) }.reduce { old, new -> old && new }
         if (accept) {
@@ -186,8 +187,10 @@ fun Character.applyFeature(feature: Feature, translations: Map<String, String>, 
                 function.values[1].toInt(),
                 translations
             )
+
             "Increase Non Proficient Skills With Proficiency Bonus" ->
                 increaseSkillsWithProficiencyBonus(false, function.values[0].toDouble())
+
             "Double Skill Bonus" -> increaseSkillsWithProficiencyBonus(function.values, 1.0)
             "Increase Initiative" -> increaseInitiative(function.values[0].toInt())
             "Increase Perception" -> increasePerception(function.values[0].toInt())
@@ -389,83 +392,138 @@ fun Character.addSavingThrows(savingThrows: List<String>, translations: Map<Stri
 }
 
 fun Character.addSkills(skills: List<String>, translations: Map<String, String>) {
-    this.skills += listOf(
-        Skill(
+    this.addSkill(
+        skills, translations[ACROBATICS_TRANSLATION] ?: "", Skill(
             name = translations[ACROBATICS_TRANSLATION] ?: "",
             ability = translations[DEXTERITY_TRANSLATION] ?: "",
             proficient = skills.contains(translations[ACROBATICS_TRANSLATION])
-        ),
-        Skill(
+        )
+    )
+    this.addSkill(
+        skills, translations[ANIMAL_HANDLING_TRANSLATION] ?: "", Skill(
             name = translations[ANIMAL_HANDLING_TRANSLATION] ?: "",
             ability = translations[WISDOM_TRANSLATION] ?: "",
             proficient = skills.contains(translations[ANIMAL_HANDLING_TRANSLATION])
-        ),
-        Skill(
+        )
+    )
+    this.addSkill(
+        skills, translations[ARCANA_TRANSLATION] ?: "", Skill(
             name = translations[ARCANA_TRANSLATION] ?: "",
             ability = translations[INTELLIGENCE_TRANSLATION] ?: "",
-            proficient = skills.contains(translations[ARCANA_TRANSLATION])),
-        Skill(
+            proficient = skills.contains(translations[ARCANA_TRANSLATION])
+        )
+    )
+    this.addSkill(
+        skills, translations[ATHLETICS_TRANSLATION] ?: "", Skill(
             name = translations[ATHLETICS_TRANSLATION] ?: "",
             ability = translations[STRENGTH_TRANSLATION] ?: "",
-            proficient = skills.contains(translations[ATHLETICS_TRANSLATION])),
-        Skill(
+            proficient = skills.contains(translations[ATHLETICS_TRANSLATION])
+        )
+    )
+    this.addSkill(
+        skills, translations[DECEPTION_TRANSLATION] ?: "", Skill(
             name = translations[DECEPTION_TRANSLATION] ?: "",
             ability = translations[CHARISMA_TRANSLATION] ?: "",
-            proficient = skills.contains(translations[DECEPTION_TRANSLATION])),
-        Skill(
+            proficient = skills.contains(translations[DECEPTION_TRANSLATION])
+        )
+    )
+    this.addSkill(
+        skills, translations[HISTORY_TRANSLATION] ?: "", Skill(
             name = translations[HISTORY_TRANSLATION] ?: "",
             ability = translations[INTELLIGENCE_TRANSLATION] ?: "",
-            proficient = skills.contains(translations[HISTORY_TRANSLATION])),
-        Skill(
+            proficient = skills.contains(translations[HISTORY_TRANSLATION])
+        )
+    )
+    this.addSkill(
+        skills, translations[INSIGHT_TRANSLATION] ?: "", Skill(
             name = translations[INSIGHT_TRANSLATION] ?: "",
             ability = translations[WISDOM_TRANSLATION] ?: "",
-            proficient = skills.contains(translations[INSIGHT_TRANSLATION])),
-        Skill(
+            proficient = skills.contains(translations[INSIGHT_TRANSLATION])
+        )
+    )
+    this.addSkill(
+        skills, translations[INTIMIDATION_TRANSLATION] ?: "", Skill(
             name = translations[INTIMIDATION_TRANSLATION] ?: "",
             ability = translations[CHARISMA_TRANSLATION] ?: "",
-            proficient = skills.contains(translations[INTIMIDATION_TRANSLATION])),
-        Skill(
+            proficient = skills.contains(translations[INTIMIDATION_TRANSLATION])
+        )
+    )
+    this.addSkill(
+        skills, translations[INVESTIGATION_TRANSLATION] ?: "", Skill(
             name = translations[INVESTIGATION_TRANSLATION] ?: "",
             ability = translations[INTELLIGENCE_TRANSLATION] ?: "",
-            proficient = skills.contains(translations[INVESTIGATION_TRANSLATION])),
-        Skill(
+            proficient = skills.contains(translations[INVESTIGATION_TRANSLATION])
+        )
+    )
+    this.addSkill(
+        skills, translations[MEDICINE_TRANSLATION] ?: "", Skill(
             name = translations[MEDICINE_TRANSLATION] ?: "",
             ability = translations[WISDOM_TRANSLATION] ?: "",
-            proficient = skills.contains(translations[MEDICINE_TRANSLATION])),
-        Skill(
+            proficient = skills.contains(translations[MEDICINE_TRANSLATION])
+        )
+    )
+    this.addSkill(
+        skills, translations[NATURE_TRANSLATION] ?: "", Skill(
             name = translations[NATURE_TRANSLATION] ?: "",
             ability = translations[INTELLIGENCE_TRANSLATION] ?: "",
-            proficient = skills.contains(translations[NATURE_TRANSLATION])),
-        Skill(
+            proficient = skills.contains(translations[NATURE_TRANSLATION])
+        )
+    )
+    this.addSkill(
+        skills, translations[PERCEPTION_TRANSLATION] ?: "", Skill(
             name = translations[PERCEPTION_TRANSLATION] ?: "",
             ability = translations[WISDOM_TRANSLATION] ?: "",
-            proficient = skills.contains(translations[PERCEPTION_TRANSLATION])),
-        Skill(
+            proficient = skills.contains(translations[PERCEPTION_TRANSLATION])
+        )
+    )
+    this.addSkill(
+        skills, translations[PERFORMANCE_TRANSLATION] ?: "", Skill(
             name = translations[PERFORMANCE_TRANSLATION] ?: "",
             ability = translations[CHARISMA_TRANSLATION] ?: "",
-            proficient = skills.contains(translations[PERFORMANCE_TRANSLATION])),
-        Skill(
+            proficient = skills.contains(translations[PERFORMANCE_TRANSLATION])
+        )
+    )
+    this.addSkill(
+        skills, translations[PERSUASION_TRANSLATION] ?: "", Skill(
             name = translations[PERSUASION_TRANSLATION] ?: "",
             ability = translations[CHARISMA_TRANSLATION] ?: "",
-            proficient = skills.contains(translations[PERSUASION_TRANSLATION])),
-        Skill(
+            proficient = skills.contains(translations[PERSUASION_TRANSLATION])
+        )
+    )
+    this.addSkill(
+        skills, translations[RELIGION_TRANSLATION] ?: "", Skill(
             name = translations[RELIGION_TRANSLATION] ?: "",
             ability = translations[INTELLIGENCE_TRANSLATION] ?: "",
-            proficient = skills.contains(translations[RELIGION_TRANSLATION])),
-        Skill(
+            proficient = skills.contains(translations[RELIGION_TRANSLATION])
+        )
+    )
+    this.addSkill(
+        skills, translations[SLEIGHT_OF_HANDS_TRANSLATION] ?: "", Skill(
             name = translations[SLEIGHT_OF_HANDS_TRANSLATION] ?: "",
             ability = translations[DEXTERITY_TRANSLATION] ?: "",
             proficient = skills.contains(translations[SLEIGHT_OF_HANDS_TRANSLATION])
-        ),
-        Skill(
+        )
+    )
+    this.addSkill(
+        skills, translations[STEALTH_TRANSLATION] ?: "", Skill(
             name = translations[STEALTH_TRANSLATION] ?: "",
             ability = translations[DEXTERITY_TRANSLATION] ?: "",
-            proficient = skills.contains(translations[STEALTH_TRANSLATION])),
-        Skill(
+            proficient = skills.contains(translations[STEALTH_TRANSLATION])
+        )
+    )
+    this.addSkill(
+        skills, translations[SURVIVAL_TRANSLATION] ?: "", Skill(
             name = translations[SURVIVAL_TRANSLATION] ?: "",
             ability = translations[WISDOM_TRANSLATION] ?: "",
-            proficient = skills.contains(translations[SURVIVAL_TRANSLATION])),
+            proficient = skills.contains(translations[SURVIVAL_TRANSLATION])
+        )
     )
+}
+
+fun Character.addSkill(toSetProficient: List<String>, skillName: String, newSkill: Skill) {
+    val currentSkill = this.skills.find { it.name == skillName } ?: newSkill
+    currentSkill.proficient = toSetProficient.contains(skillName) || currentSkill.proficient
+    this.skills = this.skills.filter { it.name != skillName } + currentSkill
 }
 
 fun Character.getCombinedLevel(): Int = this.classes.values.sum()
@@ -521,6 +579,8 @@ fun Character.allSpells() = (this.spells + this.additionalSpells).distinct()
 
 fun Character.isNotMaximumLevel() = this.getCombinedLevel() < MAXIMUM_LEVEL
 
+fun Character.isProficient(skill: String) = this.skills.find { it.name == skill }?.proficient ?: false
+
 fun Feat.toFeature(): Feature = Feature(
     name = this._id,
     description = this.description,
@@ -535,6 +595,7 @@ fun Filter.apply(character: Character): Boolean {
         WORE_TYPE -> emptyList()
         LEFT_HAND_TYPE -> emptyList()
         RIGHT_HAND_TYPE -> emptyList()
+        FEATURES -> character.features.map { it.name }
         else -> emptyList()
     }
     val dataNum = when (this.param) {

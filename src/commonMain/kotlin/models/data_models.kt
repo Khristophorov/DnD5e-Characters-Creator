@@ -114,7 +114,8 @@ data class Feature(
     var withoutFeats: Boolean = false,
     var singleClass: Boolean = false,
     var multiClass: Boolean = false,
-    var source: String = ""
+    var source: String = "",
+    var order: Int = 0
 )
 
 @Serializable
@@ -159,7 +160,8 @@ data class Filter(
         INTELLIGENCE,
         WISDOM,
         CHARISMA,
-        LEVEL
+        LEVEL,
+        FEATURES
     }
 
     @Serializable

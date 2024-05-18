@@ -21,6 +21,7 @@ import me.khrys.dnd.charcreator.client.components.validators.TextValidator
 import me.khrys.dnd.charcreator.client.components.validators.TextValidatorProps
 import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
 import me.khrys.dnd.charcreator.client.computeSpellLevel
+import me.khrys.dnd.charcreator.client.isProficient
 import me.khrys.dnd.charcreator.client.toDangerousHtml
 import me.khrys.dnd.charcreator.client.toFeature
 import me.khrys.dnd.charcreator.client.utils.playSound
@@ -185,8 +186,10 @@ val SkillsChooser = FC<MultipleStringFeatureProps> { props ->
         ChooseSeveral {
             val translations = useContext(TranslationsContext)
             val character = applyFeatures(props.character, translations)
-            val values = if (props.open)
-                computeSkillsValues(character, props.function.values) else emptyList()
+            val values =
+                if (props.open)
+                    computeSkillsValues(character, props.function.values)
+                else emptyList()
             this.open = props.open
             this.setOpen = props.setOpen
             this.header = props.feature.name
@@ -987,5 +990,5 @@ private fun computeSkillsValues(
     if (values[3] == PROFICIENT) {
         return character.skills.filter { it.proficient }.map { it.name }
     }
-    return values.subList(3, values.size)
+    return values.subList(3, values.size).filter { !character.isProficient(it) }
 }

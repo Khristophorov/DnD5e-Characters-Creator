@@ -3,6 +3,7 @@ package me.khrys.dnd.charcreator.client.components.dialogs
 import kotlinx.serialization.json.Json
 import me.khrys.dnd.charcreator.client.ManeuversContext
 import me.khrys.dnd.charcreator.client.SpellsContext
+import me.khrys.dnd.charcreator.client.apply
 import me.khrys.dnd.charcreator.client.components.dialogs.windows.InformWindow
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.AbilityChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.ElementChooser
@@ -22,8 +23,10 @@ import me.khrys.dnd.charcreator.client.components.inputs.choosers.SpellsChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.WeaponsChooser
 import me.khrys.dnd.charcreator.client.format
 import me.khrys.dnd.charcreator.common.models.Armor
+import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.DnDFunction
 import me.khrys.dnd.charcreator.common.models.Feature
+import me.khrys.dnd.charcreator.common.models.Filter
 import me.khrys.dnd.charcreator.common.models.Weapon
 import react.FC
 import react.ReactNode
@@ -55,6 +58,8 @@ val WINDOW_FUNCTIONS = listOf(
     "Add Weapon",
     "Add Armor"
 )
+
+val FILTERS_TO_APPLY = setOf(Filter.Param.FEATURES)
 
 val CollectRaceFeatures = memoDialog(FC<RaceBaseProps> { props ->
     if (props.open) {
@@ -116,19 +121,21 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
     val (child, setChild) = useState(DEFAULT_NODE)
     if (props.open) {
         if (child == DEFAULT_NODE) {
+            val simpleFeatures = mutableListOf<Feature>()
             val functionFeatures = mutableListOf<FC<DialogProps>>()
             val functionsIterator = functionFeatures.iterator()
             val nextAction = {
                 if (functionsIterator.hasNext()) {
                     setChild(createElement(functionsIterator.next()))
                 } else {
+                    props.character.features += simpleFeatures.filter { shouldAddFeature(props.character, it) }
                     props.action()
                     props.setOpen(false)
                 }
             }
             props.features.filter { filterFeats(it, props.useFeats) }.forEach { feature ->
                 if (feature.functions.isEmpty()) {
-                    props.character.features += feature
+                    simpleFeatures.add(feature)
                 } else {
                     if (hasWindowFunctions(feature)) {
                         feature.functions.forEach { function ->
@@ -436,24 +443,29 @@ private fun skillsChooser(
     nextAction: () -> Unit
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
-    SkillsChooser {
-        this.open = open
-        this.setOpen = { setOpen(it) }
-        this.feature = feature
-        this.function = function
-        this.character = props.character
-        this.size = if (function.values.isEmpty()) 0 else function.values[1].toInt()
-        this.setValue = { values ->
-            console.info("Chosen skills: $values")
-            props.character.features +=
-                Feature(
-                    name = feature.name,
-                    description = function.values[2].format(*values.toTypedArray()),
-                    functions = listOf(DnDFunction(function.values[0], values)),
-                    source = feature.source
-                )
-            nextAction()
+    if (shouldAddFeature(props.character, feature)) {
+        SkillsChooser {
+            this.open = open
+            this.setOpen = { setOpen(it) }
+            this.feature = feature
+            this.function = function
+            this.character = props.character
+            this.size = if (function.values.isEmpty()) 0 else function.values[1].toInt()
+            this.setValue = { values ->
+                console.info("Chosen skills: $values")
+                props.character.features +=
+                    Feature(
+                        name = feature.name,
+                        description = function.values[2].format(*values.toTypedArray()),
+                        functions = listOf(DnDFunction(function.values[0], values)),
+                        source = feature.source
+                    )
+                nextAction()
+            }
         }
+    }
+    else {
+        nextAction()
     }
 }
 
@@ -752,3 +764,8 @@ fun filterMulticlass(feature: Feature, multiclass: Boolean): Boolean =
 
 private fun hasWindowFunctions(feature: Feature) =
     feature.functions.map { it.name }.any { WINDOW_FUNCTIONS.contains(it) }
+
+private fun shouldAddFeature(character: Character, feature: Feature) =
+    feature.filters.filter { FILTERS_TO_APPLY.contains(it.param) }
+        .map { it.apply(character) }
+        .fold(true) { b1, b2 -> b1 && b2 }
