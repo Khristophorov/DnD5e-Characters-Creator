@@ -21,6 +21,7 @@ import mui.material.DialogContent
 import mui.material.DialogContentText
 import mui.material.DialogTitle
 import react.FC
+import react.ReactNode
 import react.useState
 import web.cssom.ClassName
 
@@ -44,7 +45,7 @@ val CharNameWindow = FC<CharBasedProps> { props ->
                         props.action()
                     }
                     TextValidator {
-                        this.label = props.translations[ENTER_NAME_LABEL_TRANSLATION] ?: ""
+                        this.label = ReactNode(props.translations[ENTER_NAME_LABEL_TRANSLATION])
                         this.value = charName
                         this.validators = arrayOf(VALIDATION_REQUIRED, VALIDATION_DUPLICATE_NAME)
                         this.errorMessages = arrayOf(

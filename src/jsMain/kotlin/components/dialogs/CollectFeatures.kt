@@ -255,7 +255,7 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
             }
             nextAction()
         }
-        this.child(child)
+        +child
     }
 }
 

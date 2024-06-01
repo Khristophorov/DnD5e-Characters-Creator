@@ -18,6 +18,6 @@ val Fab = FC<FabProps> { props ->
             playSound(BUTTON_SOUND_ID)
             props.onClick?.let { it(event) }
         }
-        child(props.children)
+        +props.children
     }
 }

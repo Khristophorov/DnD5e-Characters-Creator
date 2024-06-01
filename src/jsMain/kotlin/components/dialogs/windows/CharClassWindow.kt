@@ -28,6 +28,7 @@ import mui.material.DialogContent
 import mui.material.DialogContentText
 import mui.material.DialogTitle
 import react.FC
+import react.ReactNode
 import react.useContext
 import react.useState
 import web.cssom.ClassName
@@ -71,7 +72,7 @@ var CharClassWindow = memoDialog(FC<CharBasedProps> { props ->
                         }
                     }
                     ValidatedList {
-                        this.label = translations[ENTER_CLASS_TRANSLATION] ?: ""
+                        this.label = ReactNode(translations[ENTER_CLASS_TRANSLATION])
                         this.value = charClass._id
                         this.validators = arrayOf(VALIDATION_REQUIRED)
                         this.errorMessages = arrayOf(translations[CLASS_SHOULD_BE_FILLED_TRANSLATION] ?: "")

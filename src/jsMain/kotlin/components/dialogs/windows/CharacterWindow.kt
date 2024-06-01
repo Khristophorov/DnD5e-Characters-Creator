@@ -275,13 +275,13 @@ private val AdditionalTabs = FC<CharPropsWithValue> { props ->
         this.onChange = { _, newTabValue -> props.setValue(newTabValue as Int) }
         if (props.character.maneuvers.isNotEmpty()) {
             Tab {
-                this.label = ReactNode(props.translations[MANEUVERS_TRANSLATION] ?: "")
+                this.label = ReactNode(props.translations[MANEUVERS_TRANSLATION])
                 this.value = MANEUVERS_INDEX
             }
         }
         if (props.character.allSpells().isNotEmpty()) {
             Tab {
-                this.label = ReactNode(props.translations[SPELLS_TRANSLATION] ?: "")
+                this.label = ReactNode(props.translations[SPELLS_TRANSLATION])
                 this.value = SPELLS_INDEX
             }
         }

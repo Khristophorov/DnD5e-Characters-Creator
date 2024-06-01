@@ -2,8 +2,8 @@ package me.khrys.dnd.charcreator.client.components.inputs
 
 import me.khrys.dnd.charcreator.client.components.inputs.texts.CenteredLabel
 import me.khrys.dnd.charcreator.client.components.inputs.tooltips.DelayedTooltip
-import me.khrys.dnd.charcreator.client.components.validators.InputProps
 import me.khrys.dnd.charcreator.client.components.validators.TextValidator
+import me.khrys.dnd.charcreator.client.components.validators.inputProps
 import me.khrys.dnd.charcreator.client.computeModifier
 import me.khrys.dnd.charcreator.common.ABILITY_MAXIMUM
 import me.khrys.dnd.charcreator.common.ABILITY_MINIMUM
@@ -44,10 +44,9 @@ val AbilityBox = FC<AbilityBoxProps> { props ->
                 this.label = props.label
             }
             TextValidator {
-                val readonly = if (props.readOnly == undefined) "false" else props.readOnly.toString()
                 this.value = props.value.toString()
                 this.type = number
-                this.inputProps = InputProps(readonly = readonly)
+                this.inputProps = inputProps(readonly = props.readOnly.toString())
                 this.validators = arrayOf(VALIDATION_LOWER_0, VALIDATION_UPPER_20)
                 this.errorMessages = if (props.readOnly) emptyArray() else arrayOf(
                     props.translations[ABILITY_MINIMUM] ?: "",

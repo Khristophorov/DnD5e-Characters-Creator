@@ -25,6 +25,9 @@ hs_err_pid*
 # Gradle files
 /.gradle/
 
+# Kotlin files
+/.kotlin
+
 # Output folder
 /build/
 /out/

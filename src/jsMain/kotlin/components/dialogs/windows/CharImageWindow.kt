@@ -5,9 +5,9 @@ import me.khrys.dnd.charcreator.client.components.buttons.BackButton
 import me.khrys.dnd.charcreator.client.components.buttons.Button
 import me.khrys.dnd.charcreator.client.components.buttons.Submit
 import me.khrys.dnd.charcreator.client.components.dialogs.CharBasedProps
-import me.khrys.dnd.charcreator.client.components.validators.InputProps
 import me.khrys.dnd.charcreator.client.components.validators.TextValidator
 import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
+import me.khrys.dnd.charcreator.client.components.validators.inputProps
 import me.khrys.dnd.charcreator.client.utils.imageFromEvent
 import me.khrys.dnd.charcreator.client.utils.value
 import me.khrys.dnd.charcreator.common.CLASS_DISABLED
@@ -55,7 +55,7 @@ val CharImageWindow = FC<CharBasedProps> { props ->
                         this.type = file
                         this.value = charImage
                         this.className = ClassName(CLASS_DISABLED)
-                        this.inputProps = InputProps(accept = "image/*")
+                        this.inputProps = inputProps(accept = "image/*")
                         this.validators = arrayOf(VALIDATION_REQUIRED)
                         this.onChange = { event ->
                             setCharImage(event.value())

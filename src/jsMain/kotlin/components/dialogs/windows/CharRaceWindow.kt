@@ -64,7 +64,7 @@ val CharRaceWindow = memoDialog(FC<CharBasedProps> { props ->
                         }
                     }
                     ValidatedList {
-                        this.label = translations[ENTER_RACE_TRANSLATION] ?: ""
+                        this.label = ReactNode(translations[ENTER_RACE_TRANSLATION])
                         this.value = race._id
                         this.validators = arrayOf(VALIDATION_REQUIRED)
                         this.errorMessages = arrayOf(translations[RACE_SHOULD_BE_FILLED_TRANSLATION] ?: "")

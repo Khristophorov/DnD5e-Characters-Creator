@@ -54,7 +54,7 @@ val Tooltip = FC<TooltipProps> { props ->
                 props.id?.let { this.id = it }
                 this.onMouseEnter = { event -> setPopoverAnchor(event.currentTarget.unsafeCast<EventTarget>()) }
                 this.onMouseLeave = { setPopoverAnchor(null) }
-                child(props.children)
+                +props.children
             }
             Popover {
                 this.open = popoverAnchor != null

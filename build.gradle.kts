@@ -1,8 +1,12 @@
+@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
+
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
-    kotlin("multiplatform") version "1.9.21"
-    kotlin("plugin.serialization") version "1.9.21"
+    kotlin("multiplatform") version "2.0.0"
+    kotlin("plugin.serialization") version "2.0.0"
     application
 }
 
@@ -10,32 +14,29 @@ group = "me.khris"
 version = "1.0-SNAPSHOT"
 
 // Kotlin dependencies
-val kotlinCoroutinesVersion = "1.7.3"
-val kotlinHtmlVersion = "0.10.1"
-val kotlinReactVersion = "18.2.0-pre.598"
-val kotlinMuiVersion = "5.13.6-pre.598"
-val kotlinMuiIconsVersion = "5.11.16-pre.598"
-val kotlinEmotionVersion = "11.11.1-pre.598"
-val kotlinSerializationVersion = "1.6.2"
+val kotlinCoroutinesVersion = "1.8.1"
+val kotlinHtmlVersion = "0.11.0"
+val kotlinReactVersion = "18.2.0-pre.638"
+val kotlinMuiVersion = "5.14.12-pre.638"
+val kotlinMuiIconsVersion = "5.14.12-pre.638"
+val kotlinEmotionVersion = "11.11.1-pre.638"
+val kotlinSerializationVersion = "1.6.3"
 val kmongoVersion = "4.11.0"
-val ktorVersion = "2.3.7"
-val logbackVersion = "1.4.14"
-val mockkVersion = "1.13.8"
+val ktorVersion = "2.3.11"
+val logbackVersion = "1.5.6"
+val mockkVersion = "1.13.11"
 
 // JavaScript dependencies
 val reactMaterialUiFormValidatorVersion = "3.0.1"
 
 repositories {
     mavenCentral()
-    maven { url = uri("https://dl.bintray.com/kotlin/kotlin-js-wrappers") }
-    maven { url = uri("https://dl.bintray.com/kotlin/kotlinx") }
-    maven { url = uri("https://dl.bintray.com/kotlin/ktor") }
 }
 
 kotlin {
     jvm {
-        compilations.all {
-            kotlinOptions.jvmTarget = "11"
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
         }
         testRuns["test"].executionTask.configure {
             useJUnit()
@@ -49,6 +50,7 @@ kotlin {
                 cssSupport {
                     enabled.set(true)
                 }
+                mainOutputFileName.set("output.js")
             }
             webpackTask(enableCss)
             runTask(enableCss)
@@ -127,10 +129,12 @@ application {
 }
 
 tasks.getByName<KotlinWebpack>("jsBrowserProductionWebpack") {
+    dependsOn("jsDevelopmentExecutableCompileSync")
     mainOutputFileName.set("output.js")
 }
 
 tasks.getByName<KotlinWebpack>("jsBrowserDevelopmentWebpack") {
+    dependsOn("jsProductionExecutableCompileSync")
     mainOutputFileName.set("output.js")
 }
 

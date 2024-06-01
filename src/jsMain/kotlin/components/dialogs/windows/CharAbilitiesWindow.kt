@@ -123,6 +123,7 @@ private val Charisma = FC<AbilitiesProps> { props ->
         this.title = props.translations[CHARISMA_CONTENT_TRANSLATION] ?: ""
         this.label = props.translations[CHARISMA_TRANSLATION] ?: ""
         this.value = props.value
+        this.readOnly = false
         this.translations = props.translations
         this.onChange = { event ->
             event.value().toIntOrNull()?.let { props.setValue(it) }
@@ -135,6 +136,7 @@ private val Wisdom = FC<AbilitiesProps> { props ->
         this.title = props.translations[WISDOM_CONTENT_TRANSLATION] ?: ""
         this.label = props.translations[WISDOM_TRANSLATION] ?: ""
         this.value = props.value
+        this.readOnly = false
         this.translations = props.translations
         this.onChange = { event ->
             event.value().toIntOrNull()?.let { props.setValue(it) }
@@ -147,6 +149,7 @@ private val Intelligence = FC<AbilitiesProps> { props ->
         this.title = props.translations[INTELLIGENCE_CONTENT_TRANSLATION] ?: ""
         this.label = props.translations[INTELLIGENCE_TRANSLATION] ?: ""
         this.value = props.value
+        this.readOnly = false
         this.translations = props.translations
         this.onChange = { event ->
             event.value().toIntOrNull()?.let { props.setValue(it) }
@@ -159,6 +162,7 @@ private val Constitution = FC<AbilitiesProps> { props ->
         this.title = props.translations[CONSTITUTION_CONTENT_TRANSLATION] ?: ""
         this.label = props.translations[CONSTITUTION_TRANSLATION] ?: ""
         this.value = props.value
+        this.readOnly = false
         this.translations = props.translations
         this.onChange = { event ->
             event.value().toIntOrNull()?.let { props.setValue(it) }
@@ -171,6 +175,7 @@ private val Dexterity = FC<AbilitiesProps> { props ->
         this.title = props.translations[DEXTERITY_CONTENT_TRANSLATION] ?: ""
         this.label = props.translations[DEXTERITY_TRANSLATION] ?: ""
         this.value = props.value
+        this.readOnly = false
         this.translations = props.translations
         this.onChange = { event ->
             event.value().toIntOrNull()?.let { props.setValue(it) }
@@ -183,6 +188,7 @@ private val Strength = FC<AbilitiesProps> { props ->
         this.title = props.translations[STRENGTH_CONTENT_TRANSLATION] ?: ""
         this.label = props.translations[STRENGTH_TRANSLATION] ?: ""
         this.value = props.value
+        this.readOnly = false
         this.translations = props.translations
         this.onChange = { event ->
             event.value().toIntOrNull()?.let { props.setValue(it) }

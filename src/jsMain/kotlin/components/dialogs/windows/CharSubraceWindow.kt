@@ -22,6 +22,7 @@ import mui.material.DialogContent
 import mui.material.DialogContentText
 import mui.material.DialogTitle
 import react.FC
+import react.ReactNode
 import react.useContext
 import react.useState
 import web.cssom.ClassName
@@ -55,7 +56,7 @@ val CharSubraceWindow = FC<CharBasedProps> { props ->
                         }
                     }
                     ValidatedList {
-                        this.label = translations[ENTER_SUBRACE_TRANSLATION] ?: ""
+                        this.label = ReactNode(translations[ENTER_SUBRACE_TRANSLATION])
                         this.value = subrace._id
                         this.validators = arrayOf(VALIDATION_REQUIRED)
                         this.errorMessages = arrayOf(translations[SUBRACE_SHOULD_BE_FILLED_TRANSLATION] ?: "")

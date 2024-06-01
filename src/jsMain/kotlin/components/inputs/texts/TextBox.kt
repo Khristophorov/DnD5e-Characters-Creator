@@ -1,7 +1,7 @@
 package me.khrys.dnd.charcreator.client.components.inputs.texts
 
-import me.khrys.dnd.charcreator.client.components.validators.InputProps
 import me.khrys.dnd.charcreator.client.components.validators.TextValidator
+import me.khrys.dnd.charcreator.client.components.validators.inputProps
 import me.khrys.dnd.charcreator.common.CLASS_BORDERED
 import me.khrys.dnd.charcreator.common.CLASS_CENTER
 import me.khrys.dnd.charcreator.common.VALIDATION_LOWER_0
@@ -26,7 +26,7 @@ val TextBox = FC<TextBoxProps> { props ->
         TextValidator {
             this.value = props.value
             this.type = props.type
-            this.inputProps = InputProps(readonly = "true")
+            this.inputProps = inputProps(readonly = "true")
             this.validators = if (props.validate) arrayOf(VALIDATION_LOWER_0, VALIDATION_UPPER_20) else emptyArray()
         }
         CenteredLabel {

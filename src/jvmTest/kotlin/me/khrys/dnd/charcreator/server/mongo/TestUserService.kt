@@ -91,7 +91,7 @@ class TestUserService {
     @Test
     fun testStoreCharacter() {
         every { users.findOne(any<Bson>()) } returns user
-        justRun { users.findOneAndUpdate(any<Bson>(), any<Bson>()) }
+        every { users.findOneAndUpdate(any<Bson>(), any<Bson>()) } returns user
 
         service.storeCharacter(user._id, character)
 

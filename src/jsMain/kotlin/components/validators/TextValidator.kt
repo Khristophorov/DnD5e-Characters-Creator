@@ -1,9 +1,9 @@
 package me.khrys.dnd.charcreator.client.components.validators
 
+import mui.material.InputBaseComponentProps
+import mui.material.TextFieldProps
 import org.w3c.dom.events.InputEvent
 import react.ComponentType
-import react.PropsWithClassName
-import web.html.InputType
 
 @JsModule("react-material-ui-form-validator")
 @JsNonModule
@@ -14,12 +14,10 @@ val TextValidator: ComponentType<TextValidatorProps> = formValidatorModule.TextV
 
 data class InputProps(val accept: String? = null, val readonly: String? = null)
 
-external interface TextValidatorProps : PropsWithClassName {
-    var id: String
-    var label: String
-    var type: InputType
-    var value: String
-    var inputProps: InputProps
+fun inputProps(accept: String? = null, readonly: String? = null) =
+    InputProps(accept, readonly).unsafeCast<InputBaseComponentProps>()
+
+external interface TextValidatorProps : TextFieldProps {
     var validators: Array<String>
     var errorMessages: Array<String>
     var onChange: ((InputEvent) -> Unit)

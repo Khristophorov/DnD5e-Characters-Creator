@@ -73,6 +73,7 @@ import mui.material.TableHead
 import mui.material.TableRow
 import react.FC
 import react.Props
+import react.ReactNode
 import react.dom.html.ReactHTML.span
 import react.useContext
 import react.useState
@@ -253,7 +254,7 @@ val FeatureChooser = FC<FeatureProps<String>> { props ->
                         props.setValue(chosenFeature)
                     }
                     ValidatedList {
-                        this.label = props.feature.name
+                        this.label = ReactNode(props.feature.name)
                         this.value = chosenFeature
                         this.validators = arrayOf(VALIDATION_REQUIRED)
                         this.errorMessages = arrayOf(translations[VALUE_SHOULD_BE_CHOSEN_TRANSLATION] ?: "")
@@ -295,7 +296,7 @@ val FeatChooser = FC<FeatsProps> { props ->
                         setOpenFeatures(true)
                     }
                     ValidatedList {
-                        this.label = props.feature.name
+                        this.label = ReactNode(props.feature.name)
                         this.value = feat._id
                         this.validators = arrayOf(VALIDATION_REQUIRED)
                         this.errorMessages = arrayOf(translations[VALUE_SHOULD_BE_CHOSEN_TRANSLATION] ?: "")
@@ -350,7 +351,7 @@ val ManeuverChooser = FC<FeatureProps<String>> { props ->
                         props.setValue(maneuver._id)
                     }
                     ValidatedList {
-                        this.label = props.feature.name
+                        this.label = ReactNode(props.feature.name)
                         this.value = maneuver._id
                         this.validators = arrayOf(VALIDATION_REQUIRED)
                         this.errorMessages = arrayOf(translations[VALUE_SHOULD_BE_CHOSEN_TRANSLATION] ?: "")
@@ -644,7 +645,7 @@ val EquipmentPackChooser = FC<FeatureProps<Pair<String, List<SimpleEquipment>>>>
                     ValidatedList {
                         val equipmentPacks = values.filterIndexed { index, _ -> (index + 1) % 3 != 0 }
                             .chunked(2) { it[0] to it[1] }.toMap()
-                        this.label = props.feature.name
+                        this.label = ReactNode(props.feature.name)
                         this.value = chosenEquipment
                         this.validators = arrayOf(VALIDATION_REQUIRED)
                         this.errorMessages = arrayOf(translations[VALUE_SHOULD_BE_CHOSEN_TRANSLATION] ?: "")
