@@ -32,9 +32,13 @@ import me.khrys.dnd.charcreator.common.ALERT_TRANSLATION
 import me.khrys.dnd.charcreator.common.BUTTON_SOUND_ID
 import me.khrys.dnd.charcreator.common.CANTRIP_TRANSLATION
 import me.khrys.dnd.charcreator.common.CELLS_SHOULD_BE_FILLED_TRANSLATION
+import me.khrys.dnd.charcreator.common.CHARISMA_TRANSLATION
 import me.khrys.dnd.charcreator.common.CLASS_COLLAPSED_CELL
+import me.khrys.dnd.charcreator.common.CONSTITUTION_TRANSLATION
 import me.khrys.dnd.charcreator.common.DAMAGE_TRANSLATION
 import me.khrys.dnd.charcreator.common.DESCRIPTION_TRANSLATION
+import me.khrys.dnd.charcreator.common.DEXTERITY_TRANSLATION
+import me.khrys.dnd.charcreator.common.INTELLIGENCE_TRANSLATION
 import me.khrys.dnd.charcreator.common.NAME_TRANSLATION
 import me.khrys.dnd.charcreator.common.NEXT_TRANSLATION
 import me.khrys.dnd.charcreator.common.PRICE_TRANSLATION
@@ -44,12 +48,14 @@ import me.khrys.dnd.charcreator.common.SPELL_LEVEL_SUFFIX_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPELL_LEVEL_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPELL_NAME_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPELL_SCHOOL_TRANSLATION
+import me.khrys.dnd.charcreator.common.STRENGTH_TRANSLATION
 import me.khrys.dnd.charcreator.common.TOO_FEW_CHECKS_TRANSLATION
 import me.khrys.dnd.charcreator.common.TOO_MANY_CHECKS_TRANSLATION
 import me.khrys.dnd.charcreator.common.TYPE_TRANSLATION
 import me.khrys.dnd.charcreator.common.VALIDATION_REQUIRED
 import me.khrys.dnd.charcreator.common.VALUE_SHOULD_BE_CHOSEN_TRANSLATION
 import me.khrys.dnd.charcreator.common.WEIGHT_TRANSLATION
+import me.khrys.dnd.charcreator.common.WISDOM_TRANSLATION
 import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.SimpleEquipment
 import me.khrys.dnd.charcreator.common.models.Spell
@@ -87,6 +93,7 @@ external interface ChooserProps<T> : Props {
     var values: List<String>
     var setValue: (T) -> Unit
     var size: Int
+    var unique: Boolean
 }
 
 val ProficiencyChooser = memoDialog(FC<FeatureProps<String>> { props ->
@@ -114,6 +121,7 @@ val ProficienciesChooser = FC<MultipleStringFeatureProps> { props ->
             this.size = props.size
             this.values = if (props.open) values.subList(3, values.size) else emptyList()
             this.setValue = props.setValue
+            this.unique = true
         }
     }
 }
@@ -131,6 +139,7 @@ val SkillsAndProficienciesChooser = FC<MultipleStringFeatureProps> { props ->
             this.size = props.size
             this.values = if (props.open) skillValues + proficiencyValues else emptyList()
             this.setValue = props.setValue
+            this.unique = true
         }
     }
 }
@@ -164,6 +173,7 @@ val LanguagesChooser = FC<MultipleStringFeatureProps> { props ->
             this.size = props.size
             this.values = if (props.open) values.subList(3, values.size) else emptyList()
             this.setValue = props.setValue
+            this.unique = true
         }
     }
 }
@@ -198,6 +208,7 @@ val SkillsChooser = FC<MultipleStringFeatureProps> { props ->
             this.size = props.size
             this.values = values
             this.setValue = props.setValue
+            this.unique = true
         }
     }
 }
@@ -212,6 +223,30 @@ val AbilityChooser = FC<FeatureProps<String>> { props ->
             this.description = props.feature.description
             this.values = if (props.open) values.subList(3, values.size) else emptyList()
             this.setValue = props.setValue
+        }
+    }
+}
+
+val AbilitiesChooser = FC<MultipleStringFeatureProps> { props ->
+    if (props.open) {
+        val translations = useContext(TranslationsContext)
+        val values = listOf(
+            translations[STRENGTH_TRANSLATION],
+            translations[DEXTERITY_TRANSLATION],
+            translations[CONSTITUTION_TRANSLATION],
+            translations[INTELLIGENCE_TRANSLATION],
+            translations[WISDOM_TRANSLATION],
+            translations[CHARISMA_TRANSLATION]
+        ).map { it ?: "" }
+        ChooseSeveral {
+            this.open = props.open
+            this.setOpen = props.setOpen
+            this.header = props.feature.name
+            this.description = props.feature.description
+            this.size = props.size
+            this.values = values
+            this.setValue = props.setValue
+            this.unique = false
         }
     }
 }
@@ -372,7 +407,9 @@ val ManeuverChooser = FC<FeatureProps<String>> { props ->
 
 val SpellsChooser = FC<SpellsFeatureProps> { props ->
     val translations = useContext(TranslationsContext)
-    val (chosenSpells, setChosenSpells) = useState(props.character.spells.map { it._id })
+    val (chosenSpells, setChosenSpells) = useState(
+        if (props.isAdditionalSpells) emptyList()
+        else props.character.spells.map { it._id })
     val (openAlert, setOpenAlert) = useState(false)
     AlertDialog {
         this.open = openAlert

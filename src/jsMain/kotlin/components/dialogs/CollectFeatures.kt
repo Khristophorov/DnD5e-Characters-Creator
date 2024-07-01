@@ -5,6 +5,7 @@ import me.khrys.dnd.charcreator.client.ManeuversContext
 import me.khrys.dnd.charcreator.client.SpellsContext
 import me.khrys.dnd.charcreator.client.apply
 import me.khrys.dnd.charcreator.client.components.dialogs.windows.InformWindow
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.AbilitiesChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.AbilityChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.ElementChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.EquipmentPackChooser
@@ -39,6 +40,7 @@ val DEFAULT_NODE = ReactNode("")
 val WINDOW_FUNCTIONS = listOf(
     "Inform",
     "Choose Ability",
+    "Choose Abilities",
     "Choose Element",
     "Choose Feat",
     "Choose Language",
@@ -188,6 +190,11 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
                                 "Choose Ability" -> {
                                     functionFeatures
                                         .add(abilityChooser(feature, function, props, nextAction))
+                                }
+
+                                "Choose Abilities" -> {
+                                    functionFeatures
+                                        .add(abilitiesChooser(feature, function, props, nextAction))
                                 }
 
                                 "Choose Maneuver" -> {
@@ -463,8 +470,7 @@ private fun skillsChooser(
                 nextAction()
             }
         }
-    }
-    else {
+    } else {
         nextAction()
     }
 }
@@ -605,6 +611,35 @@ private fun abilityChooser(
                     description = function.values[1].format(value),
                     functions = feature.functions.filter { it.name != function.name } +
                             DnDFunction(function.values[0], listOf(value, function.values[2])),
+                    source = feature.source
+                )
+            nextAction()
+        }
+    }
+}
+
+private fun abilitiesChooser(
+    feature: Feature,
+    function: DnDFunction,
+    props: MultipleFeaturesFeatsProps,
+    nextAction: () -> Unit
+) = FC<DialogProps> {
+    val (open, setOpen) = useState(true)
+    AbilitiesChooser {
+        this.open = open
+        this.setOpen = { setOpen(it) }
+        this.feature = feature
+        this.function = function
+        this.character = props.character
+        this.size = if (function.values.isEmpty()) 0 else function.values[1].toInt()
+        this.setValue = { values ->
+            console.info("Chosen abilities: $values")
+            val functionName = function.values[0]
+            props.character.features +=
+                Feature(
+                    name = feature.name,
+                    description = function.values[2].format(*values.toTypedArray()),
+                    functions = values.map { DnDFunction(functionName, listOf(it, "1")) },
                     source = feature.source
                 )
             nextAction()

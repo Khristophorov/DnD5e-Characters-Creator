@@ -3,7 +3,7 @@ package me.khrys.dnd.charcreator.client.components.dialogs.windows
 import me.khrys.dnd.charcreator.client.FeatsContext
 import me.khrys.dnd.charcreator.client.RacesContext
 import me.khrys.dnd.charcreator.client.TranslationsContext
-import me.khrys.dnd.charcreator.client.components.buttons.CheckboxWithLabel
+import me.khrys.dnd.charcreator.client.components.buttons.FeatsCheckbox
 import me.khrys.dnd.charcreator.client.components.buttons.Submit
 import me.khrys.dnd.charcreator.client.components.dialogs.CharBasedProps
 import me.khrys.dnd.charcreator.client.components.dialogs.CollectRaceFeatures
@@ -13,7 +13,6 @@ import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
 import me.khrys.dnd.charcreator.client.utils.value
 import me.khrys.dnd.charcreator.common.ENTER_RACE_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.ENTER_RACE_TRANSLATION
-import me.khrys.dnd.charcreator.common.FEATS_SELECT_TRANSLATION
 import me.khrys.dnd.charcreator.common.NEXT_TRANSLATION
 import me.khrys.dnd.charcreator.common.RACE_SHOULD_BE_FILLED_TRANSLATION
 import me.khrys.dnd.charcreator.common.VALIDATION_REQUIRED
@@ -57,10 +56,10 @@ val CharRaceWindow = memoDialog(FC<CharBasedProps> { props ->
                         props.setOpen(false)
                     }
                     if (race.features.any { it.withFeats }) {
-                        CheckboxWithLabel {
-                            this.label = ReactNode(translations[FEATS_SELECT_TRANSLATION] ?: "")
+                        FeatsCheckbox {
+                            this.translations = translations
                             this.checked = useFeats
-                            this.onChange = { _, value -> setUseFeats(value) }
+                            this.setValue = { setUseFeats(it) }
                         }
                     }
                     ValidatedList {

@@ -1,7 +1,9 @@
 package me.khrys.dnd.charcreator.client.components.dialogs.windows
 
+import me.khrys.dnd.charcreator.client.FeatsContext
 import me.khrys.dnd.charcreator.client.TranslationsContext
 import me.khrys.dnd.charcreator.client.components.buttons.BackButton
+import me.khrys.dnd.charcreator.client.components.buttons.FeatsCheckbox
 import me.khrys.dnd.charcreator.client.components.buttons.Submit
 import me.khrys.dnd.charcreator.client.components.dialogs.CharBasedProps
 import me.khrys.dnd.charcreator.client.components.dialogs.CollectClassFeatures
@@ -20,6 +22,7 @@ import me.khrys.dnd.charcreator.common.ENTER_CLASS_TRANSLATION
 import me.khrys.dnd.charcreator.common.NEXT_TRANSLATION
 import me.khrys.dnd.charcreator.common.VALIDATION_REQUIRED
 import me.khrys.dnd.charcreator.common.models.Class
+import me.khrys.dnd.charcreator.common.models.Feature
 import me.khrys.dnd.charcreator.common.models.emptyClass
 import mui.material.CircularProgress
 import mui.material.Dialog
@@ -36,10 +39,13 @@ import web.cssom.ClassName
 var CharClassWindow = memoDialog(FC<CharBasedProps> { props ->
     val (classes, setClasses) = useState(emptyMap<String, Class>())
     val (charClass, setCharClass) = useState(emptyClass())
+    val (features, setFeatures) = useState(emptyList<Feature>())
     val (classLevel, setClassLevel) = useState(0)
     val (description, setDescription) = useState("")
     val (openFeatures, setOpenFeatures) = useState(false)
     val (openHp, setOpenHp) = useState(false)
+    val (useFeats, setUseFeats) = useState(false)
+    val feats = useContext(FeatsContext)
     val translations = useContext(TranslationsContext)
     if (props.open && classes.isEmpty()) {
         CircularProgress()
@@ -55,6 +61,13 @@ var CharClassWindow = memoDialog(FC<CharBasedProps> { props ->
                 this.dividers = true
                 DialogContentText {
                     +(translations[ENTER_CLASS_CONTENT_TRANSLATION] ?: "")
+                }
+                if (features.any { it.withFeats }) {
+                    FeatsCheckbox {
+                        this.translations = translations
+                        this.checked = useFeats
+                        this.setValue = { setUseFeats(it) }
+                    }
                 }
                 ValidatorForm {
                     this.onSubmit = {
@@ -77,7 +90,10 @@ var CharClassWindow = memoDialog(FC<CharBasedProps> { props ->
                         this.validators = arrayOf(VALIDATION_REQUIRED)
                         this.errorMessages = arrayOf(translations[CLASS_SHOULD_BE_FILLED_TRANSLATION] ?: "")
                         this.onChange = { event ->
-                            setCharClass(classes[event.value()] ?: emptyClass())
+                            val chosenClass = classes[event.value()] ?: emptyClass()
+                            val currentClassLevel = props.character.classes[chosenClass._id] ?: 0
+                            setCharClass(chosenClass)
+                            setFeatures(chosenClass.features[currentClassLevel + 1] ?: emptyList())
                         }
                         this.menuItems = classes.mapValues { it.value.description }
                         this.useDescription = true
@@ -102,7 +118,7 @@ var CharClassWindow = memoDialog(FC<CharBasedProps> { props ->
     }
     CollectClassFeatures {
         this.className = charClass._id
-        this.features = charClass.features[classLevel + 1] ?: emptyList()
+        this.features = features
         this.multiclass = false
         this.character = props.character
         this.open = openFeatures

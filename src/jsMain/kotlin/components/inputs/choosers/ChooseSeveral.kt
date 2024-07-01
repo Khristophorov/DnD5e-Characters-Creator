@@ -56,12 +56,15 @@ val ChooseSeveral = FC<ChooserProps<List<String>>> { props ->
                     for (i in 0 until props.size) {
                         validatorFormRules.values = chosenValues.toTypedArray()
                         ValidatedList {
+                            val validators = mutableListOf(VALIDATION_REQUIRED)
+                            val errorMessages = mutableListOf(translations[VALUE_SHOULD_BE_CHOSEN_TRANSLATION])
+                            if (props.unique) {
+                                validators.add(VALIDATION_VALUE_ALREADY_PRESENT)
+                                errorMessages.add(translations[VALUE_IS_ALREADY_SELECTED_TRANSLATION])
+                            }
                             this.value = if (chosenValues.isEmpty()) "" else chosenValues[i]
-                            this.validators = arrayOf(VALIDATION_REQUIRED, VALIDATION_VALUE_ALREADY_PRESENT)
-                            this.errorMessages = arrayOf(
-                                translations[VALUE_SHOULD_BE_CHOSEN_TRANSLATION] ?: "",
-                                translations[VALUE_IS_ALREADY_SELECTED_TRANSLATION] ?: ""
-                            )
+                            this.validators = validators.toTypedArray()
+                            this.errorMessages = errorMessages.map { it ?: "" }.toTypedArray()
                             this.onChange = { event ->
                                 val newValues = chosenValues.toMutableList()
                                 newValues[i] = event.value()
