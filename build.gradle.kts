@@ -8,6 +8,7 @@ plugins {
     kotlin("multiplatform") version "2.0.0"
     kotlin("plugin.serialization") version "2.0.0"
     application
+    idea
 }
 
 group = "me.khris"
@@ -31,6 +32,13 @@ val reactMaterialUiFormValidatorVersion = "3.0.1"
 
 repositories {
     mavenCentral()
+}
+
+idea {
+    module {
+        isDownloadJavadoc = true
+        isDownloadSources = true
+    }
 }
 
 kotlin {

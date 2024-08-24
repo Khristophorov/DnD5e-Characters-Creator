@@ -40,7 +40,12 @@ external interface MultipleFeatureProps<T : Collection<*>> : FeatureProps<T> {
 
 typealias MultipleStringFeatureProps = MultipleFeatureProps<List<String>>
 
-external interface SpellsFeatureProps : MultipleStringFeatureProps {
+external interface SpellsFeatureProps : DialogProps {
+    var character: Character
+    var feature: Feature
+    var function: DnDFunction
+    var value: List<String>
+    var setValue: (List<String>, List<String>) -> Unit
     var isAdditionalSpells: Boolean
 }
 

@@ -410,6 +410,7 @@ val SpellsChooser = FC<SpellsFeatureProps> { props ->
     val (chosenSpells, setChosenSpells) = useState(
         if (props.isAdditionalSpells) emptyList()
         else props.character.spells.map { it._id })
+    val (spellsToRemove, setSpellsToRemove) = useState(emptyList<String>())
     val (openAlert, setOpenAlert) = useState(false)
     AlertDialog {
         this.open = openAlert
@@ -437,7 +438,7 @@ val SpellsChooser = FC<SpellsFeatureProps> { props ->
                         if (chosenSpells.size < maxSpellsNumber) {
                             setOpenAlert(true)
                         } else {
-                            props.setValue(chosenSpells)
+                            props.setValue(chosenSpells, spellsToRemove)
                             props.setOpen(false)
                         }
                     }
@@ -446,7 +447,10 @@ val SpellsChooser = FC<SpellsFeatureProps> { props ->
                             this.character = props.character
                             this.function = props.function
                             this.isAdditionalSpells = props.isAdditionalSpells
-                            this.setValue = { setChosenSpells(it) }
+                            this.setValue = { toAdd, toRemove ->
+                                setChosenSpells(toAdd)
+                                setSpellsToRemove(spellsToRemove + toRemove)
+                            }
                             this.value = chosenSpells
                         }
                     }
@@ -469,6 +473,7 @@ val SpellsTable = FC<SpellsFeatureProps> { props ->
     val level = values[1].toInt()
     val classes = values[2].split(", ")
     val isMaxLevel = values.getOrNull(3).toBoolean()
+    val includeCantrips = values.getOrNull(4).toBoolean()
     AlertDialog {
         this.open = openAlert
         this.action = { setOpenAlert(false) }
@@ -487,7 +492,8 @@ val SpellsTable = FC<SpellsFeatureProps> { props ->
         }
         TableBody {
             val filteredSpells = spells.values.filter {
-                if (isMaxLevel) it.level == level else it.level in 1..level
+                val startIndex = if (includeCantrips) 0 else 1
+                if (isMaxLevel) it.level == level else it.level in startIndex..level
             }.filter { spell -> classes.any { spell.classes.contains(it) } }
                 .sortedWith(compareBy(Spell::level, Spell::_id))
             filteredSpells.forEach { spell ->
@@ -506,7 +512,9 @@ val SpellsTable = FC<SpellsFeatureProps> { props ->
                                     setChecked(checked)
                                     props.setValue(
                                         if (checked) props.value + spell._id
-                                        else props.value - spell._id
+                                        else props.value - spell._id,
+                                        if (checked) emptyList()
+                                        else listOf(spell._id)
                                     )
                                     console.info("${spell._id} is $checked")
                                 }

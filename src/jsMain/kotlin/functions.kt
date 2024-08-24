@@ -190,13 +190,13 @@ fun Character.applyFeature(feature: Feature, translations: Map<String, String>, 
 
             "Increase Non Proficient Skills With Proficiency Bonus" ->
                 increaseSkillsWithProficiencyBonus(false, function.values[0].toDouble())
-
-            "Double Skill Bonus" -> increaseSkillsWithProficiencyBonus(function.values, 1.0)
             "Increase Initiative" -> increaseInitiative(function.values[0].toInt())
             "Increase Perception" -> increasePerception(function.values[0].toInt())
             "Increase Investigation" -> increaseInvestigation(function.values[0].toInt())
             "Increase Speed" -> increaseSpeed(function.values[0].toInt())
             "Increase Armor Class" -> increaseArmorClass(function.values[0].toInt())
+            "Increase HP by Level" -> increaseHitPointsByLevel(function.values[0].toInt())
+            "Double Skill Bonus" -> increaseSkillsWithProficiencyBonus(function.values, 1.0)
             "Set Speed" -> setSpeed(function.values[0].toInt())
             "Set Spellcasting Ability" -> setSpellcastingAbility(function.values[0], translations)
             "Add Proficiencies" -> setProficiencies(function.values)
@@ -325,6 +325,11 @@ fun Character.increaseSpeed(value: Int) {
 
 fun Character.increaseArmorClass(value: Int) {
     this.armorClass += value
+}
+
+fun Character.increaseHitPointsByLevel(value: Int) {
+    val level = this.getCombinedLevel()
+    this.hitPoints += level * value
 }
 
 fun Character.setSpeed(speed: Int) {

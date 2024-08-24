@@ -35,6 +35,8 @@ import react.createElement
 import react.useContext
 import react.useState
 
+private typealias NextAction = (Feature, DnDFunction) -> Unit
+
 val DEFAULT_NODE = ReactNode("")
 
 val WINDOW_FUNCTIONS = listOf(
@@ -126,7 +128,7 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
             val simpleFeatures = mutableListOf<Feature>()
             val functionFeatures = mutableListOf<FC<DialogProps>>()
             val functionsIterator = functionFeatures.iterator()
-            val nextAction = {
+            val apply = {
                 if (functionsIterator.hasNext()) {
                     setChild(createElement(functionsIterator.next()))
                 } else {
@@ -134,6 +136,16 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
                     props.action()
                     props.setOpen(false)
                 }
+            }
+            val nextAction: NextAction = { feature, function ->
+                if (function.addFeature && shouldAddFeature(props.character, feature)) {
+                    if (function.replaceCurrent) {
+                        props.character.features -=
+                            props.character.features.filter { it.name == feature.name }
+                    }
+                    props.character.features += feature
+                }
+                apply()
             }
             props.features.filter { filterFeats(it, props.useFeats) }.forEach { feature ->
                 if (feature.functions.isEmpty()) {
@@ -144,7 +156,7 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
                             when (function.name) {
                                 "Inform" -> {
                                     functionFeatures
-                                        .add(inform(feature, function, props, nextAction))
+                                        .add(inform(feature, function, nextAction))
                                 }
 
                                 "Choose Proficiency" -> {
@@ -179,7 +191,7 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
 
                                 "Choose Feat" -> {
                                     functionFeatures
-                                        .add(featChooser(feature, props, nextAction))
+                                        .add(featChooser(feature, function, props, nextAction))
                                 }
 
                                 "Choose Element" -> {
@@ -247,20 +259,13 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
                                     props.character.equipment.armor += armor
                                 }
                             }
-                            if (function.addFeature) {
-                                if (function.replaceCurrent) {
-                                    props.character.features -=
-                                        props.character.features.filter { it.name == feature.name }
-                                }
-                                props.character.features += feature
-                            }
                         }
                     } else {
                         props.character.features += feature
                     }
                 }
             }
-            nextAction()
+            apply()
         }
         +child
     }
@@ -269,8 +274,7 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
 private fun inform(
     feature: Feature,
     function: DnDFunction,
-    props: MultipleFeaturesFeatsProps,
-    nextAction: () -> Unit
+    nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
     InformWindow {
@@ -279,14 +283,7 @@ private fun inform(
         this.feature = feature
         this.setValue = {
             console.info("Info for ${feature.name}")
-            props.character.features +=
-                Feature(
-                    name = feature.name,
-                    description = function.values[0],
-                    functions = emptyList(),
-                    source = feature.source
-                )
-            nextAction()
+            nextAction(feature, function)
         }
     }
 }
@@ -295,7 +292,7 @@ private fun proficiencyChooser(
     feature: Feature,
     function: DnDFunction,
     props: MultipleFeaturesFeatsProps,
-    nextAction: () -> Unit
+    nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
     ProficiencyChooser {
@@ -313,7 +310,7 @@ private fun proficiencyChooser(
                     functions = listOf(DnDFunction(function.values[0], listOf(value))),
                     source = feature.source
                 )
-            nextAction()
+            nextAction(feature, function)
         }
     }
 }
@@ -322,7 +319,7 @@ private fun proficienciesChooser(
     feature: Feature,
     function: DnDFunction,
     props: MultipleFeaturesFeatsProps,
-    nextAction: () -> Unit
+    nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
     ProficienciesChooser {
@@ -346,7 +343,7 @@ private fun proficienciesChooser(
                         source = feature.source
                     )
             }
-            nextAction()
+            nextAction(feature, function)
         }
     }
 }
@@ -355,7 +352,7 @@ private fun languageChooser(
     feature: Feature,
     function: DnDFunction,
     props: MultipleFeaturesFeatsProps,
-    nextAction: () -> Unit
+    nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
     LanguageChooser {
@@ -378,7 +375,7 @@ private fun languageChooser(
             )
             val filteredFeatures = props.character.features.filter { feature.name != it.name }
             props.character.features = filteredFeatures + languageFeature
-            nextAction()
+            nextAction(feature, function)
         }
     }
 }
@@ -387,7 +384,7 @@ private fun languagesChooser(
     feature: Feature,
     function: DnDFunction,
     props: MultipleFeaturesFeatsProps,
-    nextAction: () -> Unit
+    nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
     LanguagesChooser {
@@ -411,7 +408,7 @@ private fun languagesChooser(
             )
             val filteredFeatures = props.character.features.filter { feature.name != it.name }
             props.character.features = filteredFeatures + languageFeature
-            nextAction()
+            nextAction(feature, function)
         }
     }
 }
@@ -420,7 +417,7 @@ private fun skillChooser(
     feature: Feature,
     function: DnDFunction,
     props: MultipleFeaturesFeatsProps,
-    nextAction: () -> Unit
+    nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
     SkillChooser {
@@ -438,7 +435,7 @@ private fun skillChooser(
                     functions = listOf(DnDFunction(function.values[0], listOf(value))),
                     source = feature.source
                 )
-            nextAction()
+            nextAction(feature, function)
         }
     }
 }
@@ -447,7 +444,7 @@ private fun skillsChooser(
     feature: Feature,
     function: DnDFunction,
     props: MultipleFeaturesFeatsProps,
-    nextAction: () -> Unit
+    nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
     if (shouldAddFeature(props.character, feature)) {
@@ -467,11 +464,11 @@ private fun skillsChooser(
                         functions = listOf(DnDFunction(function.values[0], values)),
                         source = feature.source
                     )
-                nextAction()
+                nextAction(feature, function)
             }
         }
     } else {
-        nextAction()
+        nextAction(feature, function)
     }
 }
 
@@ -479,7 +476,7 @@ private fun skillsAndProficienciesChooser(
     feature: Feature,
     function: DnDFunction,
     props: MultipleFeaturesFeatsProps,
-    nextAction: () -> Unit
+    nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
     SkillsAndProficienciesChooser {
@@ -516,15 +513,16 @@ private fun skillsAndProficienciesChooser(
                     functions = featureFunctions,
                     source = feature.source
                 )
-            nextAction()
+            nextAction(feature, function)
         }
     }
 }
 
 private fun featChooser(
     feature: Feature,
+    function: DnDFunction,
     props: MultipleFeaturesFeatsProps,
-    nextAction: () -> Unit
+    nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
     FeatChooser {
@@ -533,7 +531,7 @@ private fun featChooser(
         this.character = props.character
         this.feature = feature
         this.feats = props.feats
-        this.action = nextAction
+        this.action = { nextAction(feature, function) }
     }
 }
 
@@ -541,7 +539,7 @@ private fun featureChooser(
     feature: Feature,
     function: DnDFunction,
     props: MultipleFeaturesFeatsProps,
-    nextAction: () -> Unit
+    nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
     FeatureChooser {
@@ -558,7 +556,7 @@ private fun featureChooser(
                     description = function.values[featureIndex + 1],
                     source = function.values[featureIndex + 2]
                 )
-            nextAction()
+            nextAction(feature, function)
         }
     }
 }
@@ -567,7 +565,7 @@ private fun elementChooser(
     feature: Feature,
     function: DnDFunction,
     props: MultipleFeaturesFeatsProps,
-    nextAction: () -> Unit
+    nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
     ElementChooser {
@@ -585,7 +583,7 @@ private fun elementChooser(
                     functions = emptyList(),
                     source = feature.source
                 )
-            nextAction()
+            nextAction(feature, function)
         }
     }
 }
@@ -594,7 +592,7 @@ private fun abilityChooser(
     feature: Feature,
     function: DnDFunction,
     props: MultipleFeaturesFeatsProps,
-    nextAction: () -> Unit
+    nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
     AbilityChooser {
@@ -613,7 +611,7 @@ private fun abilityChooser(
                             DnDFunction(function.values[0], listOf(value, function.values[2])),
                     source = feature.source
                 )
-            nextAction()
+            nextAction(feature, function)
         }
     }
 }
@@ -622,7 +620,7 @@ private fun abilitiesChooser(
     feature: Feature,
     function: DnDFunction,
     props: MultipleFeaturesFeatsProps,
-    nextAction: () -> Unit
+    nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
     AbilitiesChooser {
@@ -642,7 +640,7 @@ private fun abilitiesChooser(
                     functions = values.map { DnDFunction(functionName, listOf(it, "1")) },
                     source = feature.source
                 )
-            nextAction()
+            nextAction(feature, function)
         }
     }
 }
@@ -651,7 +649,7 @@ private fun maneuverChooser(
     feature: Feature,
     function: DnDFunction,
     props: MultipleFeaturesFeatsProps,
-    nextAction: () -> Unit
+    nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
     ManeuverChooser {
@@ -664,7 +662,7 @@ private fun maneuverChooser(
         this.setValue = { value ->
             console.info("Chosen maneuver: $value")
             maneuversMap[value]?.let { props.character.maneuvers += it }
-            nextAction()
+            nextAction(feature, function)
         }
     }
 }
@@ -674,29 +672,35 @@ private fun spellsChooser(
     function: DnDFunction,
     props: MultipleFeaturesFeatsProps,
     isAdditional: Boolean,
-    nextAction: () -> Unit
+    nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
-    SpellsChooser {
-        val spellsMap = useContext(SpellsContext)
-        this.open = open
-        this.setOpen = { setOpen(it) }
-        this.feature = feature
-        this.function = function
-        this.character = props.character
-        this.isAdditionalSpells = isAdditional
-        this.setValue = { spellsNames ->
-            console.log("Spells selected: $spellsNames")
-            if (isAdditional) {
-                spellsNames.forEach { spellName ->
-                    spellsMap[spellName]?.let { props.character.additionalSpells += it }
+    if (shouldAddFeature(props.character, feature)) {
+        SpellsChooser {
+            val spellsMap = useContext(SpellsContext)
+            this.open = open
+            this.setOpen = { setOpen(it) }
+            this.feature = feature
+            this.function = function
+            this.character = props.character
+            this.isAdditionalSpells = isAdditional
+            this.setValue = { spellsToAdd, spellsToRemove ->
+                console.log("Spells selected: $spellsToAdd")
+                if (isAdditional) {
+                    spellsToAdd.forEach { spellName ->
+                        spellsMap[spellName]?.let { props.character.additionalSpells += it }
+                    }
+                } else {
+                    spellsToRemove.mapNotNull { spellsMap[it] }
+                        .let { props.character.spells -= it }
+                    spellsToAdd.mapNotNull { spellsMap[it] }
+                        .let { props.character.spells = (it + props.character.spells).distinct() }
                 }
-            } else {
-                spellsNames.mapNotNull { spellsMap[it] }
-                    .let { props.character.spells = (it + props.character.spells).distinct() }
+                nextAction(feature, function)
             }
-            nextAction()
         }
+    } else {
+        nextAction(feature, function)
     }
 }
 
@@ -704,7 +708,7 @@ private fun weaponsChooser(
     feature: Feature,
     function: DnDFunction,
     props: MultipleFeaturesFeatsProps,
-    nextAction: () -> Unit
+    nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
     WeaponsChooser {
@@ -724,7 +728,7 @@ private fun weaponsChooser(
                     source = feature.source
                 )
             props.character.equipment.weapons += weapons
-            nextAction()
+            nextAction(feature, function)
         }
     }
 }
@@ -733,7 +737,7 @@ private fun equipmentChooser(
     feature: Feature,
     function: DnDFunction,
     props: MultipleFeaturesFeatsProps,
-    nextAction: () -> Unit
+    nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
     EquipmentsChooser {
@@ -753,7 +757,7 @@ private fun equipmentChooser(
                     source = feature.source
                 )
             props.character.equipment.otherEquipment += equipments
-            nextAction()
+            nextAction(feature, function)
         }
     }
 }
@@ -762,7 +766,7 @@ private fun equipmentPackChooser(
     feature: Feature,
     function: DnDFunction,
     props: MultipleFeaturesFeatsProps,
-    nextAction: () -> Unit
+    nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
     EquipmentPackChooser {
@@ -782,7 +786,7 @@ private fun equipmentPackChooser(
                     source = feature.source
                 )
             props.character.equipment.otherEquipment += equipments.second
-            nextAction()
+            nextAction(feature, function)
         }
     }
 }

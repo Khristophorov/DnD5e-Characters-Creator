@@ -28,6 +28,7 @@ import me.khrys.dnd.charcreator.client.computeAttackModifier
 import me.khrys.dnd.charcreator.client.computePassiveSkill
 import me.khrys.dnd.charcreator.client.computeProficiencyBonus
 import me.khrys.dnd.charcreator.client.computeSpellLevel
+import me.khrys.dnd.charcreator.client.getCombinedLevel
 import me.khrys.dnd.charcreator.client.getInitiative
 import me.khrys.dnd.charcreator.client.isNotMaximumLevel
 import me.khrys.dnd.charcreator.client.toDangerousHtml
@@ -197,7 +198,7 @@ val CharacterWindow = FC<FeatsProps> { props ->
 
             DialogContent {
                 this.dividers = true
-                val proficiencyBonus = computeProficiencyBonus(1)
+                val proficiencyBonus = computeProficiencyBonus(props.character.getCombinedLevel())
                 ValidatorForm {
                     this.onSubmit = {
                         console.info("Submitting character ${props.character.name}")
