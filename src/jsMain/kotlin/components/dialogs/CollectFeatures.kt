@@ -28,6 +28,7 @@ import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.DnDFunction
 import me.khrys.dnd.charcreator.common.models.Feature
 import me.khrys.dnd.charcreator.common.models.Filter
+import me.khrys.dnd.charcreator.common.models.SimpleEquipment
 import me.khrys.dnd.charcreator.common.models.Weapon
 import react.FC
 import react.ReactNode
@@ -60,7 +61,8 @@ val WINDOW_FUNCTIONS = listOf(
     "Choose Equipment",
     "Choose Feature",
     "Add Weapon",
-    "Add Armor"
+    "Add Armor",
+    "Add Equipments"
 )
 
 val FILTERS_TO_APPLY = setOf(Filter.Param.FEATURES)
@@ -257,6 +259,11 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
                                 "Add Armor" -> {
                                     val armor = Json.decodeFromString<Armor>(function.values[1])
                                     props.character.equipment.armor += armor
+                                }
+
+                                "Add Equipments" -> {
+                                    val equipments = Json.decodeFromString<List<SimpleEquipment>>(function.values[1])
+                                    props.character.equipment.otherEquipment += equipments
                                 }
                             }
                         }
