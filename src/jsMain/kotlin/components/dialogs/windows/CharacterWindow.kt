@@ -812,7 +812,7 @@ private val PassivePerception = FC<ParametersProps> { props ->
         OneValueInput {
             this.header = props.translations[PASSIVE_PERCEPTION_TRANSLATION] ?: ""
             this.value = computePassiveSkill(
-                ability = props.character.abilities.wisdom,
+                ability = props.character.abilities.wisdom.value,
                 proficiencyBonus = props.proficiencyBonus,
                 proficient = props.character.skills
                     .first { it.name == props.translations[PERCEPTION_TRANSLATION] }.proficient,
@@ -828,7 +828,7 @@ private val PassiveInvestigation = FC<ParametersProps> { props ->
         OneValueInput {
             this.header = props.translations[PASSIVE_INVESTIGATION_TRANSLATION] ?: ""
             this.value = computePassiveSkill(
-                ability = props.character.abilities.intelligence,
+                ability = props.character.abilities.intelligence.value,
                 proficiencyBonus = props.proficiencyBonus,
                 proficient = props.character.skills
                     .first { it.name == props.translations[INVESTIGATION_TRANSLATION] }.proficient,

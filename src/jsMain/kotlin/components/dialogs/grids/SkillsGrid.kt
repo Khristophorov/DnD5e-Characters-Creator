@@ -77,7 +77,7 @@ val SkillsGrid = FC<SkillsProps> { props ->
                     SavingThrowsItem(
                         title = content ?: "",
                         label = name ?: "",
-                        value = abilities[skill.ability] ?: 0,
+                        value = abilities[skill.ability]?.value ?: 0,
                         proficient = skill.proficient,
                         proficiencyBonus = props.proficiencyBonus,
                         additionalBonus = skill.additionalBonus

@@ -150,125 +150,121 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
                 apply()
             }
             props.features.filter { filterFeats(it, props.useFeats) }.forEach { feature ->
-                if (feature.functions.isEmpty()) {
+                if (feature.functions.isEmpty() || !hasWindowFunctions(feature)) {
                     simpleFeatures.add(feature)
                 } else {
-                    if (hasWindowFunctions(feature)) {
-                        feature.functions.forEach { function ->
-                            when (function.name) {
-                                "Inform" -> {
-                                    functionFeatures
-                                        .add(inform(feature, function, nextAction))
-                                }
+                    feature.functions.forEach { function ->
+                        when (function.name) {
+                            "Inform" -> {
+                                functionFeatures
+                                    .add(inform(feature, function, nextAction))
+                            }
 
-                                "Choose Proficiency" -> {
-                                    functionFeatures
-                                        .add(proficiencyChooser(feature, function, props, nextAction))
-                                }
+                            "Choose Proficiency" -> {
+                                functionFeatures
+                                    .add(proficiencyChooser(feature, function, props, nextAction))
+                            }
 
-                                "Choose Proficiencies" -> {
-                                    functionFeatures
-                                        .add(proficienciesChooser(feature, function, props, nextAction))
-                                }
+                            "Choose Proficiencies" -> {
+                                functionFeatures
+                                    .add(proficienciesChooser(feature, function, props, nextAction))
+                            }
 
-                                "Choose Language" -> {
-                                    functionFeatures
-                                        .add(languageChooser(feature, function, props, nextAction))
-                                }
+                            "Choose Language" -> {
+                                functionFeatures
+                                    .add(languageChooser(feature, function, props, nextAction))
+                            }
 
-                                "Choose Languages" -> {
-                                    functionFeatures
-                                        .add(languagesChooser(feature, function, props, nextAction))
-                                }
+                            "Choose Languages" -> {
+                                functionFeatures
+                                    .add(languagesChooser(feature, function, props, nextAction))
+                            }
 
-                                "Choose Skill" -> {
-                                    functionFeatures
-                                        .add(skillChooser(feature, function, props, nextAction))
-                                }
+                            "Choose Skill" -> {
+                                functionFeatures
+                                    .add(skillChooser(feature, function, props, nextAction))
+                            }
 
-                                "Choose Skills" -> {
-                                    functionFeatures
-                                        .add(skillsChooser(feature, function, props, nextAction))
-                                }
+                            "Choose Skills" -> {
+                                functionFeatures
+                                    .add(skillsChooser(feature, function, props, nextAction))
+                            }
 
-                                "Choose Feat" -> {
-                                    functionFeatures
-                                        .add(featChooser(feature, function, props, nextAction))
-                                }
+                            "Choose Feat" -> {
+                                functionFeatures
+                                    .add(featChooser(feature, function, props, nextAction))
+                            }
 
-                                "Choose Element" -> {
-                                    functionFeatures
-                                        .add(elementChooser(feature, function, props, nextAction))
-                                }
+                            "Choose Element" -> {
+                                functionFeatures
+                                    .add(elementChooser(feature, function, props, nextAction))
+                            }
 
-                                "Choose Ability" -> {
-                                    functionFeatures
-                                        .add(abilityChooser(feature, function, props, nextAction))
-                                }
+                            "Choose Ability" -> {
+                                functionFeatures
+                                    .add(abilityChooser(feature, function, props, nextAction))
+                            }
 
-                                "Choose Abilities" -> {
-                                    functionFeatures
-                                        .add(abilitiesChooser(feature, function, props, nextAction))
-                                }
+                            "Choose Abilities" -> {
+                                functionFeatures
+                                    .add(abilitiesChooser(feature, function, props, nextAction))
+                            }
 
-                                "Choose Maneuver" -> {
-                                    functionFeatures
-                                        .add(maneuverChooser(feature, function, props, nextAction))
-                                }
+                            "Choose Maneuver" -> {
+                                functionFeatures
+                                    .add(maneuverChooser(feature, function, props, nextAction))
+                            }
 
-                                "Choose Spells" -> {
-                                    functionFeatures
-                                        .add(spellsChooser(feature, function, props, false, nextAction))
-                                }
+                            "Choose Spells" -> {
+                                functionFeatures
+                                    .add(spellsChooser(feature, function, props, false, nextAction))
+                            }
 
-                                "Choose Additional Spells" -> {
-                                    functionFeatures
-                                        .add(spellsChooser(feature, function, props, true, nextAction))
-                                }
+                            "Choose Additional Spells" -> {
+                                functionFeatures
+                                    .add(spellsChooser(feature, function, props, true, nextAction))
+                            }
 
-                                "Choose Skills and Proficiencies" -> {
-                                    functionFeatures
-                                        .add(skillsAndProficienciesChooser(feature, function, props, nextAction))
-                                }
+                            "Choose Skills and Proficiencies" -> {
+                                functionFeatures
+                                    .add(skillsAndProficienciesChooser(feature, function, props, nextAction))
+                            }
 
-                                "Choose Weapon" -> {
-                                    functionFeatures
-                                        .add(weaponsChooser(feature, function, props, nextAction))
-                                }
+                            "Choose Weapon" -> {
+                                functionFeatures
+                                    .add(weaponsChooser(feature, function, props, nextAction))
+                            }
 
-                                "Choose Equipment Pack" -> {
-                                    functionFeatures
-                                        .add(equipmentPackChooser(feature, function, props, nextAction))
-                                }
+                            "Choose Equipment Pack" -> {
+                                functionFeatures
+                                    .add(equipmentPackChooser(feature, function, props, nextAction))
+                            }
 
-                                "Choose Equipment" -> {
-                                    functionFeatures
-                                        .add(equipmentChooser(feature, function, props, nextAction))
-                                }
+                            "Choose Equipment" -> {
+                                functionFeatures
+                                    .add(equipmentChooser(feature, function, props, nextAction))
+                            }
 
-                                "Choose Feature" -> {
-                                    functionFeatures
-                                        .add(featureChooser(feature, function, props, nextAction))
-                                }
+                            "Choose Feature" -> {
+                                functionFeatures
+                                    .add(featureChooser(feature, function, props, nextAction))
+                            }
 
-                                "Add Weapon" -> {
-                                    val weapon = Json.decodeFromString<Weapon>(function.values[1])
-                                    props.character.equipment.weapons += weapon
-                                }
+                            "Add Weapon" -> {
+                                val weapon = Json.decodeFromString<Weapon>(function.values[1])
+                                props.character.equipment.weapons += weapon
+                            }
 
-                                "Add Armor" -> {
-                                    val armor = Json.decodeFromString<Armor>(function.values[1])
-                                    props.character.equipment.armor += armor
-                                }
+                            "Add Armor" -> {
+                                val armor = Json.decodeFromString<Armor>(function.values[1])
+                                props.character.equipment.armor += armor
+                            }
 
-                                "Add Equipments" -> {
-                                    val equipments = Json.decodeFromString<List<SimpleEquipment>>(function.values[1])
-                                    props.character.equipment.otherEquipment += equipments
-                                }
+                            "Add Equipments" -> {
+                                val equipments = Json.decodeFromString<List<SimpleEquipment>>(function.values[1])
+                                props.character.equipment.otherEquipment += equipments
                             }
                         }
-                    } else {
-                        props.character.features += feature
                     }
                 }
             }
@@ -549,22 +545,26 @@ private fun featureChooser(
     nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
-    FeatureChooser {
-        this.open = open
-        this.setOpen = { setOpen(it) }
-        this.feature = feature
-        this.function = function
-        this.setValue = { value ->
-            console.info("Chosen feature: $value")
-            val featureIndex = function.values.indexOf(value)
-            props.character.features +=
-                Feature(
-                    name = function.values[featureIndex],
-                    description = function.values[featureIndex + 1],
-                    source = function.values[featureIndex + 2]
-                )
-            nextAction(feature, function)
+    if (shouldAddFeature(props.character, feature)) {
+        FeatureChooser {
+            this.open = open
+            this.setOpen = { setOpen(it) }
+            this.feature = feature
+            this.function = function
+            this.setValue = { value ->
+                console.info("Chosen feature: $value")
+                val featureIndex = function.values.indexOf(value)
+                props.character.features +=
+                    Feature(
+                        name = function.values[featureIndex],
+                        description = function.values[featureIndex + 1],
+                        source = function.values[featureIndex + 2]
+                    )
+                nextAction(feature, function)
+            }
         }
+    } else {
+        nextAction(feature, function)
     }
 }
 

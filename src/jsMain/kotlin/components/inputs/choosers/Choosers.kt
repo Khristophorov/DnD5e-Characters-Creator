@@ -281,7 +281,7 @@ val FeatureChooser = FC<FeatureProps<String>> { props ->
             DialogContent {
                 this.dividers = true
                 DialogContentText {
-                    +props.feature.description
+                    this.dangerouslySetInnerHTML = toDangerousHtml(props.feature.description)
                 }
                 ValidatorForm {
                     this.onSubmit = {

@@ -28,42 +28,42 @@ val AbilitiesGrid = FC<AbilitiesProps> { props ->
         this.title = props.translations[STRENGTH_CONTENT_TRANSLATION] ?: ""
         this.label = props.translations[STRENGTH_TRANSLATION] ?: ""
         this.readOnly = true
-        this.value = props.abilities.strength
+        this.value = props.abilities.strength.value
         this.translations = props.translations
     }
     AbilityBox {
         this.title = props.translations[DEXTERITY_CONTENT_TRANSLATION] ?: ""
         this.label = props.translations[DEXTERITY_TRANSLATION] ?: ""
         this.readOnly = true
-        this.value = props.abilities.dexterity
+        this.value = props.abilities.dexterity.value
         this.translations = props.translations
     }
     AbilityBox {
         this.title = props.translations[CONSTITUTION_CONTENT_TRANSLATION] ?: ""
         this.label = props.translations[CONSTITUTION_TRANSLATION] ?: ""
         this.readOnly = true
-        this.value = props.abilities.constitution
+        this.value = props.abilities.constitution.value
         this.translations = props.translations
     }
     AbilityBox {
         this.title = props.translations[INTELLIGENCE_CONTENT_TRANSLATION] ?: ""
         this.label = props.translations[INTELLIGENCE_TRANSLATION] ?: ""
         this.readOnly = true
-        this.value = props.abilities.intelligence
+        this.value = props.abilities.intelligence.value
         this.translations = props.translations
     }
     AbilityBox {
         this.title = props.translations[WISDOM_CONTENT_TRANSLATION] ?: ""
         this.label = props.translations[WISDOM_TRANSLATION] ?: ""
         this.readOnly = true
-        this.value = props.abilities.wisdom
+        this.value = props.abilities.wisdom.value
         this.translations = props.translations
     }
     AbilityBox {
         this.title = props.translations[CHARISMA_CONTENT_TRANSLATION] ?: ""
         this.label = props.translations[CHARISMA_TRANSLATION] ?: ""
         this.readOnly = true
-        this.value = props.abilities.charisma
+        this.value = props.abilities.charisma.value
         this.translations = props.translations
     }
 }

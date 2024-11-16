@@ -22,7 +22,7 @@ val SavingThrowsGrid = FC<SkillsProps> { props ->
         SavingThrowsGridItem {
             this.item = SavingThrowsItem(
                 label = props.translations[STRENGTH_TRANSLATION] ?: "",
-                value = abilities.strength,
+                value = abilities.strength.value,
                 proficient = savingThrows.strength,
                 proficiencyBonus = props.proficiencyBonus
             )
@@ -30,7 +30,7 @@ val SavingThrowsGrid = FC<SkillsProps> { props ->
         SavingThrowsGridItem {
             this.item = SavingThrowsItem(
                 label = props.translations[DEXTERITY_TRANSLATION] ?: "",
-                value = abilities.dexterity,
+                value = abilities.dexterity.value,
                 proficient = savingThrows.dexterity,
                 proficiencyBonus = props.proficiencyBonus
             )
@@ -38,7 +38,7 @@ val SavingThrowsGrid = FC<SkillsProps> { props ->
         SavingThrowsGridItem {
             this.item = SavingThrowsItem(
                 label = props.translations[CONSTITUTION_TRANSLATION] ?: "",
-                value = abilities.constitution,
+                value = abilities.constitution.value,
                 proficient = savingThrows.constitution,
                 proficiencyBonus = props.proficiencyBonus
             )
@@ -46,7 +46,7 @@ val SavingThrowsGrid = FC<SkillsProps> { props ->
         SavingThrowsGridItem {
             this.item = SavingThrowsItem(
                 label = props.translations[INTELLIGENCE_TRANSLATION] ?: "",
-                value = abilities.intelligence,
+                value = abilities.intelligence.value,
                 proficient = savingThrows.intelligence,
                 proficiencyBonus = props.proficiencyBonus
             )
@@ -54,7 +54,7 @@ val SavingThrowsGrid = FC<SkillsProps> { props ->
         SavingThrowsGridItem {
             this.item = SavingThrowsItem(
                 label = props.translations[WISDOM_TRANSLATION] ?: "",
-                value = abilities.wisdom,
+                value = abilities.wisdom.value,
                 proficient = savingThrows.wisdom,
                 proficiencyBonus = props.proficiencyBonus
             )
@@ -62,7 +62,7 @@ val SavingThrowsGrid = FC<SkillsProps> { props ->
         SavingThrowsGridItem {
             this.item = SavingThrowsItem(
                 label = props.translations[CHARISMA_TRANSLATION] ?: "",
-                value = abilities.charisma,
+                value = abilities.charisma.value,
                 proficient = savingThrows.charisma,
                 proficiencyBonus = props.proficiencyBonus
             )

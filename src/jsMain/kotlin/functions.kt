@@ -28,6 +28,7 @@ import me.khrys.dnd.charcreator.common.STRENGTH_TRANSLATION
 import me.khrys.dnd.charcreator.common.SURVIVAL_TRANSLATION
 import me.khrys.dnd.charcreator.common.WISDOM_TRANSLATION
 import me.khrys.dnd.charcreator.common.models.Abilities
+import me.khrys.dnd.charcreator.common.models.Ability
 import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.Dice
 import me.khrys.dnd.charcreator.common.models.Feat
@@ -98,9 +99,10 @@ fun computeAttackBonus(
 }
 
 fun computeAttackModifier(abilities: Abilities, properties: String, translations: Map<String, String>) =
-    if (isRanged(properties, translations)) computeModifier(abilities.dexterity)
-    else if (isFinesse(properties, translations)) computeModifier(max(abilities.strength, abilities.dexterity))
-    else computeModifier(abilities.strength)
+    if (isRanged(properties, translations)) computeModifier(abilities.dexterity.value)
+    else if (isFinesse(properties, translations))
+        computeModifier(max(abilities.strength.value, abilities.dexterity.value))
+    else computeModifier(abilities.strength.value)
 
 fun isRanged(properties: String, translations: Map<String, String>) =
     properties.contains(translations[RANGE_TRANSLATION] ?: "", ignoreCase = true)
@@ -148,13 +150,15 @@ fun Character.clone() = Character(
 )
 
 fun Abilities.clone() = Abilities(
-    strength = this.strength,
-    dexterity = this.dexterity,
-    constitution = this.constitution,
-    intelligence = this.intelligence,
-    wisdom = this.wisdom,
-    charisma = this.charisma
+    strength = this.strength.clone(),
+    dexterity = this.dexterity.clone(),
+    constitution = this.constitution.clone(),
+    intelligence = this.intelligence.clone(),
+    wisdom = this.wisdom.clone(),
+    charisma = this.charisma.clone()
 )
+
+fun Ability.clone() = Ability(this.value, this.maxLimit)
 
 fun SavingThrows.clone() = SavingThrows(
     strength = this.strength,
@@ -181,6 +185,8 @@ fun Character.applyFeature(feature: Feature, translations: Map<String, String>, 
             "Increase Intelligence" -> increaseIntelligence(function.values[0].toInt())
             "Increase Charisma" -> increaseCharisma(function.values[0].toInt())
             "Increase Wisdom" -> increaseWisdom(function.values[0].toInt())
+            "Increase Maximum Strength" -> increaseMaximumStrength(function.values[0].toInt())
+            "Increase Maximum Constitution" -> increaseMaximumConstitution(function.values[0].toInt())
             "Increase Ability" -> increaseAbility(function.values[0], function.values[1].toInt(), translations)
             "Increase Ability with Saving Throws" -> increaseAbilityAndSavingThrows(
                 function.values[0],
@@ -190,6 +196,7 @@ fun Character.applyFeature(feature: Feature, translations: Map<String, String>, 
 
             "Increase Non Proficient Skills With Proficiency Bonus" ->
                 increaseSkillsWithProficiencyBonus(false, function.values[0].toDouble())
+
             "Increase Initiative" -> increaseInitiative(function.values[0].toInt())
             "Increase Perception" -> increasePerception(function.values[0].toInt())
             "Increase Investigation" -> increaseInvestigation(function.values[0].toInt())
@@ -211,39 +218,53 @@ fun Character.applyFeature(feature: Feature, translations: Map<String, String>, 
 }
 
 fun Character.increaseStrength(value: Int) {
-    if (this.abilities.strength + value <= MAXIMUM_LEVEL) {
-        this.abilities.strength += value
+    val strength = this.abilities.strength
+    if (strength.value + value <= strength.maxLimit) {
+        strength.value += value
     }
 }
 
 fun Character.increaseDexterity(value: Int) {
-    if (this.abilities.dexterity + value <= MAXIMUM_LEVEL) {
-        this.abilities.dexterity += value
+    val dexterity = this.abilities.dexterity
+    if (dexterity.value + value <= dexterity.maxLimit) {
+        dexterity.value += value
     }
 }
 
 fun Character.increaseConstitution(value: Int) {
-    if (this.abilities.constitution + value <= MAXIMUM_LEVEL) {
-        this.abilities.constitution += value
+    val constitution = this.abilities.constitution
+    if (constitution.value + value <= constitution.maxLimit) {
+        constitution.value += value
     }
 }
 
 fun Character.increaseIntelligence(value: Int) {
-    if (this.abilities.intelligence + value <= MAXIMUM_LEVEL) {
-        this.abilities.intelligence += value
+    val intelligence = this.abilities.intelligence
+    if (intelligence.value + value <= intelligence.maxLimit) {
+        intelligence.value += value
     }
 }
 
 fun Character.increaseWisdom(value: Int) {
-    if (this.abilities.wisdom + value <= MAXIMUM_LEVEL) {
-        this.abilities.wisdom += value
+    val wisdom = this.abilities.wisdom
+    if (wisdom.value + value <= wisdom.maxLimit) {
+        wisdom.value += value
     }
 }
 
 fun Character.increaseCharisma(value: Int) {
-    if (this.abilities.charisma + value <= MAXIMUM_LEVEL) {
-        this.abilities.charisma += value
+    val charisma = this.abilities.charisma
+    if (charisma.value + value <= charisma.maxLimit) {
+        charisma.value += value
     }
+}
+
+fun Character.increaseMaximumStrength(value: Int) {
+    this.abilities.strength.maxLimit += value
+}
+
+fun Character.increaseMaximumConstitution(value: Int) {
+    this.abilities.constitution.maxLimit += value
 }
 
 fun Character.increaseAbility(abilityName: String, value: Int, translations: Map<String, String>) {
@@ -346,12 +367,12 @@ fun Character.setSpellcastingAbility(ability: String, translations: Map<String, 
 
 fun Character.getAbility(ability: String, translations: Map<String, String>): Int {
     return when (ability) {
-        translations[STRENGTH_TRANSLATION] -> this.abilities.strength
-        translations[DEXTERITY_TRANSLATION] -> this.abilities.dexterity
-        translations[CONSTITUTION_TRANSLATION] -> this.abilities.constitution
-        translations[INTELLIGENCE_TRANSLATION] -> this.abilities.intelligence
-        translations[WISDOM_TRANSLATION] -> this.abilities.wisdom
-        translations[CHARISMA_TRANSLATION] -> this.abilities.charisma
+        translations[STRENGTH_TRANSLATION] -> this.abilities.strength.value
+        translations[DEXTERITY_TRANSLATION] -> this.abilities.dexterity.value
+        translations[CONSTITUTION_TRANSLATION] -> this.abilities.constitution.value
+        translations[INTELLIGENCE_TRANSLATION] -> this.abilities.intelligence.value
+        translations[WISDOM_TRANSLATION] -> this.abilities.wisdom.value
+        translations[CHARISMA_TRANSLATION] -> this.abilities.charisma.value
         else -> {
             throw IllegalArgumentException("Unknown ability: $ability")
         }
@@ -535,7 +556,7 @@ fun Character.getCombinedLevel(): Int = this.classes.values.sum()
 
 fun Character.computeArmorClass(): Int {
     return 10 + computeModifier(
-        this.abilities.dexterity,
+        this.abilities.dexterity.value,
         computeProficiencyBonus(this.getCombinedLevel()),
         this.savingThrows.dexterity
     ) + this.armorClass
@@ -543,7 +564,7 @@ fun Character.computeArmorClass(): Int {
 
 fun Character.getInitiative(): Int {
     return computeModifier(
-        this.abilities.dexterity,
+        this.abilities.dexterity.value,
         computeProficiencyBonus(this.getCombinedLevel()),
         this.savingThrows.dexterity
     ) + bonuses.initiative
@@ -551,7 +572,7 @@ fun Character.getInitiative(): Int {
 
 fun Character.setDefaultHitPoints(dice: Dice) {
     if (this.hitPoints == 0) {
-        this.hitPoints = dice.maxValue + computeModifier(this.abilities.constitution)
+        this.hitPoints = dice.maxValue + computeModifier(this.abilities.constitution.value)
     }
 }
 
@@ -604,12 +625,12 @@ fun Filter.apply(character: Character): Boolean {
         else -> emptyList()
     }
     val dataNum = when (this.param) {
-        STRENGTH -> character.abilities.strength
-        DEXTERITY -> character.abilities.dexterity
-        CONSTITUTION -> character.abilities.constitution
-        INTELLIGENCE -> character.abilities.intelligence
-        WISDOM -> character.abilities.wisdom
-        CHARISMA -> character.abilities.charisma
+        STRENGTH -> character.abilities.strength.value
+        DEXTERITY -> character.abilities.dexterity.value
+        CONSTITUTION -> character.abilities.constitution.value
+        INTELLIGENCE -> character.abilities.intelligence.value
+        WISDOM -> character.abilities.wisdom.value
+        CHARISMA -> character.abilities.charisma.value
         LEVEL -> character.getCombinedLevel()
         else -> 0
     }

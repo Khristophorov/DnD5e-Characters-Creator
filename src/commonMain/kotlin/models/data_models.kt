@@ -60,12 +60,18 @@ data class CharBonuses(
 
 @Serializable
 data class Abilities(
-    var strength: Int,
-    var dexterity: Int,
-    var constitution: Int,
-    var intelligence: Int,
-    var wisdom: Int,
-    var charisma: Int
+    var strength: Ability,
+    var dexterity: Ability,
+    var constitution: Ability,
+    var intelligence: Ability,
+    var wisdom: Ability,
+    var charisma: Ability
+)
+
+@Serializable
+data class Ability(
+    var value: Int,
+    var maxLimit: Int = 20
 )
 
 @Serializable
@@ -269,7 +275,7 @@ fun emptyWeapon() = Weapon("", type = "", price = "", damage = "", weight = "", 
 
 fun emptySimpleEquipment() = SimpleEquipment("", type = "", price = "", weight = "")
 
-fun initialAbilities() = Abilities(10, 10, 10, 10, 10, 10)
+fun initialAbilities() = Abilities(Ability(10), Ability(10), Ability(10), Ability(10), Ability(10), Ability(10))
 
 fun initialSavingThrows() = SavingThrows(
     strength = false,

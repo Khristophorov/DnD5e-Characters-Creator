@@ -26,6 +26,7 @@ import me.khrys.dnd.charcreator.common.STRENGTH_TRANSLATION
 import me.khrys.dnd.charcreator.common.WISDOM_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.WISDOM_TRANSLATION
 import me.khrys.dnd.charcreator.common.models.Abilities
+import me.khrys.dnd.charcreator.common.models.Ability
 import mui.material.Dialog
 import mui.material.DialogActions
 import mui.material.DialogContent
@@ -67,7 +68,14 @@ val CharAbilitiesWindow = FC<CharBasedProps> { props ->
                 ValidatorForm {
                     this.onSubmit = {
                         props.character.abilities =
-                            Abilities(strength, dexterity, constitution, intelligence, wisdom, charisma)
+                            Abilities(
+                                Ability(strength),
+                                Ability(dexterity),
+                                Ability(constitution),
+                                Ability(intelligence),
+                                Ability(wisdom),
+                                Ability(charisma)
+                            )
                         props.action()
                     }
                     div {
