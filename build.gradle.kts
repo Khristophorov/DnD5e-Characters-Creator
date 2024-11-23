@@ -5,8 +5,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
-    kotlin("multiplatform") version "2.0.0"
-    kotlin("plugin.serialization") version "2.0.0"
+    kotlin("multiplatform") version "2.0.21"
+    kotlin("plugin.serialization") version "2.0.21"
     application
     idea
 }
@@ -15,17 +15,17 @@ group = "me.khris"
 version = "1.0-SNAPSHOT"
 
 // Kotlin dependencies
-val kotlinCoroutinesVersion = "1.8.1"
+val kotlinCoroutinesVersion = "1.9.0"
 val kotlinHtmlVersion = "0.11.0"
 val kotlinReactVersion = "18.2.0-pre.638"
 val kotlinMuiVersion = "5.14.12-pre.638"
 val kotlinMuiIconsVersion = "5.14.12-pre.638"
 val kotlinEmotionVersion = "11.11.1-pre.638"
-val kotlinSerializationVersion = "1.7.1"
+val kotlinSerializationVersion = "1.7.3"
 val kmongoVersion = "5.1.0"
-val ktorVersion = "2.3.12"
-val logbackVersion = "1.5.7"
-val mockkVersion = "1.13.12"
+val ktorVersion = "3.0.1"
+val logbackVersion = "1.5.12"
+val mockkVersion = "1.13.13"
 
 // JavaScript dependencies
 val reactMaterialUiFormValidatorVersion = "3.0.1"
@@ -90,7 +90,7 @@ kotlin {
                 implementation("io.ktor:ktor-server-sessions:$ktorVersion")
                 implementation("io.ktor:ktor-server-html-builder:$ktorVersion")
                 implementation("io.ktor:ktor-server-auth:$ktorVersion")
-                implementation("io.ktor:ktor-server-locations:$ktorVersion")
+                implementation("io.ktor:ktor-server-resources:$ktorVersion")
                 implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
                 implementation("io.ktor:ktor-client-apache:$ktorVersion")
                 implementation("io.ktor:ktor-client-serialization:$ktorVersion")

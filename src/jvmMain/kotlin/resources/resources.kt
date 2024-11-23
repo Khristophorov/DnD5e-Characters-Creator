@@ -1,9 +1,6 @@
-@file:OptIn(KtorExperimentalLocationsAPI::class)
+package me.khrys.dnd.charcreator.server.resources
 
-package me.khrys.dnd.charcreator.server.locations
-
-import io.ktor.server.locations.KtorExperimentalLocationsAPI
-import io.ktor.server.locations.Location
+import io.ktor.resources.Resource
 import me.khrys.dnd.charcreator.common.CHARACTERS_URL
 import me.khrys.dnd.charcreator.common.CLASSES_URL
 import me.khrys.dnd.charcreator.common.FEATS_URL
@@ -16,35 +13,35 @@ import me.khrys.dnd.charcreator.common.ROOT_URL
 import me.khrys.dnd.charcreator.common.SPELLS_URL
 import me.khrys.dnd.charcreator.common.TRANSLATIONS_URL
 
-@Location(ROOT_URL)
+@Resource(ROOT_URL)
 class Index
 
-@Location(LOGIN_URL)
+@Resource(LOGIN_URL)
 class Login
 
-@Location(LOGOUT_URL)
+@Resource(LOGOUT_URL)
 class Logout
 
-@Location(TRANSLATIONS_URL)
+@Resource(TRANSLATIONS_URL)
 class Translations
 
-@Location(CHARACTERS_URL)
+@Resource(CHARACTERS_URL)
 class Characters
 
-@Location(RACES_URL)
+@Resource(RACES_URL)
 class Races
 
-@Location(CLASSES_URL)
+@Resource(CLASSES_URL)
 class Classes
 
-@Location(FEATS_URL)
+@Resource(FEATS_URL)
 class Feats
 
-@Location(MANEUVERS_URL)
+@Resource(MANEUVERS_URL)
 class Maneuvers
 
-@Location(SPELLS_URL)
+@Resource(SPELLS_URL)
 class Spells
 
-@Location("${IMAGE_URL}/{name}")
+@Resource("${IMAGE_URL}/{name}")
 data class Image(val name: String)

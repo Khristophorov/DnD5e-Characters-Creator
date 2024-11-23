@@ -15,4 +15,5 @@ data class UserInfo(
     val access_type: String?
 )
 
+@Serializable
 data class LoginSession(val username: String)

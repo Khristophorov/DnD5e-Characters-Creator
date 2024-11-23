@@ -9,7 +9,6 @@ import me.khrys.dnd.charcreator.common.ABILITY_MINIMUM
 import me.khrys.dnd.charcreator.common.CLASS_JUSTIFY_BETWEEN
 import me.khrys.dnd.charcreator.common.ENTER_HIT_POINTS_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.ENTER_HIT_POINTS_TRANSLATION
-import me.khrys.dnd.charcreator.common.ENTER_NAME_LABEL_TRANSLATION
 import me.khrys.dnd.charcreator.common.NEXT_TRANSLATION
 import me.khrys.dnd.charcreator.common.VALIDATION_LOWER_0
 import mui.material.Dialog

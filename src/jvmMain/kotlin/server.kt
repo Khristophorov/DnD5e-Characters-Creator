@@ -16,7 +16,7 @@ fun Application.main() {
             json()
         }
     }.apply {
-        environment.monitor.subscribe(ApplicationStopping) { close() }
+        monitor.subscribe(ApplicationStopping) { close() }
     }
     val loginProvider = initLoginProvider(config)
 
