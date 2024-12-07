@@ -21,6 +21,7 @@ import me.khrys.dnd.charcreator.client.components.validators.TextValidator
 import me.khrys.dnd.charcreator.client.components.validators.TextValidatorProps
 import me.khrys.dnd.charcreator.client.components.validators.ValidatorForm
 import me.khrys.dnd.charcreator.client.computeSpellLevel
+import me.khrys.dnd.charcreator.client.isNumber
 import me.khrys.dnd.charcreator.client.isProficient
 import me.khrys.dnd.charcreator.client.toDangerousHtml
 import me.khrys.dnd.charcreator.client.toFeature
@@ -420,7 +421,7 @@ val SpellsChooser = FC<SpellsFeatureProps> { props ->
     }
     if (props.open) {
         val values = props.function.values
-        val maxSpellsNumber = values[0].toInt()
+        val hasSpellsLimit = values[1].isNumber()
         Dialog {
             this.open = props.open
             DialogTitle {
@@ -435,7 +436,7 @@ val SpellsChooser = FC<SpellsFeatureProps> { props ->
                 }
                 ValidatorForm {
                     this.onSubmit = {
-                        if (chosenSpells.size < maxSpellsNumber) {
+                        if (hasSpellsLimit && chosenSpells.size < values[0].toInt()) {
                             setOpenAlert(true)
                         } else {
                             props.setValue(chosenSpells, spellsToRemove)
@@ -469,11 +470,15 @@ val SpellsTable = FC<SpellsFeatureProps> { props ->
         .filter { (name, _) -> !props.character.additionalSpells.map { it._id }.contains(name) }
     val (openAlert, setOpenAlert) = useState(false)
     val values = props.function.values
-    val maxSpellsNumber = values[0].toInt()
-    val level = values[1].toInt()
-    val classes = values[2].split(", ")
-    val isMaxLevel = values.getOrNull(3).toBoolean()
-    val includeCantrips = values.getOrNull(4).toBoolean()
+    val hasSpellsLimit = values[1].isNumber()
+    val levelIndex = if (hasSpellsLimit) 1 else 0
+    val classesIndex = levelIndex + 1
+    val maxLevelIndex = levelIndex + 2
+    val includeCantripsIndex = levelIndex + 3
+    val level = values[levelIndex].toInt()
+    val classes = values[classesIndex].split(", ")
+    val isMaxLevel = values.getOrNull(maxLevelIndex).toBoolean()
+    val includeCantrips = values.getOrNull(includeCantripsIndex).toBoolean()
     AlertDialog {
         this.open = openAlert
         this.action = { setOpenAlert(false) }
@@ -505,7 +510,7 @@ val SpellsTable = FC<SpellsFeatureProps> { props ->
                             this.checked = checked
                             this.onChange = { _, checked ->
                                 playSound(BUTTON_SOUND_ID)
-                                if (checked && props.value.size >= maxSpellsNumber) {
+                                if (checked && hasSpellsLimit && props.value.size >= values[0].toInt()) {
                                     setOpenAlert(true)
                                     setChecked(false)
                                 } else {

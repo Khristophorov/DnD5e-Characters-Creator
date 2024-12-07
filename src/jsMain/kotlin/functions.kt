@@ -653,6 +653,8 @@ fun String.format(vararg values: String): String {
     return newString
 }
 
+fun String.isNumber() = this.toIntOrNull() != null
+
 fun toDangerousHtml(value: String) = object : DangerousHTML {
     override var __html = value
 }.unsafeCast<DangerouslySetInnerHTML>()

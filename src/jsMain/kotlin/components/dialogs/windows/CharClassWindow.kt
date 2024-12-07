@@ -21,6 +21,7 @@ import me.khrys.dnd.charcreator.common.ENTER_CLASS_CONTENT_TRANSLATION
 import me.khrys.dnd.charcreator.common.ENTER_CLASS_TRANSLATION
 import me.khrys.dnd.charcreator.common.NEXT_TRANSLATION
 import me.khrys.dnd.charcreator.common.VALIDATION_REQUIRED
+import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.Class
 import me.khrys.dnd.charcreator.common.models.Feature
 import me.khrys.dnd.charcreator.common.models.emptyClass
@@ -119,7 +120,7 @@ var CharClassWindow = memoDialog(FC<CharBasedProps> { props ->
     CollectClassFeatures {
         this.className = charClass._id
         this.features = features
-        this.multiclass = false
+        this.multiclass = isMultiClass(props.character, charClass._id)
         this.character = props.character
         this.open = openFeatures
         this.setOpen = { setOpenFeatures(it) }
@@ -141,3 +142,7 @@ var CharClassWindow = memoDialog(FC<CharBasedProps> { props ->
         }
     }
 })
+
+fun isMultiClass(character: Character, className: String): Boolean {
+    return character.classes.size > 1 || !character.classes.containsKey(className)
+}
