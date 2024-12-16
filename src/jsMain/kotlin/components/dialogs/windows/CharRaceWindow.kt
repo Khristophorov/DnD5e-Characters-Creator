@@ -90,5 +90,6 @@ val CharRaceWindow = memoDialog(FC<CharBasedProps> { props ->
         this.action = props.action
         this.feats = feats
         this.useFeats = useFeats
+        this.translations = translations
     }
 })

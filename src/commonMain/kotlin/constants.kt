@@ -173,6 +173,7 @@ const val DAMAGE_TYPE_TRANSLATION = "damage_type"
 const val EQUIPMENT_TRANSLATION = "equipment"
 const val LEVEL_UP_TRANSLATION = "level_up"
 const val CLASSES_TRANSLATION = "classes"
+const val MARTIAL_WEAPON_TRANSLATION = "martial_weapon"
 
 const val PROFICIENT = "Proficient"
 

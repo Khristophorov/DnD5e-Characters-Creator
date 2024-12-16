@@ -160,6 +160,8 @@ data class Filter(
         WORE_TYPE,
         LEFT_HAND_TYPE,
         RIGHT_HAND_TYPE,
+        ARMORS,
+        WEAPONS,
         STRENGTH,
         DEXTERITY,
         CONSTITUTION,
@@ -167,12 +169,14 @@ data class Filter(
         WISDOM,
         CHARISMA,
         LEVEL,
-        FEATURES
+        FEATURES,
+        MARTIAL_WEAPONS_SIZE
     }
 
     @Serializable
     enum class Comparator {
         CONTAINS,
+        EQUALS,
         EQUALS_OR_HIGHER
     }
 }
@@ -195,7 +199,7 @@ data class Spell(
 @Serializable
 data class Equipment(
     var coinage: Coinage,
-    var armor: List<Armor> = emptyList(),
+    var armors: List<Armor> = emptyList(),
     var weapons: List<Weapon> = emptyList(),
     var otherEquipment: List<SimpleEquipment> = emptyList()
 )
@@ -218,21 +222,21 @@ data class Weapon(
     var price: String,
     var damage: String,
     var weight: String,
-    var properties: String,
+    var properties: String = "",
     var functions: List<DnDFunction> = emptyList()
 )
 
 @Serializable
 data class Armor(
-    val _id: String,
+    var _id: String,
     var description: String = "",
-    val type: String,
-    val price: String,
-    val armorClass: String,
-    val strength: Int? = null,
-    val stealth: String,
-    val weight: String,
-    val functions: List<DnDFunction> = emptyList()
+    var type: String,
+    var price: String,
+    var armorClass: String,
+    var strength: Int? = null,
+    var stealth: String,
+    var weight: String,
+    var functions: List<DnDFunction> = emptyList()
 )
 
 @Serializable
@@ -272,6 +276,8 @@ fun emptyFeat() = Feat("", "")
 fun emptyManeuver() = Maneuver("", "", "")
 
 fun emptyWeapon() = Weapon("", type = "", price = "", damage = "", weight = "", properties = "")
+
+fun emptyArmor() = Armor("", type = "", price = "", armorClass = "", stealth = "", weight = "")
 
 fun emptySimpleEquipment() = SimpleEquipment("", type = "", price = "", weight = "")
 

@@ -27,9 +27,11 @@ import me.khrys.dnd.charcreator.client.toDangerousHtml
 import me.khrys.dnd.charcreator.client.toFeature
 import me.khrys.dnd.charcreator.client.utils.playSound
 import me.khrys.dnd.charcreator.client.utils.value
+import me.khrys.dnd.charcreator.client.validateArmor
 import me.khrys.dnd.charcreator.client.validateSimpleEquipment
 import me.khrys.dnd.charcreator.client.validateWeapon
 import me.khrys.dnd.charcreator.common.ALERT_TRANSLATION
+import me.khrys.dnd.charcreator.common.ARMOR_CLASS_TRANSLATION
 import me.khrys.dnd.charcreator.common.BUTTON_SOUND_ID
 import me.khrys.dnd.charcreator.common.CANTRIP_TRANSLATION
 import me.khrys.dnd.charcreator.common.CELLS_SHOULD_BE_FILLED_TRANSLATION
@@ -49,6 +51,7 @@ import me.khrys.dnd.charcreator.common.SPELL_LEVEL_SUFFIX_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPELL_LEVEL_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPELL_NAME_TRANSLATION
 import me.khrys.dnd.charcreator.common.SPELL_SCHOOL_TRANSLATION
+import me.khrys.dnd.charcreator.common.STEALTH_TRANSLATION
 import me.khrys.dnd.charcreator.common.STRENGTH_TRANSLATION
 import me.khrys.dnd.charcreator.common.TOO_FEW_CHECKS_TRANSLATION
 import me.khrys.dnd.charcreator.common.TOO_MANY_CHECKS_TRANSLATION
@@ -57,10 +60,12 @@ import me.khrys.dnd.charcreator.common.VALIDATION_REQUIRED
 import me.khrys.dnd.charcreator.common.VALUE_SHOULD_BE_CHOSEN_TRANSLATION
 import me.khrys.dnd.charcreator.common.WEIGHT_TRANSLATION
 import me.khrys.dnd.charcreator.common.WISDOM_TRANSLATION
+import me.khrys.dnd.charcreator.common.models.Armor
 import me.khrys.dnd.charcreator.common.models.Character
 import me.khrys.dnd.charcreator.common.models.SimpleEquipment
 import me.khrys.dnd.charcreator.common.models.Spell
 import me.khrys.dnd.charcreator.common.models.Weapon
+import me.khrys.dnd.charcreator.common.models.emptyArmor
 import me.khrys.dnd.charcreator.common.models.emptyFeat
 import me.khrys.dnd.charcreator.common.models.emptyManeuver
 import me.khrys.dnd.charcreator.common.models.emptySimpleEquipment
@@ -357,6 +362,7 @@ val FeatChooser = FC<FeatsProps> { props ->
         this.setOpen = { setOpenFeatures(it) }
         this.action = props.action
         this.feature = feat.toFeature()
+        this.translations = translations
     }
 }
 
@@ -570,6 +576,57 @@ val WeaponsChooser = FC<MultipleFeatureProps<List<Weapon>>> { props ->
     }
     if (props.open) {
         val values = props.function.values
+        val minNumber = values[1].toInt()
+        Dialog {
+            this.open = props.open
+            this.maxWidth = "lg"
+            DialogTitle {
+                +props.feature.name
+            }
+            DialogContent {
+                this.dividers = true
+                DialogContentText {
+                    span {
+                        this.dangerouslySetInnerHTML = toDangerousHtml(props.feature.description)
+                    }
+                }
+                ValidatorForm {
+                    this.onSubmit = {
+                        if (chosenWeapons.size < minNumber) {
+                            setOpenAlert(true)
+                        } else {
+                            props.setValue(chosenWeapons)
+                            props.setOpen(false)
+                        }
+                    }
+                    TableContainer {
+                        WeaponsTable {
+                            this.function = props.function
+                            this.setValue = { setChosenWeapons(it) }
+                            this.value = chosenWeapons
+                        }
+                    }
+                    DialogActions {
+                        Submit { +(translations[NEXT_TRANSLATION] ?: "") }
+                    }
+                }
+            }
+        }
+    }
+}
+
+val ArmorsChooser = FC<MultipleFeatureProps<List<Armor>>> { props ->
+    val translations = useContext(TranslationsContext)
+    val (chosenArmors, setChosenArmors) = useState(emptyList<Armor>())
+    val (openAlert, setOpenAlert) = useState(false)
+    AlertDialog {
+        this.open = openAlert
+        this.action = { setOpenAlert(false) }
+        this.header = translations[ALERT_TRANSLATION] ?: ""
+        +translations[TOO_FEW_CHECKS_TRANSLATION]
+    }
+    if (props.open) {
+        val values = props.function.values
         val maxNumber = values[1].toInt()
         Dialog {
             this.open = props.open
@@ -586,18 +643,18 @@ val WeaponsChooser = FC<MultipleFeatureProps<List<Weapon>>> { props ->
                 }
                 ValidatorForm {
                     this.onSubmit = {
-                        if (chosenWeapons.size < maxNumber) {
+                        if (chosenArmors.size < maxNumber) {
                             setOpenAlert(true)
                         } else {
-                            props.setValue(chosenWeapons)
+                            props.setValue(chosenArmors)
                             props.setOpen(false)
                         }
                     }
                     TableContainer {
-                        WeaponsTable {
+                        ArmorsTable {
                             this.function = props.function
-                            this.setValue = { setChosenWeapons(it) }
-                            this.value = chosenWeapons
+                            this.setValue = { setChosenArmors(it) }
+                            this.value = chosenArmors
                         }
                     }
                     DialogActions {
@@ -720,8 +777,8 @@ val WeaponsTable = FC<MultipleFeatureProps<List<Weapon>>> { props ->
     val (openTextAlert, setOpenTextAlert) = useState(false)
     val values = props.function.values
     val allowManual = values[0].toBoolean()
-    val maxNumber = values[1].toInt()
-    val weapons = Json.decodeFromString<List<Weapon>>(values[3])
+    val maxNumber = values[2].toInt()
+    val weapons = Json.decodeFromString<List<Weapon>>(values[4])
     AlertDialog {
         this.open = openAlert
         this.action = { setOpenAlert(false) }
@@ -868,6 +925,180 @@ val WeaponsTable = FC<MultipleFeatureProps<List<Weapon>>> { props ->
                                 setWeapon(weapon)
                                 setChecked(false)
                                 props.setValue(props.value - weapon)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+val ArmorsTable = FC<MultipleFeatureProps<List<Armor>>> { props ->
+    val translations = useContext(TranslationsContext)
+    val (openAlert, setOpenAlert) = useState(false)
+    val (openTextAlert, setOpenTextAlert) = useState(false)
+    val values = props.function.values
+    val allowManual = values[0].toBoolean()
+    val maxNumber = values[1].toInt()
+    val armors = Json.decodeFromString<List<Armor>>(values[3])
+    AlertDialog {
+        this.open = openAlert
+        this.action = { setOpenAlert(false) }
+        this.header = translations[ALERT_TRANSLATION] ?: ""
+        +translations[TOO_MANY_CHECKS_TRANSLATION]
+    }
+    AlertDialog {
+        this.open = openTextAlert
+        this.action = { setOpenTextAlert(false) }
+        this.header = translations[ALERT_TRANSLATION] ?: ""
+        +translations[CELLS_SHOULD_BE_FILLED_TRANSLATION]
+    }
+    Table {
+        this.stickyHeader = true
+        TableHead {
+            TableRow {
+                TableCell()
+                TableCell { +translations[NAME_TRANSLATION] }
+                TableCell { +translations[DESCRIPTION_TRANSLATION] }
+                TableCell { +translations[TYPE_TRANSLATION] }
+                TableCell { +translations[PRICE_TRANSLATION] }
+                TableCell { +translations[ARMOR_CLASS_TRANSLATION] }
+                TableCell { +translations[STRENGTH_TRANSLATION] }
+                TableCell { +translations[STEALTH_TRANSLATION] }
+                TableCell { +translations[WEIGHT_TRANSLATION] }
+            }
+        }
+        TableBody {
+            armors.forEach { armor ->
+                TableRow {
+                    TableCell {
+                        val (checked, setChecked) = useState(false)
+                        Checkbox {
+                            this.checked = checked
+                            this.onChange = { _, checked ->
+                                playSound(BUTTON_SOUND_ID)
+                                if (checked && props.value.size >= maxNumber) {
+                                    setOpenAlert(true)
+                                    setChecked(false)
+                                } else {
+                                    setChecked(checked)
+                                    props.setValue(
+                                        if (checked) props.value + armor
+                                        else props.value - armor
+                                    )
+                                    console.info("${armor._id} is $checked")
+                                }
+                            }
+                        }
+                    }
+                    TableCell { +armor._id }
+                    TableCell { this.dangerouslySetInnerHTML = toDangerousHtml(armor.description) }
+                    TableCell { +armor.type }
+                    TableCell { +armor.price }
+                    TableCell { +armor.armorClass }
+                    TableCell { +armor.strength.toString() }
+                    TableCell { +armor.stealth }
+                    TableCell { +armor.weight }
+                }
+            }
+            if (allowManual) {
+                for (i in 0 until maxNumber) {
+                    TableRow {
+                        val (checked, setChecked) = useState(false)
+                        val (armor, setArmor) = useState(emptyArmor())
+                        TableCell {
+                            Checkbox {
+                                this.checked = checked
+                                this.onChange = { _, checked ->
+                                    playSound(BUTTON_SOUND_ID)
+                                    if (checked && props.value.size >= maxNumber) {
+                                        setOpenAlert(true)
+                                        setChecked(false)
+                                    } else if (checked && !validateArmor(armor)) {
+                                        setOpenTextAlert(true)
+                                        setChecked(false)
+                                    } else {
+                                        setChecked(checked)
+                                        props.setValue(
+                                            if (checked) props.value + armor
+                                            else props.value - armor
+                                        )
+                                        console.info("${armor._id} is $checked")
+                                    }
+                                }
+                            }
+                        }
+                        EditableCell {
+                            this.value = armor._id
+                            this.onChange = { event ->
+                                armor._id = event.value()
+                                setArmor(armor)
+                                setChecked(false)
+                                props.setValue(props.value - armor)
+                            }
+                        }
+                        EditableCell {
+                            this.value = armor.description
+                            this.onChange = { event ->
+                                armor.description = event.value()
+                                setArmor(armor)
+                                setChecked(false)
+                                props.setValue(props.value - armor)
+                            }
+                        }
+                        EditableCell {
+                            this.value = armor.type
+                            this.onChange = { event ->
+                                armor.type = event.value()
+                                setArmor(armor)
+                                setChecked(false)
+                                props.setValue(props.value - armor)
+                            }
+                        }
+                        EditableCell {
+                            this.value = armor.price
+                            this.onChange = { event ->
+                                armor.price = event.value()
+                                setArmor(armor)
+                                setChecked(false)
+                                props.setValue(props.value - armor)
+                            }
+                        }
+                        EditableCell {
+                            this.value = armor.armorClass
+                            this.onChange = { event ->
+                                armor.armorClass = event.value()
+                                setArmor(armor)
+                                setChecked(false)
+                                props.setValue(props.value - armor)
+                            }
+                        }
+                        EditableCell {
+                            this.value = armor.strength
+                            this.onChange = { event ->
+                                armor.strength = event.value().toInt()
+                                setArmor(armor)
+                                setChecked(false)
+                                props.setValue(props.value - armor)
+                            }
+                        }
+                        EditableCell {
+                            this.value = armor.stealth
+                            this.onChange = { event ->
+                                armor.stealth = event.value()
+                                setArmor(armor)
+                                setChecked(false)
+                                props.setValue(props.value - armor)
+                            }
+                        }
+                        EditableCell {
+                            this.value = armor.weight
+                            this.onChange = { event ->
+                                armor.weight = event.value()
+                                setArmor(armor)
+                                setChecked(false)
+                                props.setValue(props.value - armor)
                             }
                         }
                     }

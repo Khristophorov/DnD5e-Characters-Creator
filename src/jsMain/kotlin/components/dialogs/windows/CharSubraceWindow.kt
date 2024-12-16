@@ -89,5 +89,6 @@ val CharSubraceWindow = FC<CharBasedProps> { props ->
         this.open = openFeatures
         this.setOpen = { setOpenFeatures(it) }
         this.action = props.action
+        this.translations = translations
     }
 }

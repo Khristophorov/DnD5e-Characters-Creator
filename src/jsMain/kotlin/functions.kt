@@ -35,7 +35,9 @@ import me.khrys.dnd.charcreator.common.models.Feat
 import me.khrys.dnd.charcreator.common.models.Feature
 import me.khrys.dnd.charcreator.common.models.Filter
 import me.khrys.dnd.charcreator.common.models.Filter.Comparator.CONTAINS
+import me.khrys.dnd.charcreator.common.models.Filter.Comparator.EQUALS
 import me.khrys.dnd.charcreator.common.models.Filter.Comparator.EQUALS_OR_HIGHER
+import me.khrys.dnd.charcreator.common.models.Filter.Param.ARMORS
 import me.khrys.dnd.charcreator.common.models.Filter.Param.CHARISMA
 import me.khrys.dnd.charcreator.common.models.Filter.Param.CONSTITUTION
 import me.khrys.dnd.charcreator.common.models.Filter.Param.DEXTERITY
@@ -46,6 +48,7 @@ import me.khrys.dnd.charcreator.common.models.Filter.Param.LEVEL
 import me.khrys.dnd.charcreator.common.models.Filter.Param.PROFICIENCIES
 import me.khrys.dnd.charcreator.common.models.Filter.Param.RIGHT_HAND_TYPE
 import me.khrys.dnd.charcreator.common.models.Filter.Param.STRENGTH
+import me.khrys.dnd.charcreator.common.models.Filter.Param.WEAPONS
 import me.khrys.dnd.charcreator.common.models.Filter.Param.WISDOM
 import me.khrys.dnd.charcreator.common.models.Filter.Param.WORE_TYPE
 import me.khrys.dnd.charcreator.common.models.SavingThrows
@@ -57,6 +60,9 @@ import me.khrys.dnd.charcreator.common.models.Weapon
 import react.dom.DangerouslySetInnerHTML
 import kotlin.math.floor
 import kotlin.math.max
+import me.khrys.dnd.charcreator.common.MARTIAL_WEAPON_TRANSLATION
+import me.khrys.dnd.charcreator.common.models.Armor
+import me.khrys.dnd.charcreator.common.models.Filter.Param.MARTIAL_WEAPONS_SIZE
 
 private const val MAXIMUM_LEVEL = 20
 
@@ -120,7 +126,8 @@ fun applyFeatures(
     val featuredCharacter = character.clone()
     character.features.sortedBy { it.order }.forEach { feature ->
         val accept =
-            feature.filters.isEmpty() || feature.filters.map { it.apply(character) }.reduce { old, new -> old && new }
+            feature.filters.isEmpty() || feature.filters.map { it.apply(character, translations) }
+                .reduce { old, new -> old && new }
         if (accept) {
             featuredCharacter.applyFeature(feature, translations, spells)
         }
@@ -615,12 +622,14 @@ fun Feat.toFeature(): Feature = Feature(
     source = this.source
 )
 
-fun Filter.apply(character: Character): Boolean {
+fun Filter.apply(character: Character, translations: Map<String, String>): Boolean {
     val dataSet = when (this.param) {
         PROFICIENCIES -> character.proficiencies
         WORE_TYPE -> emptyList()
         LEFT_HAND_TYPE -> emptyList()
         RIGHT_HAND_TYPE -> emptyList()
+        ARMORS -> character.equipment.armors.map { it._id }
+        WEAPONS -> character.equipment.weapons.map { it._id }
         FEATURES -> character.features.map { it.name }
         else -> emptyList()
     }
@@ -632,10 +641,14 @@ fun Filter.apply(character: Character): Boolean {
         WISDOM -> character.abilities.wisdom.value
         CHARISMA -> character.abilities.charisma.value
         LEVEL -> character.getCombinedLevel()
+        MARTIAL_WEAPONS_SIZE ->
+            character.equipment.weapons.filter { it.type == translations[MARTIAL_WEAPON_TRANSLATION] }.size
+
         else -> 0
     }
     return when (this.comparator) {
         CONTAINS -> dataSet.contains(value)
+        EQUALS -> dataNum == value.toInt()
         EQUALS_OR_HIGHER -> dataNum >= value.toInt()
     }
 }
@@ -643,6 +656,10 @@ fun Filter.apply(character: Character): Boolean {
 fun validateWeapon(weapon: Weapon) =
     weapon._id.isNotBlank() && weapon.type.isNotBlank() && weapon.price.isNotBlank()
             && weapon.damage.isNotBlank() && weapon.weight.isNotBlank() && weapon.properties.isNotBlank()
+
+fun validateArmor(armor: Armor) =
+    armor._id.isNotBlank() && armor.type.isNotBlank() && armor.price.isNotBlank()
+            && armor.armorClass.isNotBlank() && armor.weight.isNotBlank()
 
 fun validateSimpleEquipment(equipment: SimpleEquipment) =
     equipment._id.isNotBlank() && equipment.price.isNotBlank() && equipment.weight.isNotBlank()

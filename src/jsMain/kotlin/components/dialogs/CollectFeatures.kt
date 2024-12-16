@@ -7,6 +7,7 @@ import me.khrys.dnd.charcreator.client.apply
 import me.khrys.dnd.charcreator.client.components.dialogs.windows.InformWindow
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.AbilitiesChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.AbilityChooser
+import me.khrys.dnd.charcreator.client.components.inputs.choosers.ArmorsChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.ElementChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.EquipmentPackChooser
 import me.khrys.dnd.charcreator.client.components.inputs.choosers.EquipmentsChooser
@@ -57,6 +58,7 @@ val WINDOW_FUNCTIONS = listOf(
     "Choose Spells",
     "Choose Additional Spells",
     "Choose Weapon",
+    "Choose Armor",
     "Choose Equipment Pack",
     "Choose Equipment",
     "Choose Feature",
@@ -65,7 +67,8 @@ val WINDOW_FUNCTIONS = listOf(
     "Add Equipments"
 )
 
-val FILTERS_TO_APPLY = setOf(Filter.Param.FEATURES)
+val FILTERS_TO_APPLY =
+    setOf(Filter.Param.FEATURES, Filter.Param.ARMORS, Filter.Param.WEAPONS, Filter.Param.MARTIAL_WEAPONS_SIZE)
 
 val CollectRaceFeatures = memoDialog(FC<RaceBaseProps> { props ->
     if (props.open) {
@@ -78,6 +81,7 @@ val CollectRaceFeatures = memoDialog(FC<RaceBaseProps> { props ->
             this.feats = props.feats
             this.useFeats = props.useFeats
             this.action = props.action
+            this.translations = props.translations
         }
     }
 })
@@ -91,6 +95,7 @@ val CollectSubraceFeatures = memoDialog(FC<RaceBaseProps> { props ->
             this.character = props.character
             this.features = props.features
             this.action = props.action
+            this.translations = props.translations
         }
     }
 })
@@ -108,6 +113,7 @@ val CollectClassFeatures = memoDialog(FC<ClassBaseProps> { props ->
             this.feats = props.feats
             this.useFeats = props.useFeats
             this.action = props.action
+            this.translations = props.translations
         }
     }
 })
@@ -120,6 +126,7 @@ val CollectFeatFeatures: FC<FeatsProps> = FC { props ->
         this.character = props.character
         this.features = listOf(props.feature)
         this.action = props.action
+        this.translations = props.translations
     }
 }
 
@@ -134,13 +141,14 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
                 if (functionsIterator.hasNext()) {
                     setChild(createElement(functionsIterator.next()))
                 } else {
-                    props.character.features += simpleFeatures.filter { shouldAddFeature(props.character, it) }
+                    props.character.features += simpleFeatures
+                        .filter { shouldAddFeature(props.character, it, props.translations) }
                     props.action()
                     props.setOpen(false)
                 }
             }
             val nextAction: NextAction = { feature, function ->
-                if (function.addFeature && shouldAddFeature(props.character, feature)) {
+                if (function.addFeature && shouldAddFeature(props.character, feature, props.translations)) {
                     if (function.replaceCurrent) {
                         props.character.features -=
                             props.character.features.filter { it.name == feature.name }
@@ -235,6 +243,11 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
                                     .add(weaponsChooser(feature, function, props, nextAction))
                             }
 
+                            "Choose Armor" -> {
+                                functionFeatures
+                                    .add(armorsChooser(feature, function, props, nextAction))
+                            }
+
                             "Choose Equipment Pack" -> {
                                 functionFeatures
                                     .add(equipmentPackChooser(feature, function, props, nextAction))
@@ -251,18 +264,37 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
                             }
 
                             "Add Weapon" -> {
-                                val weapon = Json.decodeFromString<Weapon>(function.values[1])
-                                props.character.equipment.weapons += weapon
+                                functionFeatures.add(FC<DialogProps> {
+                                    if (shouldAddFeature(props.character, feature, props.translations)) {
+                                        val weapon = Json.decodeFromString<Weapon>(function.values[1])
+                                        console.info("Adding weapon: ${weapon._id}")
+                                        props.character.equipment.weapons += weapon
+                                    }
+                                    nextAction(feature, function)
+                                })
                             }
 
                             "Add Armor" -> {
-                                val armor = Json.decodeFromString<Armor>(function.values[1])
-                                props.character.equipment.armor += armor
+                                functionFeatures.add(FC<DialogProps> {
+                                    if (shouldAddFeature(props.character, feature, props.translations)) {
+                                        val armor = Json.decodeFromString<Armor>(function.values[1])
+                                        console.info("Adding armor: ${armor._id}")
+                                        props.character.equipment.armors += armor
+                                    }
+                                    nextAction(feature, function)
+                                })
                             }
 
                             "Add Equipments" -> {
-                                val equipments = Json.decodeFromString<List<SimpleEquipment>>(function.values[1])
-                                props.character.equipment.otherEquipment += equipments
+                                functionFeatures.add(FC<DialogProps> {
+                                    if (shouldAddFeature(props.character, feature, props.translations)) {
+                                        val equipments =
+                                            Json.decodeFromString<List<SimpleEquipment>>(function.values[1])
+                                        console.info("Adding equipments: ${equipments.map { it._id }}")
+                                        props.character.equipment.otherEquipment += equipments
+                                    }
+                                    nextAction(feature, function)
+                                })
                             }
                         }
                     }
@@ -450,7 +482,7 @@ private fun skillsChooser(
     nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
-    if (shouldAddFeature(props.character, feature)) {
+    if (shouldAddFeature(props.character, feature, props.translations)) {
         SkillsChooser {
             this.open = open
             this.setOpen = { setOpen(it) }
@@ -545,7 +577,7 @@ private fun featureChooser(
     nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
-    if (shouldAddFeature(props.character, feature)) {
+    if (shouldAddFeature(props.character, feature, props.translations)) {
         FeatureChooser {
             this.open = open
             this.setOpen = { setOpen(it) }
@@ -682,7 +714,7 @@ private fun spellsChooser(
     nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
-    if (shouldAddFeature(props.character, feature)) {
+    if (shouldAddFeature(props.character, feature, props.translations)) {
         SpellsChooser {
             val spellsMap = useContext(SpellsContext)
             this.open = open
@@ -730,11 +762,40 @@ private fun weaponsChooser(
             props.character.features +=
                 Feature(
                     name = feature.name,
-                    description = function.values[2].format(*weaponsNames.toTypedArray()),
+                    description = function.values[3].format(*weaponsNames.toTypedArray()),
                     functions = listOf(DnDFunction(feature.name)),
                     source = feature.source
                 )
             props.character.equipment.weapons += weapons
+            nextAction(feature, function)
+        }
+    }
+}
+
+private fun armorsChooser(
+    feature: Feature,
+    function: DnDFunction,
+    props: MultipleFeaturesFeatsProps,
+    nextAction: NextAction
+) = FC<DialogProps> {
+    val (open, setOpen) = useState(true)
+    ArmorsChooser {
+        this.open = open
+        this.setOpen = { setOpen(it) }
+        this.feature = feature
+        this.function = function
+        this.character = props.character
+        this.setValue = { armors ->
+            val weaponsNames = armors.map { it._id }
+            console.info("Chosen weapons: $weaponsNames")
+            props.character.features +=
+                Feature(
+                    name = feature.name,
+                    description = function.values[2].format(*weaponsNames.toTypedArray()),
+                    functions = listOf(DnDFunction(feature.name)),
+                    source = feature.source
+                )
+            props.character.equipment.armors += armors
             nextAction(feature, function)
         }
     }
@@ -811,7 +872,7 @@ fun filterMulticlass(feature: Feature, multiclass: Boolean): Boolean =
 private fun hasWindowFunctions(feature: Feature) =
     feature.functions.map { it.name }.any { WINDOW_FUNCTIONS.contains(it) }
 
-private fun shouldAddFeature(character: Character, feature: Feature) =
+private fun shouldAddFeature(character: Character, feature: Feature, translations: Map<String, String>) =
     feature.filters.filter { FILTERS_TO_APPLY.contains(it.param) }
-        .map { it.apply(character) }
+        .map { it.apply(character, translations) }
         .fold(true) { b1, b2 -> b1 && b2 }

@@ -684,7 +684,7 @@ private val Armor = FC<ParametersProps> { props ->
                     }
                 }
                 TableBody {
-                    character.equipment.armor.forEach {
+                    character.equipment.armors.forEach {
                         TableRow {
                             TableCell {
                                 TextWithTooltip {

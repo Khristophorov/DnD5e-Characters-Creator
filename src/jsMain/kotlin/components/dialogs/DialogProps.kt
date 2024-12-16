@@ -14,6 +14,7 @@ external interface DialogProps : PropsWithChildren {
     var open: Boolean
     var setOpen: (Boolean) -> Unit
     var header: String
+    var translations: Map<String, String>
     var action: () -> Unit
 }
 
@@ -67,7 +68,6 @@ external interface CharBasedProps : DialogProps {
     var character: Character
     var classes: Map<String, Class>
     var backAction: ButtonAction
-    var translations: Map<String, String>
 }
 
 fun <T : DialogProps> memoDialog(component: FC<T>) = memo(component) { p1, p2 -> p1.open == p2.open }
