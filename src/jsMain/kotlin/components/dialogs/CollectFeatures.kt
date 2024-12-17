@@ -330,23 +330,27 @@ private fun proficiencyChooser(
     nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
-    ProficiencyChooser {
-        this.open = open
-        this.setOpen = { setOpen(it) }
-        this.feature = feature
-        this.function = function
-        this.character = props.character
-        this.setValue = { value ->
-            console.info("Chosen proficiency: $value")
-            props.character.features +=
-                Feature(
-                    name = feature.name,
-                    description = function.values[1].format(value),
-                    functions = listOf(DnDFunction(function.values[0], listOf(value))),
-                    source = feature.source
-                )
-            nextAction(feature, function)
+    if (shouldAddFeature(props.character, feature, props.translations)) {
+        ProficiencyChooser {
+            this.open = open
+            this.setOpen = { setOpen(it) }
+            this.feature = feature
+            this.function = function
+            this.character = props.character
+            this.setValue = { value ->
+                console.info("Chosen proficiency: $value")
+                props.character.features +=
+                    Feature(
+                        name = feature.name,
+                        description = function.values[1].format(value),
+                        functions = listOf(DnDFunction(function.values[0], listOf(value))),
+                        source = feature.source
+                    )
+                nextAction(feature, function)
+            }
         }
+    } else {
+        nextAction(feature, function)
     }
 }
 
@@ -357,29 +361,33 @@ private fun proficienciesChooser(
     nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
-    ProficienciesChooser {
-        this.open = open
-        this.setOpen = { setOpen(it) }
-        this.feature = feature
-        this.function = function
-        this.character = props.character
-        this.size = if (function.values.isEmpty()) 0 else function.values[2].toInt()
-        this.setValue = { values ->
-            console.info("Chosen proficiencies: $values")
-            val featureFunctions = listOf(DnDFunction(function.values[0], values))
-            if (props.character.hasFeature(feature.name)) {
-                props.character.features.filter { it.name == feature.name }[0].functions += featureFunctions
-            } else {
-                props.character.features +=
-                    Feature(
-                        name = feature.name,
-                        description = function.values[1].format(*values.toTypedArray()),
-                        functions = featureFunctions,
-                        source = feature.source
-                    )
+    if (shouldAddFeature(props.character, feature, props.translations)) {
+        ProficienciesChooser {
+            this.open = open
+            this.setOpen = { setOpen(it) }
+            this.feature = feature
+            this.function = function
+            this.character = props.character
+            this.size = if (function.values.isEmpty()) 0 else function.values[2].toInt()
+            this.setValue = { values ->
+                console.info("Chosen proficiencies: $values")
+                val featureFunctions = listOf(DnDFunction(function.values[0], values))
+                if (props.character.hasFeature(feature.name)) {
+                    props.character.features.filter { it.name == feature.name }[0].functions += featureFunctions
+                } else {
+                    props.character.features +=
+                        Feature(
+                            name = feature.name,
+                            description = function.values[1].format(*values.toTypedArray()),
+                            functions = featureFunctions,
+                            source = feature.source
+                        )
+                }
+                nextAction(feature, function)
             }
-            nextAction(feature, function)
         }
+    } else {
+        nextAction(feature, function)
     }
 }
 
@@ -691,18 +699,22 @@ private fun maneuverChooser(
     nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
-    ManeuverChooser {
-        val maneuversMap = useContext(ManeuversContext)
-        this.open = open
-        this.setOpen = { setOpen(it) }
-        this.feature = feature
-        this.function = function
-        this.character = props.character
-        this.setValue = { value ->
-            console.info("Chosen maneuver: $value")
-            maneuversMap[value]?.let { props.character.maneuvers += it }
-            nextAction(feature, function)
+    if (shouldAddFeature(props.character, feature, props.translations)) {
+        ManeuverChooser {
+            val maneuversMap = useContext(ManeuversContext)
+            this.open = open
+            this.setOpen = { setOpen(it) }
+            this.feature = feature
+            this.function = function
+            this.character = props.character
+            this.setValue = { value ->
+                console.info("Chosen maneuver: $value")
+                maneuversMap[value]?.let { props.character.maneuvers += it }
+                nextAction(feature, function)
+            }
         }
+    } else {
+        nextAction(feature, function)
     }
 }
 
