@@ -276,8 +276,10 @@ val FeatureChooser = FC<FeatureProps<String>> { props ->
         val (chosenFeature, setChosenFeature) = useState("")
         val (description, setDescription) = useState("")
         val values = props.function.values
+        val currentFeatures = props.character.features.map { it.name }
         val features = values.filterIndexed { index, _ -> (index + 1) % 3 != 0 }
             .chunked(2) { it[0] to it[1] }.toMap()
+            .filter { !currentFeatures.contains(it.key) }
         val translations = useContext(TranslationsContext)
         Dialog {
             this.open = props.open

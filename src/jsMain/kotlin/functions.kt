@@ -1,5 +1,6 @@
 package me.khrys.dnd.charcreator.client
 
+import kotlin.math.ceil
 import me.khrys.dnd.charcreator.client.extentions.DangerousHTML
 import me.khrys.dnd.charcreator.common.ACROBATICS_TRANSLATION
 import me.khrys.dnd.charcreator.common.ANIMAL_HANDLING_TRANSLATION
@@ -185,41 +186,51 @@ fun Skill.clone() = Skill(
 
 fun Character.applyFeature(feature: Feature, translations: Map<String, String>, spells: Map<String, Spell>) {
     feature.functions.forEach { function ->
+        val values = function.values
         when (function.name) {
-            "Increase Strength" -> increaseStrength(function.values[0].toInt())
-            "Increase Dexterity" -> increaseDexterity(function.values[0].toInt())
-            "Increase Constitution" -> increaseConstitution(function.values[0].toInt())
-            "Increase Intelligence" -> increaseIntelligence(function.values[0].toInt())
-            "Increase Charisma" -> increaseCharisma(function.values[0].toInt())
-            "Increase Wisdom" -> increaseWisdom(function.values[0].toInt())
-            "Increase Maximum Strength" -> increaseMaximumStrength(function.values[0].toInt())
-            "Increase Maximum Constitution" -> increaseMaximumConstitution(function.values[0].toInt())
-            "Increase Ability" -> increaseAbility(function.values[0], function.values[1].toInt(), translations)
+            "Increase Strength" -> increaseStrength(values[0].toInt())
+            "Increase Dexterity" -> increaseDexterity(values[0].toInt())
+            "Increase Constitution" -> increaseConstitution(values[0].toInt())
+            "Increase Intelligence" -> increaseIntelligence(values[0].toInt())
+            "Increase Charisma" -> increaseCharisma(values[0].toInt())
+            "Increase Wisdom" -> increaseWisdom(values[0].toInt())
+            "Increase Maximum Strength" -> increaseMaximumStrength(values[0].toInt())
+            "Increase Maximum Constitution" -> increaseMaximumConstitution(values[0].toInt())
+            "Increase Ability" -> increaseAbility(values[0], values[1].toInt(), translations)
             "Increase Ability with Saving Throws" -> increaseAbilityAndSavingThrows(
-                function.values[0],
-                function.values[1].toInt(),
+                values[0],
+                values[1].toInt(),
                 translations
             )
 
-            "Increase Non Proficient Skills With Proficiency Bonus" ->
-                increaseSkillsWithProficiencyBonus(false, function.values[0].toDouble())
+            "Increase Non Proficient Skills With Proficiency Bonus" -> increaseSkillsWithProficiencyBonus(
+                false,
+                values[0].toDouble(),
+                values.subList(1, values.size)
+            )
 
-            "Increase Initiative" -> increaseInitiative(function.values[0].toInt())
-            "Increase Perception" -> increasePerception(function.values[0].toInt())
-            "Increase Investigation" -> increaseInvestigation(function.values[0].toInt())
-            "Increase Speed" -> increaseSpeed(function.values[0].toInt())
-            "Increase Armor Class" -> increaseArmorClass(function.values[0].toInt())
-            "Increase HP by Level" -> increaseHitPointsByLevel(function.values[0].toInt())
-            "Double Skill Bonus" -> increaseSkillsWithProficiencyBonus(function.values, 1.0)
-            "Set Speed" -> setSpeed(function.values[0].toInt())
-            "Set Spellcasting Ability" -> setSpellcastingAbility(function.values[0], translations)
-            "Add Proficiencies" -> setProficiencies(function.values)
-            "Add Languages" -> addLanguages(function.values)
-            "Add Saving Throws" -> addSavingThrows(function.values, translations)
-            "Add Skills" -> addSkills(function.values, translations)
-            "Add Superiority Dices" -> addSuperiorityDices(Dice.valueOf(function.values[0]), function.values[1].toInt())
-            "Add Spells" -> addSpells(function.values, spells)
-            "Add Additional Spells" -> addAdditionalSpells(function.values, spells)
+            "Increase Non Proficient Skills With Proficiency Bonus Ceil" -> increaseSkillsWithProficiencyBonusCeil(
+                false,
+                values[0].toDouble(),
+                values.subList(1, values.size)
+            )
+
+            "Increase Initiative" -> increaseInitiative(values[0].toInt())
+            "Increase Perception" -> increasePerception(values[0].toInt())
+            "Increase Investigation" -> increaseInvestigation(values[0].toInt())
+            "Increase Speed" -> increaseSpeed(values[0].toInt())
+            "Increase Armor Class" -> increaseArmorClass(values[0].toInt())
+            "Increase HP by Level" -> increaseHitPointsByLevel(values[0].toInt())
+            "Double Skill Bonus" -> increaseSkillsWithProficiencyBonus(values, 1.0)
+            "Set Speed" -> setSpeed(values[0].toInt())
+            "Set Spellcasting Ability" -> setSpellcastingAbility(values[0], translations)
+            "Add Proficiencies" -> setProficiencies(values)
+            "Add Languages" -> addLanguages(values)
+            "Add Saving Throws" -> addSavingThrows(values, translations)
+            "Add Skills" -> addSkills(values, translations)
+            "Add Superiority Dices" -> addSuperiorityDices(Dice.valueOf(values[0]), values[1].toInt())
+            "Add Spells" -> addSpells(values, spells)
+            "Add Additional Spells" -> addAdditionalSpells(values, spells)
         }
     }
 }
@@ -319,9 +330,26 @@ fun Character.increaseAbilityAndSavingThrows(abilityName: String, value: Int, tr
     }
 }
 
-fun Character.increaseSkillsWithProficiencyBonus(proficient: Boolean, multiplier: Double) {
+fun Character.increaseSkillsWithProficiencyBonus(
+    proficient: Boolean,
+    multiplier: Double,
+    skills: List<String>
+) {
     val bonus = (computeProficiencyBonus(this.getCombinedLevel()) * multiplier).toInt()
-    this.skills.forEach { skill ->
+    this.skills.filter { skills.contains(it.ability) }.forEach { skill ->
+        if (skill.proficient == proficient) {
+            skill.additionalBonus += bonus
+        }
+    }
+}
+
+fun Character.increaseSkillsWithProficiencyBonusCeil(
+    proficient: Boolean,
+    multiplier: Double,
+    skills: List<String>
+) {
+    val bonus = ceil(computeProficiencyBonus(this.getCombinedLevel()) * multiplier).toInt()
+    this.skills.filter { skills.contains(it.ability) }.forEach { skill ->
         if (skill.proficient == proficient) {
             skill.additionalBonus += bonus
         }

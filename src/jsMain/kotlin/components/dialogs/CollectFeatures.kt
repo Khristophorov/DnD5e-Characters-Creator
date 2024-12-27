@@ -165,7 +165,7 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
                         when (function.name) {
                             "Inform" -> {
                                 functionFeatures
-                                    .add(inform(feature, function, nextAction))
+                                    .add(inform(feature, function, props, nextAction))
                             }
 
                             "Choose Proficiency" -> {
@@ -309,17 +309,22 @@ val CollectFeatures = FC<MultipleFeaturesFeatsProps> { props ->
 private fun inform(
     feature: Feature,
     function: DnDFunction,
+    props: MultipleFeaturesFeatsProps,
     nextAction: NextAction
 ) = FC<DialogProps> {
     val (open, setOpen) = useState(true)
-    InformWindow {
-        this.open = open
-        this.setOpen = { setOpen(it) }
-        this.feature = feature
-        this.setValue = {
-            console.info("Info for ${feature.name}")
-            nextAction(feature, function)
+    if (shouldAddFeature(props.character, feature, props.translations)) {
+        InformWindow {
+            this.open = open
+            this.setOpen = { setOpen(it) }
+            this.feature = feature
+            this.setValue = {
+                console.info("Info for ${feature.name}")
+                nextAction(feature, function)
+            }
         }
+    } else {
+        nextAction(feature, function)
     }
 }
 
@@ -589,6 +594,7 @@ private fun featureChooser(
         FeatureChooser {
             this.open = open
             this.setOpen = { setOpen(it) }
+            this.character = props.character
             this.feature = feature
             this.function = function
             this.setValue = { value ->
