@@ -27,7 +27,7 @@ import react.useContext
 import react.useState
 import web.cssom.ClassName
 
-val CharSubraceWindow = FC<CharBasedProps> { props ->
+val CharSubraceWindow = FC<CharBasedProps>("CharSubraceWindow") { props ->
     val (subrace, setSubrace) = useState(emptyRace())
     val (description, setDescription) = useState("")
     val (openFeatures, setOpenFeatures) = useState(false)

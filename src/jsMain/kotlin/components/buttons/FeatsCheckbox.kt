@@ -11,7 +11,7 @@ external interface FeatsProps : Props {
     var translations: Map<String, String>
 }
 
-val FeatsCheckbox = FC<FeatsProps> { props ->
+val FeatsCheckbox = FC<FeatsProps>("FeatsCheckbox") { props ->
     CheckboxWithLabel {
         this.label = ReactNode(props.translations[FEATS_SELECT_TRANSLATION] ?: "")
         this.checked = props.checked

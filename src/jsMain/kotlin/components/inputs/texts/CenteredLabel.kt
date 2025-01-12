@@ -11,7 +11,7 @@ external interface LabelProps : Props {
     var label: String
 }
 
-val CenteredLabel = FC<LabelProps> { props ->
+val CenteredLabel = FC<LabelProps>("CenteredLabel") { props ->
     div {
         css {
             justifyContent = center

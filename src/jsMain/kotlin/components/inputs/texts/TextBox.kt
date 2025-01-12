@@ -20,7 +20,7 @@ external interface TextBoxProps : Props {
     var classes: String?
 }
 
-val TextBox = FC<TextBoxProps> { props ->
+val TextBox = FC<TextBoxProps>("TextBox") { props ->
     div {
         className = ClassName("${props.classes} $CLASS_BORDERED $CLASS_CENTER")
         TextValidator {

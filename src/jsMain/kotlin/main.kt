@@ -18,7 +18,7 @@ import react.dom.html.ReactHTML.div
 import react.useState
 import web.cssom.Clear.Companion.both
 
-val MainDnd = FC<Props> {
+val MainDnd = FC<Props>("MainDnd") {
     val (translations, setTranslations) = useState<Map<String, String>?>(null)
     val (characters, setCharacters) = useState<List<Character>?>(null)
     val (spells, setSpells) = useState(emptyMap<String, Spell>())
@@ -43,14 +43,14 @@ val MainDnd = FC<Props> {
             CharactersContext.Provider(characters) {
                 SpellsContext.Provider(spells) {
                     initValidators(characters)
-                    mainContent()
+                    MainContent()
                 }
             }
         }
     }
 }
 
-private val mainContent = FC<Props> {
+private val MainContent = FC<Props>("MainContent") {
     console.info("Rendering content.")
     div {
         css { clear = both }

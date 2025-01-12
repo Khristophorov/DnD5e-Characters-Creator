@@ -23,7 +23,7 @@ external interface AbilitiesProps : Props {
     var proficiencyBonus: Int
 }
 
-val AbilitiesGrid = FC<AbilitiesProps> { props ->
+val AbilitiesGrid = FC<AbilitiesProps>("AbilitiesGrid") { props ->
     AbilityBox {
         this.title = props.translations[STRENGTH_CONTENT_TRANSLATION] ?: ""
         this.label = props.translations[STRENGTH_TRANSLATION] ?: ""

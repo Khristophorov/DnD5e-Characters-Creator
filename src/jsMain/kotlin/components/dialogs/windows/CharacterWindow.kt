@@ -165,7 +165,7 @@ private external interface SpellsProps : Props {
     var spells: List<Spell>
 }
 
-val CharacterWindow = FC<FeatsProps> { props ->
+val CharacterWindow = FC<FeatsProps>("CharacterWindow") { props ->
     console.info("Loading character window for ${props.character.name}")
     val translations = useContext(TranslationsContext)
     val spells = useContext(SpellsContext)
@@ -239,7 +239,7 @@ val CharacterWindow = FC<FeatsProps> { props ->
     }
 }
 
-private val SpecificParameters = FC<ParametersProps> { props ->
+private val SpecificParameters = FC<ParametersProps>("SpecificParameters") { props ->
     val showTabs = shouldShowTabs(props.character)
     Grid {
         this.item = true
@@ -270,7 +270,7 @@ private val SpecificParameters = FC<ParametersProps> { props ->
     }
 }
 
-private val AdditionalTabs = FC<CharPropsWithValue> { props ->
+private val AdditionalTabs = FC<CharPropsWithValue>("AdditionalTabs") { props ->
     Tabs {
         this.value = props.value
         this.onChange = { _, newTabValue -> props.setValue(newTabValue as Int) }
@@ -289,7 +289,7 @@ private val AdditionalTabs = FC<CharPropsWithValue> { props ->
     }
 }
 
-private val TabBoxes = FC<CharPropsWithValue> { props ->
+private val TabBoxes = FC<CharPropsWithValue>("TabBoxes") { props ->
     val character = props.character
     Box {
         if (props.value == MANEUVERS_INDEX) {
@@ -317,7 +317,7 @@ private val TabBoxes = FC<CharPropsWithValue> { props ->
     }
 }
 
-private val ManeuversBox = FC<ManeuversProps> { props ->
+private val ManeuversBox = FC<ManeuversProps>("ManeuversBox") { props ->
     Grid {
         this.container = true
         Grid {
@@ -336,7 +336,7 @@ private val ManeuversBox = FC<ManeuversProps> { props ->
     }
 }
 
-private val SuperiorityDices = FC<SuperiorDicesProps> { props ->
+private val SuperiorityDices = FC<SuperiorDicesProps>("SuperiorityDices") { props ->
     Grid {
         this.container = true
         Grid {

@@ -45,7 +45,7 @@ fun createTooltipTheme(): Theme {
     )
 }
 
-val Tooltip = FC<TooltipProps> { props ->
+val Tooltip = FC<TooltipProps>("Tooltip") { props ->
     val (popoverAnchor, setPopoverAnchor) = useState<EventTarget?>(null)
     div {
         ThemeProvider {

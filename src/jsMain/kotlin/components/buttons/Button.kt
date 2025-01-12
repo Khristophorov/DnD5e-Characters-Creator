@@ -13,7 +13,7 @@ import web.html.HTMLButtonElement
 
 typealias ButtonAction = (MouseEvent<HTMLButtonElement, *>) -> Unit
 
-val Button = FC<ButtonProps> { props ->
+val Button = FC<ButtonProps>("Button") { props ->
     Button {
         +props.children
         this.color = primary

@@ -8,7 +8,7 @@ import react.Props
 import react.useContext
 import react.useState
 
-val AddCharacter = FC<Props> {
+val AddCharacter = FC<Props>("AddCharacter") {
     console.info("Add characters button rendering")
     val (open, setOpen) = useState(false)
     val translations = useContext(TranslationsContext)

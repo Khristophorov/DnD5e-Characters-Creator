@@ -8,7 +8,7 @@ import react.dom.html.ReactHTML.span
 import web.cssom.WhiteSpace.Companion.preWrap
 import web.cssom.px
 
-val TextWithTooltip = FC<TooltipProps> { props ->
+val TextWithTooltip = FC<TooltipProps>("TextWithTooltip") { props ->
     if (props.title.toString().isBlank()) {
         TextSpan {
             this.children = props.children
@@ -29,7 +29,7 @@ val TextWithTooltip = FC<TooltipProps> { props ->
     }
 }
 
-private val TextSpan = FC<TooltipProps> { props ->
+private val TextSpan = FC<TooltipProps>("TextSpan") { props ->
     span {
         css {
             maxWidth = 300.px

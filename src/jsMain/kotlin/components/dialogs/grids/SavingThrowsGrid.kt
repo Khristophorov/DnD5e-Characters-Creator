@@ -14,7 +14,7 @@ import react.FC
 import react.dom.html.ReactHTML.div
 import web.cssom.ClassName
 
-val SavingThrowsGrid = FC<SkillsProps> { props ->
+val SavingThrowsGrid = FC<SkillsProps>("SavingThrowsGrid") { props ->
     div {
         className = ClassName(CLASS_BORDERED)
         val savingThrows = props.character.savingThrows

@@ -12,7 +12,7 @@ import react.useState
 import web.cssom.ClassName
 import web.cssom.FlexWrap.Companion.wrap
 
-var CurrentCharacters = FC<Props> {
+var CurrentCharacters = FC<Props>("CurrentCharacters") {
     console.info("Rendering characters.")
     val characters = useContext(CharactersContext)
     div {

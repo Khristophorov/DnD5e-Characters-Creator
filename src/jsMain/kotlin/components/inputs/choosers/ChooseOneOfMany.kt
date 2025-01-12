@@ -19,7 +19,7 @@ import react.dom.html.ReactHTML.span
 import react.useContext
 import react.useState
 
-val ChooseOneOfMany = FC<ChooserProps<String>> { props ->
+val ChooseOneOfMany = FC<ChooserProps<String>>("ChooseOneOfMany") { props ->
     val (chosenValue, setChosenValue) = useState("")
     val translations = useContext(TranslationsContext)
     Dialog {

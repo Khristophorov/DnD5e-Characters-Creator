@@ -6,7 +6,7 @@ import react.FC
 
 const val ENTER_DELAY = 1_000
 
-val DelayedTooltip = FC<TooltipProps> { props ->
+val DelayedTooltip = FC<TooltipProps>("DelayedTooltip") { props ->
     Tooltip {
         this.title = props.title
         this.enterDelay = ENTER_DELAY

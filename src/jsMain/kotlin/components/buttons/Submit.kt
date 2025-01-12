@@ -4,7 +4,7 @@ import mui.material.ButtonProps
 import react.FC
 import web.html.ButtonType.Companion.submit
 
-val Submit = FC<ButtonProps> { props ->
+val Submit = FC<ButtonProps>("Submit") { props ->
     Button {
         this.type = submit
         +props.children

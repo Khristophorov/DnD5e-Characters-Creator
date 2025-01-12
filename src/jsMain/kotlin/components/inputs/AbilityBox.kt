@@ -34,7 +34,7 @@ external interface AbilityBoxProps : Props {
     var onChange: (InputEvent) -> Unit
 }
 
-val AbilityBox = FC<AbilityBoxProps> { props ->
+val AbilityBox = FC<AbilityBoxProps>("AbilityBox") { props ->
     console.info("Rendering ability box ${props.title}")
     DelayedTooltip {
         this.title = ReactNode(props.title)

@@ -13,7 +13,7 @@ import web.cssom.ClassName
 import web.cssom.Display.Companion.block
 import web.cssom.px
 
-val AvatarButton = FC<FeatsProps> { props ->
+val AvatarButton = FC<FeatsProps>("AvatarButton") { props ->
     console.info("Loading avatar for ${props.character.name}")
     div {
         css {

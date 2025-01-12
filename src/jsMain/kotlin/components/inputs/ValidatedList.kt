@@ -23,7 +23,7 @@ external interface ValidatedListProps : SelectValidatorProps {
     var menuItems: Map<String, String>
 }
 
-val ValidatedList = FC<ValidatedListProps> { props ->
+val ValidatedList = FC<ValidatedListProps>("ValidatedList") { props ->
     val (currentDescription, setCurrentDescription) = useState("")
     div {
         this.className = ClassName(CLASS_INLINE)
@@ -62,7 +62,7 @@ val ValidatedList = FC<ValidatedListProps> { props ->
     }
 }
 
-private val DescriptionFrame = FC<PropsWithChildren> { props ->
+private val DescriptionFrame = FC<PropsWithChildren>("DescriptionFrame") { props ->
     div {
         css(ClassName(CLASS_BORDERED)) {
             height = 300.px

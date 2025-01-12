@@ -21,7 +21,7 @@ import react.useState
 import web.cssom.ClassName
 import web.html.InputType.Companion.number
 
-val HitPointsDialog = FC<CharBasedProps> { props ->
+val HitPointsDialog = FC<CharBasedProps>("HitPointsDialog") { props ->
     console.info("Rendering hit points window")
     val (newHitPoints, setNewHitPoints) = useState(0)
     if (props.open) {

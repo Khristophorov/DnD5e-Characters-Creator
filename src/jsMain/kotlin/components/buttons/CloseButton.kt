@@ -7,7 +7,7 @@ import react.FC
 import react.dom.html.ReactHTML.div
 import web.cssom.Float
 
-val CloseButton = FC<ButtonProps> { props ->
+val CloseButton = FC<ButtonProps>("CloseButton") { props ->
     div {
         css {
             float = Float.right

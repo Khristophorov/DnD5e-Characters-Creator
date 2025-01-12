@@ -102,7 +102,7 @@ external interface ChooserProps<T> : Props {
     var unique: Boolean
 }
 
-val ProficiencyChooser = memoDialog(FC<FeatureProps<String>> { props ->
+val ProficiencyChooser = memoDialog(FC<FeatureProps<String>>("ProficiencyChooser") { props ->
     if (props.open) {
         val values = props.function.values.toList().filter { !props.character.proficiencies.contains(it) }
         ChooseOneOfMany {
@@ -116,7 +116,7 @@ val ProficiencyChooser = memoDialog(FC<FeatureProps<String>> { props ->
     }
 })
 
-val ProficienciesChooser = FC<MultipleStringFeatureProps> { props ->
+val ProficienciesChooser = FC<MultipleStringFeatureProps>("ProficienciesChooser") { props ->
     if (props.open) {
         val values = props.function.values.toList().filter { !props.character.proficiencies.contains(it) }
         ChooseSeveral {
@@ -132,7 +132,7 @@ val ProficienciesChooser = FC<MultipleStringFeatureProps> { props ->
     }
 }
 
-val SkillsAndProficienciesChooser = FC<MultipleStringFeatureProps> { props ->
+val SkillsAndProficienciesChooser = FC<MultipleStringFeatureProps>("SkillsAndProficienciesChooser") { props ->
     if (props.open) {
         val values = props.function.values
         val skillValues = values[2].split(", ")
@@ -150,7 +150,7 @@ val SkillsAndProficienciesChooser = FC<MultipleStringFeatureProps> { props ->
     }
 }
 
-val LanguageChooser = memoDialog(FC<FeatureProps<String>> { props ->
+val LanguageChooser = memoDialog(FC<FeatureProps<String>>("LanguageChooser") { props ->
     if (props.open) {
         val translations = useContext(TranslationsContext)
         val filledCharacter = applyFeatures(props.character.clone(), translations)
@@ -166,7 +166,7 @@ val LanguageChooser = memoDialog(FC<FeatureProps<String>> { props ->
     }
 })
 
-val LanguagesChooser = FC<MultipleStringFeatureProps> { props ->
+val LanguagesChooser = FC<MultipleStringFeatureProps>("LanguagesChooser") { props ->
     if (props.open) {
         val translations = useContext(TranslationsContext)
         val filledCharacter = applyFeatures(props.character.clone(), translations)
@@ -184,7 +184,7 @@ val LanguagesChooser = FC<MultipleStringFeatureProps> { props ->
     }
 }
 
-val SkillChooser = memoDialog(FC<FeatureProps<String>> { props ->
+val SkillChooser = memoDialog(FC<FeatureProps<String>>("SkillChooser") { props ->
     if (props.open) {
         val values = props.function.values
         ChooseOneOfMany {
@@ -198,7 +198,7 @@ val SkillChooser = memoDialog(FC<FeatureProps<String>> { props ->
     }
 })
 
-val SkillsChooser = FC<MultipleStringFeatureProps> { props ->
+val SkillsChooser = FC<MultipleStringFeatureProps>("SkillsChooser") { props ->
     if (props.open) {
         ChooseSeveral {
             val translations = useContext(TranslationsContext)
@@ -219,7 +219,7 @@ val SkillsChooser = FC<MultipleStringFeatureProps> { props ->
     }
 }
 
-val AbilityChooser = FC<FeatureProps<String>> { props ->
+val AbilityChooser = FC<FeatureProps<String>>("AbilityChooser") { props ->
     if (props.open) {
         val values = props.function.values
         ChooseOneOfMany {
@@ -233,7 +233,7 @@ val AbilityChooser = FC<FeatureProps<String>> { props ->
     }
 }
 
-val AbilitiesChooser = FC<MultipleStringFeatureProps> { props ->
+val AbilitiesChooser = FC<MultipleStringFeatureProps>("AbilitiesChooser") { props ->
     if (props.open) {
         val translations = useContext(TranslationsContext)
         val values = listOf(
@@ -257,7 +257,7 @@ val AbilitiesChooser = FC<MultipleStringFeatureProps> { props ->
     }
 }
 
-val ElementChooser = FC<FeatureProps<String>> { props ->
+val ElementChooser = FC<FeatureProps<String>>("ElementChooser") { props ->
     if (props.open) {
         val values = props.function.values
         ChooseOneOfMany {
@@ -271,7 +271,7 @@ val ElementChooser = FC<FeatureProps<String>> { props ->
     }
 }
 
-val FeatureChooser = FC<FeatureProps<String>> { props ->
+val FeatureChooser = FC<FeatureProps<String>>("FeatureChooser") { props ->
     if (props.open) {
         val (chosenFeature, setChosenFeature) = useState("")
         val (description, setDescription) = useState("")
@@ -316,11 +316,10 @@ val FeatureChooser = FC<FeatureProps<String>> { props ->
     }
 }
 
-val FeatChooser = FC<FeatsProps> { props ->
+val FeatChooser = FC<FeatsProps>("FeatChooser") { props ->
     val (feat, setFeat) = useState(emptyFeat())
     val (description, setDescription) = useState("")
     val (openFeatures, setOpenFeatures) = useState(false)
-
     if (props.open) {
         val translations = useContext(TranslationsContext)
         Dialog {
@@ -368,7 +367,7 @@ val FeatChooser = FC<FeatsProps> { props ->
     }
 }
 
-val ManeuverChooser = FC<FeatureProps<String>> { props ->
+val ManeuverChooser = FC<FeatureProps<String>>("ManeuverChooser") { props ->
     val (maneuver, setManeuver) = useState(emptyManeuver())
     val (description, setDescription) = useState("")
     val maneuvers = useContext(ManeuversContext)
@@ -414,7 +413,7 @@ val ManeuverChooser = FC<FeatureProps<String>> { props ->
     }
 }
 
-val SpellsChooser = FC<SpellsFeatureProps> { props ->
+val SpellsChooser = FC<SpellsFeatureProps>("SpellsChooser") { props ->
     val translations = useContext(TranslationsContext)
     val (chosenSpells, setChosenSpells) = useState(
         if (props.isAdditionalSpells) emptyList()
@@ -472,7 +471,7 @@ val SpellsChooser = FC<SpellsFeatureProps> { props ->
     }
 }
 
-val SpellsTable = FC<SpellsFeatureProps> { props ->
+val SpellsTable = FC<SpellsFeatureProps>("SpellsTable") { props ->
     val translations = useContext(TranslationsContext)
     val spells = useContext(SpellsContext)
         .filter { (name, _) -> !props.character.additionalSpells.map { it._id }.contains(name) }
@@ -566,7 +565,7 @@ val SpellsTable = FC<SpellsFeatureProps> { props ->
     }
 }
 
-val WeaponsChooser = FC<MultipleFeatureProps<List<Weapon>>> { props ->
+val WeaponsChooser = FC<MultipleFeatureProps<List<Weapon>>>("WeaponsChooser") { props ->
     val translations = useContext(TranslationsContext)
     val (chosenWeapons, setChosenWeapons) = useState(emptyList<Weapon>())
     val (openAlert, setOpenAlert) = useState(false)
@@ -617,7 +616,7 @@ val WeaponsChooser = FC<MultipleFeatureProps<List<Weapon>>> { props ->
     }
 }
 
-val ArmorsChooser = FC<MultipleFeatureProps<List<Armor>>> { props ->
+val ArmorsChooser = FC<MultipleFeatureProps<List<Armor>>>("ArmorsChooser") { props ->
     val translations = useContext(TranslationsContext)
     val (chosenArmors, setChosenArmors) = useState(emptyList<Armor>())
     val (openAlert, setOpenAlert) = useState(false)
@@ -668,7 +667,7 @@ val ArmorsChooser = FC<MultipleFeatureProps<List<Armor>>> { props ->
     }
 }
 
-val EquipmentsChooser = FC<MultipleFeatureProps<List<SimpleEquipment>>> { props ->
+val EquipmentsChooser = FC<MultipleFeatureProps<List<SimpleEquipment>>>("EquipmentsChooser") { props ->
     val translations = useContext(TranslationsContext)
     val (chosenEquipment, setChosenEquipment) = useState(emptyList<SimpleEquipment>())
     val (openAlert, setOpenAlert) = useState(false)
@@ -719,7 +718,7 @@ val EquipmentsChooser = FC<MultipleFeatureProps<List<SimpleEquipment>>> { props 
     }
 }
 
-val EquipmentPackChooser = FC<FeatureProps<Pair<String, List<SimpleEquipment>>>> { props ->
+val EquipmentPackChooser = FC<FeatureProps<Pair<String, List<SimpleEquipment>>>>("EquipmentPackChooser") { props ->
     val translations = useContext(TranslationsContext)
     val (chosenEquipment, setChosenEquipment) = useState("")
     val (description, setDescription) = useState("")
@@ -773,7 +772,7 @@ val EquipmentPackChooser = FC<FeatureProps<Pair<String, List<SimpleEquipment>>>>
     }
 }
 
-val WeaponsTable = FC<MultipleFeatureProps<List<Weapon>>> { props ->
+val WeaponsTable = FC<MultipleFeatureProps<List<Weapon>>>("WeaponsTable") { props ->
     val translations = useContext(TranslationsContext)
     val (openAlert, setOpenAlert) = useState(false)
     val (openTextAlert, setOpenTextAlert) = useState(false)
@@ -936,7 +935,7 @@ val WeaponsTable = FC<MultipleFeatureProps<List<Weapon>>> { props ->
     }
 }
 
-val ArmorsTable = FC<MultipleFeatureProps<List<Armor>>> { props ->
+val ArmorsTable = FC<MultipleFeatureProps<List<Armor>>>("ArmorsTable") { props ->
     val translations = useContext(TranslationsContext)
     val (openAlert, setOpenAlert) = useState(false)
     val (openTextAlert, setOpenTextAlert) = useState(false)
@@ -1110,7 +1109,7 @@ val ArmorsTable = FC<MultipleFeatureProps<List<Armor>>> { props ->
     }
 }
 
-val EquipmentsTable = FC<MultipleFeatureProps<List<SimpleEquipment>>> { props ->
+val EquipmentsTable = FC<MultipleFeatureProps<List<SimpleEquipment>>>("EquipmentsTable") { props ->
     val translations = useContext(TranslationsContext)
     val (openAlert, setOpenAlert) = useState(false)
     val (openTextAlert, setOpenTextAlert) = useState(false)
@@ -1252,7 +1251,7 @@ val EquipmentsTable = FC<MultipleFeatureProps<List<SimpleEquipment>>> { props ->
     }
 }
 
-val EditableCell = FC<TextValidatorProps> { props ->
+val EditableCell = FC<TextValidatorProps>("EditableCell") { props ->
     val (value, setValue) = useState(props.value)
     TableCell {
         TextValidator {

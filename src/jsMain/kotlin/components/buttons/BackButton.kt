@@ -7,7 +7,7 @@ import react.FC
 import react.dom.html.ReactHTML.div
 import web.cssom.Float
 
-val BackButton = FC<ButtonProps> { props ->
+val BackButton = FC<ButtonProps>("BackButton") { props ->
     div {
         css { float = Float.left }
         Fab {

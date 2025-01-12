@@ -8,7 +8,7 @@ import react.FC
 import react.dom.html.ReactHTML.div
 import web.cssom.Float
 
-val LogoutButton = FC<ButtonProps> { props ->
+val LogoutButton = FC<ButtonProps>("LogoutButton") { props ->
     console.info("Logout button rendering")
     div {
         css { float = Float.right }

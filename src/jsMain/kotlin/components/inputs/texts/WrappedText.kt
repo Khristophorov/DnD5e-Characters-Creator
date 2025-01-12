@@ -14,7 +14,7 @@ external interface WrappedTextProps : Props {
     var values: Collection<String>
 }
 
-val WrappedText = FC<WrappedTextProps> { props ->
+val WrappedText = FC<WrappedTextProps>("WrappedText") { props ->
     div {
         InputLabel {
             +props.label

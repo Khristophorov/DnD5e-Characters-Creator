@@ -8,7 +8,7 @@ import mui.material.DialogContentText
 import mui.material.DialogTitle
 import react.FC
 
-val AlertDialog = FC<DialogProps> { props ->
+val AlertDialog = FC<DialogProps>("AlertDialog") { props ->
     Dialog {
         this.open = props.open
         DialogTitle {

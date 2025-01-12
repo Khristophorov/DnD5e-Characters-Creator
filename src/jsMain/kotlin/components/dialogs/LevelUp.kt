@@ -13,7 +13,7 @@ import mui.material.CircularProgress
 import react.FC
 import react.useState
 
-val LevelUp = FC<CharBasedProps> { props ->
+val LevelUp = FC<CharBasedProps>("LevelUp") { props ->
     val (feats, setFeats) = useState(emptyMap<String, Feat>())
     val (maneuvers, setManeuvers) = useState(emptyMap<String, Maneuver>())
 

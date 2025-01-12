@@ -8,7 +8,7 @@ import mui.material.FabProps
 import mui.material.Size.medium
 import react.FC
 
-val Fab = FC<FabProps> { props ->
+val Fab = FC<FabProps>("Fab") { props ->
     console.info("Rendering fab")
     Fab {
         this.size = props.size ?: medium

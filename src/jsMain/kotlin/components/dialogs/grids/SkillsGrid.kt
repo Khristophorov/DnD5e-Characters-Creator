@@ -63,7 +63,7 @@ private external interface SavingThrowsProps : Props {
     var elements: List<SavingThrowsItem>
 }
 
-val SkillsGrid = FC<SkillsProps> { props ->
+val SkillsGrid = FC<SkillsProps>("SkillsGrid") { props ->
     div {
         this.className = ClassName(CLASS_BORDERED)
         val skills = props.character.skills.associateBy { it.name }

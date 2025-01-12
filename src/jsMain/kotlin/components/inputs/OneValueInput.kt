@@ -25,7 +25,7 @@ external interface OneValueProps : PropsWithClassName {
     var isReadOnly: Boolean
 }
 
-val OneValueInput = FC<OneValueProps> { props ->
+val OneValueInput = FC<OneValueProps>("OneValueInput") { props ->
     console.info("Rendering one value input ${props.value}")
     DelayedTooltip {
         this.title = ReactNode(props.title ?: "")

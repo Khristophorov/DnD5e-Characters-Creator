@@ -9,7 +9,7 @@ import react.dom.html.ReactHTML.div
 import web.cssom.Float
 import web.cssom.px
 
-val PlusButton = FC<ButtonProps> { props ->
+val PlusButton = FC<ButtonProps>("PlusButton") { props ->
     console.info("Rendering Plus Button")
     div {
         css {

@@ -15,7 +15,7 @@ import react.FC
 import react.dom.html.ReactHTML.span
 import react.useContext
 
-val InformWindow = FC<FeatureProps<String>> { props ->
+val InformWindow = FC<FeatureProps<String>>("InformWindow") { props ->
     if (props.open) {
         val translations = useContext(TranslationsContext)
         console.info("Rendering info for ${props.feature.name}")

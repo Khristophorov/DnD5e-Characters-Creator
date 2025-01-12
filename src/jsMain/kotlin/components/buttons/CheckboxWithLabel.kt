@@ -17,8 +17,8 @@ external interface CheckboxWithLabelProps : CheckboxProps {
     var label: ReactNode
 }
 
-val CheckboxWithLabel = FC<CheckboxWithLabelProps> { props ->
-    val checkBox = FC<Props> {
+val CheckboxWithLabel = FC<CheckboxWithLabelProps>("CheckboxWithLabel") { props ->
+    val checkBox = FC<Props>("checkBox") {
         Checkbox {
             this.checked = props.checked
             this.icon = createElement(RadioButtonUnchecked)

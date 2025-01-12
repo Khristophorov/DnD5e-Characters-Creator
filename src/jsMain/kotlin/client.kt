@@ -14,7 +14,7 @@ fun main() {
     window.onload = {
         document.getElementById(ROOT)?.let {
             console.info("Starting the app.")
-            val mainElement = FC<Props> {
+            val mainElement = FC<Props>("mainElement") {
                 ThemeProvider {
                     this.theme = defaultTheme
                     div {

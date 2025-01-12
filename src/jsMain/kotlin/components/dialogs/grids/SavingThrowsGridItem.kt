@@ -26,7 +26,7 @@ external interface SavingThrowsGridItemProps : Props {
     var item: SavingThrowsItem
 }
 
-val SavingThrowsGridItem = FC<SavingThrowsGridItemProps> { props ->
+val SavingThrowsGridItem = FC<SavingThrowsGridItemProps>("SavingThrowsGridItem") { props ->
     console.info("Rendering saving throws grid item: Title ${props.item.title} Value: ${props.item.value}")
     val item = props.item
     DelayedTooltip {

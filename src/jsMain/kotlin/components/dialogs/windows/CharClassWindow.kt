@@ -37,7 +37,7 @@ import react.useContext
 import react.useState
 import web.cssom.ClassName
 
-var CharClassWindow = memoDialog(FC<CharBasedProps> { props ->
+var CharClassWindow = memoDialog(FC<CharBasedProps>("CharClassWindow") { props ->
     val (classes, setClasses) = useState(emptyMap<String, Class>())
     val (charClass, setCharClass) = useState(emptyClass())
     val (features, setFeatures) = useState(emptyList<Feature>())

@@ -6,7 +6,7 @@ import mui.material.IconButton
 import mui.material.IconButtonProps
 import react.FC
 
-val IconButton = FC<IconButtonProps> { props ->
+val IconButton = FC<IconButtonProps>("IconButton") { props ->
     IconButton {
         this.onClick = { event ->
             playSound(BUTTON_SOUND_ID)

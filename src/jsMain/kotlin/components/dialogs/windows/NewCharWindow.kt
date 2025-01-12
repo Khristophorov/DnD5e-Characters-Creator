@@ -18,7 +18,7 @@ import react.FC
 import react.useContext
 import react.useState
 
-val NewCharWindow = FC<DialogProps> { props ->
+val NewCharWindow = FC<DialogProps>("NewCharWindow") { props ->
     console.info("Rendering new character window.")
     val translations = useContext(TranslationsContext)
     val (raceDialogOpen, setRaceDialogOpen) = useState(true)

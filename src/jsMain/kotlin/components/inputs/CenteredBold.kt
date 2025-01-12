@@ -8,7 +8,7 @@ import react.dom.html.ReactHTML.strong
 import web.cssom.ClassName
 import web.cssom.TextAlign.Companion.center
 
-val CenteredBold = FC<PropsWithChildren> { props ->
+val CenteredBold = FC<PropsWithChildren>("CenteredBold") { props ->
     strong {
         css(ClassName(CLASS_CENTER)) {
             textAlign = center

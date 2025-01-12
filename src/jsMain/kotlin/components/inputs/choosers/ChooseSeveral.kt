@@ -25,7 +25,7 @@ import react.useContext
 import react.useState
 import web.cssom.ClassName
 
-val ChooseSeveral = FC<ChooserProps<List<String>>> { props ->
+val ChooseSeveral = FC<ChooserProps<List<String>>>("ChooseSeveral") { props ->
     val (chosenValues, setChosenValues) = useState(emptyList<String>())
     val translations = useContext(TranslationsContext)
     Dialog {
