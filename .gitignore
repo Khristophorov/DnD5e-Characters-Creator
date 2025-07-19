@@ -29,7 +29,7 @@ hs_err_pid*
 /.kotlin
 
 # Output folder
-/build/
+*/build/
 /out/
 
 # Mongo internal scripts
